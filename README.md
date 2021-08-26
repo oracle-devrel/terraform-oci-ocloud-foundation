@@ -1,7 +1,6 @@
-# TITLE
+# OCI Ocloud Framework: Landing Zone
 
-[![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_test)](https://sonarcloud.io/dashboard?id=oracle-devrel_test)
-
+[![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone)](https://sonarcloud.io/dashboard?id=oracle-devrel_terraform-oci-ocloud-landing-zone)
 
 ## Introduction
 MISSING
