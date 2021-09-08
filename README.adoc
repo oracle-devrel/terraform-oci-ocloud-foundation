@@ -1,4 +1,8 @@
 = The OCloud Framework: Landing Zone
+ifdef::status[]
+image:{img-build-status}[Build Status Badge,link={uri-build-status}]
+endif::[]
+
 [#img-license]
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) 
 
