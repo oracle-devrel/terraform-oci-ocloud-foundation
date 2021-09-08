@@ -1,0 +1,52 @@
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+
+title: "Oracloud Base Framework"
+description: "Oracloud Resource Manager Stack"
+stackDescription: "ITIL inspired service delivery framework for application deployments in Oracle Cloud Infrastructure (OCI)"
+schemaVersion: 1.1.0
+version: "20210704"
+locale: "en"
+
+variableGroups:
+- title: "Hidden Configuration"
+  visible: false
+  variables:
+  - tenancy_ocid
+  
+- title: "General Configuration"
+  visible: true
+  variables:
+  - organization
+  - project
+  - stage
+
+variables:
+# Hidden Configuration
+  tenancy_ocid:
+    title: "Tenancy ID"
+    description: "The Oracle Cloud Identifier (OCID) for your tenancy"
+    type: string
+    required: true
+    visibile: false
+  
+  # General Configuration
+  organization:
+    title: "Organization"
+    description: "Identifier for the organization or platform owner"
+    type: string
+    required: true
+    visibile: true
+
+  project:
+    title: "Project or Program"
+    description: "Identifier for the service delivery platform"
+    type: string
+    required: true
+    visibile: true
+
+  stage:
+    title: "Lifecycle stage"
+    description: "Define the lifecycle stage, e.g. dev, uat, prod"
+    type: string
+    required: true
+    visibile: true

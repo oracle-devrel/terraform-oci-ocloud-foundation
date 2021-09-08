@@ -1,0 +1,187 @@
+include::links.adoc[]
+
+= Networking
+
+One of the unique features of OCI is the {oci-l2}[virtual layer 2 network] design. Compared to the common network overlays in public clouds, this design provides the necessary control to create isolated data center on a shared infrastructure pool. Packet encapsulation shields private traffic on a shared network backbone to the extend of defining overlapping IP ranges. This allows for a multi-tenant design on the infrastructure layer, and prevents developers and operators to rely complex procedures building and maintaining multi-tenant applications. The following diagram exemplifies the topology in a multi data centre region. 
+
+[#img-Topology] 
+.Network Network 
+image::doc/image/topology.png[Network Topology]
+
+While network overlyas obligate VLANs on provider managed switches to connect server on networks networks, OCI launches a smart network interface with every server, exposing a Layer 3 switch for network seperation. The smart NIC operates at both Layer 2 and Layer 3, allowing devices to communicate with one another without going through a dedicated router. External traffic is still being routed and transferred between virtual cloud networks using gateways, but the internal routing is done by a private switch instead of a provider managed router. Network administrator, not the provider configure the physical device manage traffic between network segments.
+
+== Network Segmentation
+
+Network segmentation is the practice of splitting a computer network into independent network segment. Objectives of such split are for reflecting operational responsibilities, boosting performance and improving security.
+
+[#img-Segementation] 
+.Network Segmentation
+image::doc/image/segmentation.png[Network Segmentation]
+
+=== Improve Security
+When a cyber-criminal gains unauthorized access to a network, segmentation provides effective controls to limit further movement across the network. Security standards like CIS, PCI, C5 etc. provide guidance on creating clear separation of data within a network. A sound policy entails segmenting the network into multiple zones, with varying security requirements, and rigorously enforcing the policy on what is allowed to move from zone to zone.
+
+=== Control Access 
+Defining segments allows to implement a set of policies that protect network nodes from unauthorized access. Using the OCI API we configure routers, switches and firewalls to work together with ID management systems and ensure the information system is operating securely. 
+
+=== Contain network problems
+Separating Virtual Cloud Networks (VCN), is limiting the effect of local failures on other parts of network. Improved performance is achieved, because on a segmented network there are fewer hosts per subnetwork, thus minimizing local traffic.
+
+Even though we need to distinguish the physical topology of single- and multi-data centre regions, the logical network layer remains the same, because the data center are connected through a close network and packet forwarding relys on {ref-hostrouting}[host routing mechanisms]. Regional subnets enable operators to launch multi-data center networks for both, private and public cloud services. Beside the CIDR the VCN definition contains the Dynamic Routing Gateway (DRG) as IP peer and host for network functions like Internet Connectivity, Network Address Translation (NAT) or Private-Public Service Communication.
+
+== Subnetting
+
+A subnetwork or subnet is a logical subdivision of an IP network. We break a network segement further down into smaller IP networks. Hosts that belong to the same subnet are addressed with an identical most-significant bit-group in their IP addresses. This results in the logical division of an IP address into two fields: the network number or routing prefix and the rest field or host identifier. The rest field is an identifier for a specific host or network interface.
+
+The routing prefix is expressed in {ref-cidr}[Classless Inter-Domain Routing (CIDR)] notation, written as the first address of a network, followed by a slash character (/), and ending with the bit-length of the prefix. For example, 10.0.0.0/16 is the prefix of the Internet Protocol version 4 network starting at the given address, having 24 bits allocated for the network prefix, and the remaining 8 bits reserved for host addressing. Addresses in the range 198.51.100.0 to 198.51.100.255 belong to this network. The IPv6 address specification 2001:db8::/32 is a large address block with 296 addresses, having a 32-bit routing prefix.
+
+In the ocloud framework we rely on Terraforms cidrsubnet function to separate a VCN into subnets. The number in the mal only refers to newbits, netnums are computed automatically.
+
+
+```hcl
+module "network_segment" {
+  address_space = {
+      cidr_block = "10.0.0.0/24"
+  }
+  subnets = {
+    # Provide a list with newbits for the cidrsubnet function
+    app = 1
+    db  = 2
+    web = 2
+  }
+```
+
+The functions assigns consecutive IP address blocks to each of the requested subnets, packing them densely in the address space. The `subnet_map` output is then a map from the given `name` strings to the allocated CIDR prefixes:
+
+```hcl
+{
+  web  = "10.0.0.0/26"
+  db   = "10.0.0.64/26"
+  app  = "10.0.0.128/25"
+}
+```
+
+The `new_bits` values are the number of _additional_ address bits to use for numbering the new networks. Because network `web` has a `new_bits` of 2, and the base CIDR block has an existing prefix of 24, its final prefix length is 24 + 2 = 26. `app` has a `new_bits` of 1, so its final prefix length is only 24 + 1 = 25 bits.
+
+If the order of the given subnets is significant, the alternative output `subnet_map` is a list with an object for each requested network that has the following attributes:
+
+* `name` is the same name that was given in the request.
+* `cidr_block` is the allocated CIDR prefix for the network.
+
+If you need the CIDR block addresses in order and don't need the names, you can use `module.network_segment.subnet_map.name` to obtain that flattened list.
+
+=== Changing Networks Later
+
+When initially declaring your network addressing scheme, you can declare your subnets in any order. However, the positions of the subnets in the request list affects the assigned subnet numbers, so when making changes later it's important to take care to avoid implicitly renumbering other subnets.
+
+The safest approach is to only add new subnets to the end of the list and to never remove an existing subnet or or change its `new_bits` value. If an existing allocation becomes obsolute, you can delete the "network_domain" in the respective template file and set its name explicitly to `null` in the "net" template to skip allocating it a prefix but to retain the space it previously occupied in the address space:
+
+```hcl
+module "network_segment" {
+  subnets = [
+    {
+      name     = null # formerly "app", but no longer used
+      new_bits = 1
+    },
+    {
+      name     = "db"
+      new_bits = 2
+    },
+  ]
+}
+```
+
+In the above example, the `subnet_cidr_blocks` output would have the
+following value:
+
+```
+{
+  db = "10.0.0.0/26"
+}
+```
+
+`app` has been excluded, but its former prefix `10.0.0.64/26` is now skipped altogether so `db` retains its allocation of `10.0.0.64/26`. Because the `subnets` output is a list that preserves the element indices of the requested networks, it _does_ still include the skipped networks, but with their `name` and `cidr_blocks` attributes set to null:
+
+```
+[
+  {
+    name       = null
+    new_bits   = 1
+    cidr_block = null
+  },
+  {
+    name       = "db"
+    new_bits   = 2
+    cidr_block = "10.0.0.64/26"
+  },
+]
+```
+
+We don't recommend using the `subnets` output when subnets are skipped in this way, but if you _do_ need to preserve the indices while excluding the null items you could use a `for` expression to project the indices into attributes of the objects:
+
+```
+[
+  for i, n in module.network_segment.subnets : {
+    index      = i
+    name       = n.name
+    cidr_block = n.cidr_block
+  }
+  if n.cidr_block != null
+]
+```
+
+Certain edits to existing allocations are possible without affecting subsequent allocations, as long as you are careful to ensure that the new allocation occupies the same address space as whatever replaced it. For example, it's safe to replace a single allocation anywhere in the list with a pair of consecutive allocations whose `new_bits` value is one greater. If you have an allocation with `new_bits` set to 4, you can replace it with two allocations that have `new_bits` set to 5 as long as those two new allocations retain their position in the overall list:
+
+```hcl
+  networks = [
+    # "app-1" and "app-2" replace the former "app", taking half of the
+    # former address space each: 10.0.0.128/26 and 10.0.0.192/26, respectively.
+    {
+      name     = "app-1"
+      new_bits = 2
+    },
+    {
+      name     = "app-2"
+      new_bits = 2
+    },
+
+    # "db" is still at 10.0.0.64/26
+    {
+      name     = "db"
+      new_bits = 2
+    },
+  ]
+```
+
+When making in-place edits to existing subnets, be sure to verify that the result is as you expected using `terraform plan` before applying, to avoid disruption to already-provisioned subnets that you want to keep.
+
+## Network Allocations in a CSV file
+
+It may be convenient to represent your table of network definitions in a CSV file rather than writing them out as object values directly in the Terraform configuration, because CSV allows for a denser representation of such a table that might be easier to quickly scan.
+
+You can create a CSV file `subnets.csv` containing the following and place it inside your own calling module:
+
+```
+"name","newbits"
+"web","2"
+"","2"
+"db","2"
+```
+
+Since CSV cannot represent null, we'll use the empty string to represent an obsolete subnet that must still have reserved address space. When editing the CSV file after the resulting allocations have been used, be sure to keep in mind the restrictions under [_Changing Networks Later_](#changing-networks-later) above.
+
+We can use Terraform's `csvdecode` function to parse this file and pass the result into the CIDR Subnets function:
+
+```hcl
+module "network_segment" {
+  ...
+
+  subnets = [
+    for r in csvdecode(file("${path.module}/subnets.csv")) : {
+      name     = r.name != "" ? r.name : null
+      new_bits = tonumber(r.new_bits)
+    }
+  ]
+}
+```
+{ocloud-base}[<<] | {ocloud-tf}[<] | {ocloud-intro}[+] | {ocloud-name}[>] | {ocloud-links}[>>]
