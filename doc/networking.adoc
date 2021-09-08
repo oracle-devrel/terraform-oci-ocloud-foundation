@@ -63,6 +63,8 @@ The functions assigns consecutive IP address blocks to each of the requested sub
 
 The `new_bits` values are the number of _additional_ address bits to use for numbering the new networks. Because network `web` has a `new_bits` of 2, and the base CIDR block has an existing prefix of 24, its final prefix length is 24 + 2 = 26. `app` has a `new_bits` of 1, so its final prefix length is only 24 + 1 = 25 bits.
 
+include::cidr.adoc[]
+
 If the order of the given subnets is significant, the alternative output `subnet_map` is a list with an object for each requested network that has the following attributes:
 
 * `name` is the same name that was given in the request.
