@@ -4,7 +4,7 @@
 image:https://img.shields.io/badge/License-UPL-green.svg[License: UPL]
 
 [#img-quality]
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone)](https://sonarcloud.io/dashboard?id=oracle-devrel_terraform-oci-ocloud-landing-zone)
+image:https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone[link="https://sonarcloud.io/dashboard?id=oracle-devrel_terraform-oci-ocloud-landing-zone"][Quality gate]
 
 
 [#img-deployment]
