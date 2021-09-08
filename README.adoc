@@ -1,9 +1,9 @@
 = The OCloud Framework: Landing Zone
 
 [#img-license]
-image:https://img.shields.io/badge/license-UPL[License: UPL]
+image:https://img.shields.io/badge/license-UPL-green[License: UPL]
 
-)](https://img.shields.io/badge/license-UPL-green
+image:https://img.shields.io/badge/license-UPL
 image:https://img.shields.io/badge/License-UPL-green.svg
 
 [#img-quality]
