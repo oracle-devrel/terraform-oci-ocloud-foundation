@@ -1,8 +1,8 @@
 = The OCloud Framework: Landing Zone
 
 [#img-license]
-[link="https://img.shields.io/badge/license-UPL"]
-image:https://img.shields.io/badge/license-UPL-green[License: UPL]
+[link="https://img.shields.io/badge/license-UPL-green"]
+image:https://img.shields.io/badge/license-UPL[License: UPL]
 
 [#img-quality]
 [link="https://sonarcloud.io/dashboard?id=oracle-devrel_terraform-oci-ocloud-landing-zone"]
