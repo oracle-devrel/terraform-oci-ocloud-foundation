@@ -3,7 +3,7 @@
 [.float-group]
 --
 image::https://img.shields.io/badge/license-UPL-green[float="left"]
-image::https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone[link="https://sonarcloud.io/dashboard?id=oracle-devrel_terraform-oci-ocloud-landing-zone"][float="left"]
+image::https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone[float="left"]
 // Define float role, instead of attribute.
 [.left]
 [link="https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/archive/refs/heads/main.zip"]
