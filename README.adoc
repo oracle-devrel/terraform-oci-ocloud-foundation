@@ -1,20 +1,10 @@
 = The OCloud Framework: Landing Zone
 
---
-image::https://img.shields.io/badge/license-UPL-green[float="left"]
-image::https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone[float="left"]
-[.left]
---
+image::https://img.shields.io/badge/license-UPL-green[License: UPL, link="https://img.shields.io/badge/license-UPL-green"]
+image::https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone[Quality gate, link="https://sonarcloud.io/dashboard?id=oracle-devrel_terraform-oci-ocloud-landing-zone"]
 
-[.float-group]
---
-image::https://img.shields.io/badge/license-UPL-green[link="https://img.shields.io/badge/license-UPL-green"][License: UPL][float="left"]
-//image::https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone[link="https://sonarcloud.io/dashboard?id=oracle-devrel_terraform-oci-ocloud-landing-zone"][Quality gate][float="left"]
-// Define float role, instead of attribute.
-[.left]
 [link="https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/archive/refs/heads/main.zip"]
 image::https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg[Deploy on Oracle Cloud][]
---
 
 == Introduction
 The service delivery framework "ocloud" helps operators to quickly set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). While launching a new resource in OCI is a matter of loging in and pressing a button, the preperation of a tenancy that extends a private data center can be challenging. Provisioning private ressources in a secured environment involves numberous services and requires a deep understanding of various configuration options build into Oracle's Cloud Infrastructure platform.
