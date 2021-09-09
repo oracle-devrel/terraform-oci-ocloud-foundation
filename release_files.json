@@ -1,3 +1,22 @@
-// see https://github.com/oracle-devrel/action-release-zip-maker for docs
 [
+  {
+    "action": "create_zip",
+    "file_name": "ocloud-base.zip",
+    "files": [
+      {
+        "src_pattern": "*.tf",
+        "exclude": [ ] 
+      },
+      {
+        "src": "LICENSE"
+      },
+      {
+        "src": "schema.yaml",
+      }
+    ]
+  },
+  {
+    "action": "upload_file",
+    "file_name": "ocloud-base.zip"
+  }
 ]
