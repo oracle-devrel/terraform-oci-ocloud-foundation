@@ -2,7 +2,7 @@ image::https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/dep
 
 == The OCloud Framework: Landing Zone
 
-image:https://img.shields.io/badge/license-UPL-green[LICENSE]
+image:https://img.shields.io/badge/license-UPL-green[link="LICENSE"]
 image:https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone[Quality gate, link="https://sonarcloud.io/dashboard?id=oracle-devrel_terraform-oci-ocloud-landing-zone"]
 
 === Introduction
