@@ -27,7 +27,10 @@ The default repository separates four templates:
 The ops and the net deployment templates are obligatory, the db and the app templates are optional. The bastion service connects to an operator in the application domain and allows to enter all domains via SSH.
 
 ==== Prerequisites
-MISSING
+* link:https://www.oracle.com/cloud/free/[Oracle Cloud Infrastructure (OCI) Account]
+* link:https://www.terraform.io[Terraform]
+* OCI Service Provider
+* Time Service Provider
 
 ==== Components
 Templates refer to terraform modules, rather than addressing resource blocks directly. Platform components combine multiple resources logically into Terraform modules. These modules contain best practices collected throughout numberous projects and remain subject to change. Initially we provide the following modules:
