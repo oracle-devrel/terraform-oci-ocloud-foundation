@@ -28,6 +28,7 @@ The ops and the net deployment templates are obligatory, the db and the app temp
 
 ==== Prerequisites
 This repository is intended to be used with the Oracle Resource Manager. An link:https://www.oracle.com/cloud/free/[Oracle Cloud Infrastructure (OCI) Account] is sufficient to execute the code. It builds on the following technologies:
+
 * link:https://www.terraform.io[Terraform]
 * link:https://registry.terraform.io/providers/hashicorp/oci/latest[OCI Service Provider]
 * link:https://registry.terraform.io/providers/hashicorp/time/latest[Time Service Provider]
