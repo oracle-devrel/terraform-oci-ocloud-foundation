@@ -76,7 +76,7 @@ Modules deploy a variety of different resources, like infrastructure components,
 * Missing wait states cause deployment errors, terraform apply might need to be applied multiple times
 
 === URLs
-* Nothing at this time
+* Sign In: https://www.oracle.com/cloud/sign-in.html
 
 === Contributing
 This project is open source.  Please submit your contributions by forking this repository and submitting a pull request!  Oracle appreciates any contributions that are made by the open source community.
