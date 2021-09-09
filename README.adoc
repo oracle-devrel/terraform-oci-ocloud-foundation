@@ -26,13 +26,6 @@ The default repository separates four templates:
 
 The ops and the net deployment templates are obligatory, the db and the app templates are optional. The bastion service connects to an operator in the application domain and allows to enter all domains via SSH.
 
-==== Prerequisites
-This repository is intended to be used with the Oracle Resource Manager. An link:https://www.oracle.com/cloud/free/[Oracle Cloud Infrastructure (OCI) Account] is sufficient to execute the code. It builds on the following technologies:
-
-* link:https://www.terraform.io[Terraform]
-* link:https://registry.terraform.io/providers/hashicorp/oci/latest[OCI Service Provider]
-* link:https://registry.terraform.io/providers/hashicorp/time/latest[Time Service Provider]
-
 ==== Components
 Templates refer to terraform modules, rather than addressing resource blocks directly. Platform components combine multiple resources logically into Terraform modules. These modules contain best practices collected throughout numberous projects and remain subject to change. Initially we provide the following modules:
 
@@ -67,6 +60,14 @@ Modules deploy a variety of different resources, like infrastructure components,
 |...
 |...
 |=== 
+
+
+==== Prerequisites
+This repository is intended to be used with the Oracle Resource Manager. An link:https://www.oracle.com/cloud/free/[Oracle Cloud Infrastructure (OCI) Account] is sufficient to execute the code. It builds on the following technologies:
+
+* link:https://www.terraform.io[Terraform]
+* link:https://registry.terraform.io/providers/hashicorp/oci/latest[OCI Service Provider]
+* link:https://registry.terraform.io/providers/hashicorp/time/latest[Time Service Provider]
 
 === Notes/Issues
 * The VPN connection is not tested yet
