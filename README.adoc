@@ -70,11 +70,9 @@ This repository is intended to be used with the Oracle Resource Manager. An link
 * link:https://registry.terraform.io/providers/hashicorp/time/latest[Time Service Provider]
 
 === Notes/Issues
-* The VPN connection is not tested yet
-* Destroying compartments should be an exception and can take a long time. Best practice is destroying all other resources first, before destroying the compartments in a separate run. In the default setup, the "enable_delete" flag prevent unintensional destroy of compartments
-* The bastion service is limited to port forwarding, managed ssh does not work at the moment. 
-* Using Terraform 1.0 produces a warning about missing provider definitions in the module directories, which can be ignored.
-* Missing wait states cause deployment errors, terraform apply might need to be applied multiple times
+* Destroying compartments should be an exception and can take a long time. Best practice is destroying all other resources first, before destroying the compartments in a separate run. In the default setup, the "enable_delete" flag prevent unintensional destroy of compartments 
+* Using Terraform 1.0 produces a warning about missing provider definitions in the module directories, which can be ignored
+* Under specific circumstances, missing wait states can cause deployment errors. In that case terraform apply or destroy should be executed repeatedly
 
 === URLs
 * Sign In: https://www.oracle.com/cloud/sign-in.html
