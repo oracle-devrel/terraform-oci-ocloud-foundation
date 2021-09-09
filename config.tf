@@ -1,3 +1,6 @@
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 // Global settings and naming conventions
 // In order to apply these settings run the following command 'terraform plan -var tenancy_ocid=$OCI_TENANCY -var compartment_ocid="..." -out config.tfplan'
 // and than 'terraform apply "config.tfplan" -auto-approve'
