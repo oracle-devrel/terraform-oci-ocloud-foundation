@@ -12,7 +12,7 @@ The service delivery framework "ocloud" helps operators to quickly set up a host
 .Base Architecture 
 image::doc/image/base_architecture.png[Base Architecture]
 
-This framework helps to automate the provisioning processes for a service delivery platform. It rolls out a typical network design, implements a security baseline and ensures consistent names for core infrastructure components. The setup reflects the separation of duties, typically found in an ITIL oriented organization and builds a foundation for a multi-tenant service operation. 
+This framework helps to automate the provisioning processes for an initial set of resources that turn a fresh OCI tenancy into a private cloud. It includes a typical network design for three tier applications, implements a security baseline and ensures consistent names for accross infrastructure components. The setup reflects the separation of duties, typically found in an ITIL oriented organization and builds a foundation for a multi-tenant service operation. 
 
 === Getting Started
 The first layer of code addresses the needs of system adminstrators. It is written in HCL and captures the parameters that customize the provisioning processes for OCI core resources. 
@@ -23,8 +23,8 @@ image::doc/image/code_structure.png[Code Structure]
 
 The default repository separates four templates:
 
-* https://gitlab.com/tboettjer/ocloud-platform/-/blob/master/operation.tf[Operations] prepares a working environment cloud- and security operators with an "ops" compartment that contains base roles like the cloud "super admin".
-* https://gitlab.com/tboettjer/ocloud-platform/-/blob/master/network.tf[Network] provisions an initial network segment and creates a "web" domain for internet facing portals beside the "netops" compartment and role.
+* https://gitlab.com/tboettjer/ocloud-platform/-/blob/master/operation.tf[Operations] prepares a working environment priviledged operators with an "ops" compartment that contains base roles like the cloud "super admin".
+* https://gitlab.com/tboettjer/ocloud-platform/-/blob/master/network.tf[Network] provisions an initial network segment and creates a "presentation" domain for internet facing portals beside the "netops" compartment and role.
 * https://gitlab.com/tboettjer/ocloud-platform/-/blob/master/database.tf[Database] defines the infrastructure for database hosting with access via port 1521-1522 in addition to the "db" compartment and admin role.
 * https://gitlab.com/tboettjer/ocloud-platform/-/blob/master/application.tf[Application] creates an application management domain, the an app compartment, the sysops role and deploys an operator for remote scripts.
 
@@ -35,7 +35,7 @@ Templates refer to terraform modules, rather than addressing resource blocks dir
 
 * https://gitlab.com/tboettjer/ocloud-platform/-/tree/master/module/admin_section[Administrator Section] is the compartment block combined with groups an policies that define a working environment for cloud and security operators
 * https://gitlab.com/tboettjer/ocloud-platform/-/tree/master/module/network_segment[Network Segment] defines the compart and role for network administrators together with a Virtual Cloud Network (VCN) incl. Dynamic Routing Gateway and gateways for NAT, Intenrnet and Oracle Services
-* https://gitlab.com/tboettjer/ocloud-platform/-/tree/master/module/network_domain[Network Domain] creates a subnet with portfilters and routing rules
+* https://gitlab.com/tboettjer/ocloud-platform/-/tree/master/module/network_domain[Network Domain] the necessary subnets with portfilters and routing rules to host the application tiers
 * https://gitlab.com/tboettjer/ocloud-platform/-/tree/master/module/application_host[Application Host] launches a compute node and executes the respective configuration scripts are executed
 
 ==== Resource Interfaces
