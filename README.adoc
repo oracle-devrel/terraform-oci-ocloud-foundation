@@ -6,7 +6,7 @@ image:https://img.shields.io/badge/license-UPL-green[link="LICENSE"]
 image:https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone[Quality gate, link="https://sonarcloud.io/dashboard?id=oracle-devrel_terraform-oci-ocloud-landing-zone"]
 
 === Introduction
-The service delivery framework "ocloud" helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). While launching a new resource in the OCI is a matter of pressing a button, preperaing a tenancy to extend or replace on-prem infrastructure can be challenging. Provisioning private cloud involves numberous services and requires a deep understanding of various configuration options build into automated infrastructure platform.
+The service delivery framework "ocloud" helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). While launching a new resource in OCI is a matter of pressing a button, preparing a tenancy to extend or replace on-prem infrastructure can be challenging. Provisioning private cloud involves numberous services and requires a deep understanding of various configuration options build into Oracle's automated infrastructure platform.
 
 [#img-architecture] 
 .Base Architecture 
@@ -44,10 +44,10 @@ Modules deploy a variety of different resources, like infrastructure components,
 
 [cols="1,1,1,1,1"]
 |===
-|       | Admin Section | Network Segment  | Network Domain | Application Host
-| Core  | Compartment   | VCN              | Subnet         | Instance
-| Roles |               |                  |                |
-| SSH   |               |                  |                |
+|       | Admin Section | Network Segment    | Network Domain | Application Host
+| Core  | Compartment   | VCN, DRG, NAT, IGW | Subnet         | Instance
+| Roles | Group, Policy |                    |                |
+| SSH   | Bstion        |                    |                | Session
 |=== 
 
 
