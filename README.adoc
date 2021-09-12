@@ -57,9 +57,9 @@ Code is written in HashiCorp Configuration Language (HCL), includes data stored 
 
 * link:https://www.oracle.com/cloud/free/[Oracle Cloud Infrastructure (OCI) Account] 
 * link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[Oracle Resource Manager]
-* link:https://www.terraform.io[Terraform]
-* link:https://registry.terraform.io/providers/hashicorp/oci/latest[OCI Service Provider]
-* link:https://registry.terraform.io/providers/hashicorp/time/latest[Time Service Provider]
+* link:https://www.terraform.io[HashiCorp Terraform]
+* link:https://registry.terraform.io/providers/hashicorp/oci/latest[Terraform Service Provider for OCI]
+* link:https://registry.terraform.io/providers/hashicorp/time/latest[Terraform Time Service Provider]
 
 === Notes/Issues
 * Destroying compartments should be an exception and can take a long time. Best practice is destroying all other resources first, before destroying the compartments in a separate run. In the default setup, the "enable_delete" flag prevent unintensional destroy of compartments 
