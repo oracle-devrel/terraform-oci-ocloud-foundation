@@ -42,30 +42,31 @@ Templates refer to terraform modules, rather than addressing resource blocks dir
 
 Modules deploy a variety of different resources, like infrastructure components, predefined cloud services, applications or third party software products. Usually we employ the terraform service provider to provision resources, however, comand line scripts, API or SDK are additional options.
 
-[cols="1,1,1,1,1"]
+[cols="1,1,1,1,1",options="header"]
 |===
-|       | Admin Section | Network Segment    | Network Domain | Application Host
-| Core  | Compartment   | VCN, DRG, NAT, IGW | Subnet         | Instance
-| Roles | Group, Policy |                    |                |
-| SSH   | Bstion        |                    |                | Session
+|          | Admin Section | Network Segment | Network Domain | Application Host
+| Core     | Compartment   | VCN,            | Subnet         | Instance
+| Gateways |               | DRG, NAT, IGW   |                | ...
+| Roles    | Group, Policy |                 |                | ...
+| SSH      | Bastion       |                 |                | Session
 |=== 
 
 
 ==== Prerequisites
-Modules are written in HCL and executed with link:https://www.terraform.io[Terraform]. 
-This repository is intended to be used with the Oracle Resource Manager. 
+Code is written in HashiCorp Configuration Language (HCL), includes data stored in JSON format and cloud init scripts. It is executed with link:https://www.terraform.io[Terraform]. Resource Manager is an Oracle Cloud Infrastructure service that helps to install, configure, and manage Terraform code to support a fast adoption of the "infrastructure-as-code" model.
 
 * link:https://www.oracle.com/cloud/free/[Oracle Cloud Infrastructure (OCI) Account] 
-* 
+* link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[Oracle Resource Manager]
 * link:https://registry.terraform.io/providers/hashicorp/oci/latest[OCI Service Provider]
 * link:https://registry.terraform.io/providers/hashicorp/time/latest[Time Service Provider]
 
 === Notes/Issues
 * Destroying compartments should be an exception and can take a long time. Best practice is destroying all other resources first, before destroying the compartments in a separate run. In the default setup, the "enable_delete" flag prevent unintensional destroy of compartments 
 * Using Terraform 1.0 produces a warning about missing provider definitions in the module directories, which can be ignored
-* Under specific circumstances, missing wait states can cause deployment errors. In that case terraform apply or destroy should be executed repeatedly
+* Under specific circumstances, resource dependencies can cause deployment errors. In that case, terraform apply or destroy commands are required to run repeatedly to reach the desired state
 
 === URLs
+This repository is intended to be used with the Oracle Resource Manager. Using the "Deploy to Oracle Cloud" Button requires users to sign in.
 * Sign In: https://www.oracle.com/cloud/sign-in.html
 
 === Contributing
