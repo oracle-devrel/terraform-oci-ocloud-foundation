@@ -53,10 +53,11 @@ Modules deploy a variety of different resources, like infrastructure components,
 
 
 ==== Prerequisites
-Code is written in HashiCorp Configuration Language (HCL), includes data stored in JSON format and cloud init scripts. It is executed with link:https://www.terraform.io[Terraform]. Resource Manager is an Oracle Cloud Infrastructure service that helps to install, configure, and manage Terraform code to support a fast adoption of the "infrastructure-as-code" model.
+Code is written in HashiCorp Configuration Language (HCL), includes data stored in JSON format and cloud init scripts. We use the OCI Resource Manager service to install, configure, and manage Terraform code in order to support a fast adoption of the "infrastructure-as-code" model.
 
 * link:https://www.oracle.com/cloud/free/[Oracle Cloud Infrastructure (OCI) Account] 
 * link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[Oracle Resource Manager]
+* link:https://www.terraform.io[Terraform]
 * link:https://registry.terraform.io/providers/hashicorp/oci/latest[OCI Service Provider]
 * link:https://registry.terraform.io/providers/hashicorp/time/latest[Time Service Provider]
 
@@ -66,8 +67,7 @@ Code is written in HashiCorp Configuration Language (HCL), includes data stored 
 * Under specific circumstances, resource dependencies can cause deployment errors. In that case, terraform apply or destroy commands are required to run repeatedly to reach the desired state
 
 === URLs
-This repository is intended to be used with the Oracle Resource Manager. Using the "Deploy to Oracle Cloud" Button requires users to sign in.
-* Sign In: https://www.oracle.com/cloud/sign-in.html
+This repository is intended to be used with the Oracle Resource Manager. Using the "Deploy to Oracle Cloud" Button requires users to link:https://www.oracle.com/cloud/sign-in.html[sign in].
 
 === Contributing
 This project is open source.  Please submit your contributions by forking this repository and submitting a pull request!  Oracle appreciates any contributions that are made by the open source community.
