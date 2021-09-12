@@ -45,8 +45,8 @@ Modules deploy a variety of different resources, like infrastructure components,
 [cols="1,1,1,1,1",frame=ends,grid=rows,stripes=hover,options="header"]
 |===
 |          | Admin Section | Network Segment | Network Domain | Application Host
-| Core     | Compartment   | VCN,            | Subnet         | Instance
-| Gateways |               | DRG, NAT, IGW   |                | ...
+| Core     | Compartment   | VCN, DRG        | Subnet         | Instance
+| Routing  |               | IGW, NAT, SGW   | Table          | ...
 | Roles    | Group, Policy |                 |                | ...
 | SSH      | Bastion       |                 |                | Session
 |=== 
