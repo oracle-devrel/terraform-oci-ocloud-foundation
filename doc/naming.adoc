@@ -1,0 +1,76 @@
+include::links.adoc[]
+
+= Naming Conventions
+
+Managing IT assets requires a harmonize set of identifiers accross multiple system. Cloud resources will pe represented in existing systems like the configuration management database (CMDB), the directory server (LDAP) and network management services like network information systems (NIS), dynamic host configuration protocol (DHCP), domain name service (DNS) or IP address manager (IPAM). It is necessary to adhere unique values for records such as computer names, usernames and asset tags, so operators can differentiate between them. In operations engineering we distinguish the following types of names: 
+
+* Resource Name - unique identifier for resource blocks in Terraform 
+* DNS Label     - unique resource argument, prologuing the URL, needs to comply with {rfc-1035}[RFC 1035], up to 15 alpha numeric characters 
+* Name          - unique resource argument to identify resource instances, up to 255 alpha numeric characters
+* Display Name  - freetext argument inside resource blocks refering, to resources in the console and in log files, up to 255 alpha numeric and special characters
+
+
+The following guidelines should help to define names for an OCI tenancy
+
+== Oracle Resource Manager (ORM) stacks
+[cols="1,1,1,1",options="header"]
+|===
+| Name | working-dir | depends on | can depend on
+| base | /base       | -          | - 
+| db   | /db         | base       | -
+| app  | /app        | base       | db
+|===
+
+== Input Parameter
+
+[cols="1,1,1,1,1",options="header"]
+|===
+| Name            | Convention                 | Example       | Limit Enforcement                       | Type
+| service label   | "owner" + "project"        | dteldbas      | 8 alphanumeric characters, lower letter | implicit  
+| service name    | "owner" + _ + "project"    | -             | upper letter                            | implicit           
+| owner           | client name                | dtel          | 4 alphanumeric characters max           | mandatory
+| project         | department / project name  | dbas          | 4 alphanumeric characters max           | mandatory
+| stage           | type of environment        | dev/test/prd  | -                                       | optional
+|===
+
+== Assembly Rules for Implicit Types
+
+[cols="1,1,1",options="header"]
+|===
+| Type         | Convention                 | Example
+| Display Name | "service_name" + _ + "..." | dteldbas
+| DNS Label    | "service_label" + "..."    | dbas
+|===
+
+== Assembly Rules for Explicit Types
+
+=== Display Name
+[cols="1,1,1",options="header"]
+|===
+| Type        | Convention                                   | Example
+| compartment | "service_name"-"resource name"-compartment   | dteldbas-application-compartment
+| vcn         | "service_name"-"instance number"-network     | dteldbas-0-network
+| policy      | "group name"-policy                          | netops-policy
+|===
+
+=== Name
+an ITSM oriented setup would be the following:  
+
+**Groups**
+[cols="1,1",options="header"]
+|===
+| Name     | Function
+| cloudops | Group for super user, managing the cloud tenancy
+| sysops   | Group for managing application infrastructure in compartment /application/
+| secops   | Specific sysops group with access to security services
+| netops   | Group for managing networking infrastrcutrue in the root compartment
+| dbops    | Group for managing database infrastructure in compartment /database/
+| iam      | Group for managing IAM resources in the tenancy.
+| README   | Group for inspecting and auditing the use of a tenancy
+|===
+
+=== Resource Name
+Using a consistent identifier, like the default "ocloud" and add numbers when multiple instances are possible.
+
+
+{ocloud-base}[<<] | {ocloud-net}[<] | {ocloud-intro}[+] | {ocloud-net}[>] | {ocloud-links}[>>]

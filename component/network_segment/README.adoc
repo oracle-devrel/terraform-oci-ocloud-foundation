@@ -1,0 +1,102 @@
+== Providers
+[cols="1,1",options="header"]
+|===
+|Name
+|Version
+
+|oci 
+|n/a
+|===
+
+== Dependencies
+* https://gitlab.com/oracloud/landing-zone/-/tree/master/module/admin_section[Administrator Section]
+
+== Module
+
+```hcl
+
+module "ocloud1_segment" {
+  source         = "./module/network_segment/"
+  providers      = { oci = oci.home }
+  depends_on = [
+    module.netops_section
+  ]
+  config  = {
+    compartment_id = module.netops_section.compartment_id
+    display_name   = "VCN_${local.service_name}"
+    dns_label      = "vcn${local.service_label}"
+    defined_tags   = null
+    freeform_tags  = {"framework"= "ocloud"}
+  }
+  vcn = {
+    description                     = "virtual cloud network"
+    address_spaces = {
+      "cidr_block"                  = "10.0.0.0/24" 
+      "anywhere"                    = "0.0.0.0/0"
+      "interconnect"                = "192.168.0.0/16"
+    }
+    subnets = [
+      {
+        name     = "web"
+        new_bits = 2
+      },
+      {
+        name     = "db"
+        new_bits = 2
+      },
+      {
+        name     = "app"
+        new_bits = 1
+      },
+    ]
+    block_nat_traffic               = false
+    service_gateway_cidr            = "all-${lower(local.home_region_key)}-services-in-oracle-services-network" #Alternative: "oci-${local.region_key}-objectstorage"
+  }
+  drg = {
+    create_drg                      = true
+    display_name                    = "DRG_${local.service_name}"
+    dns_label                       = "drg${local.service_label}"
+    description                     = "dynamic routing gateway"
+  }
+}
+```
+
+== Resources
+
+* https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_vcn[oci_core_vcn]
+* https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg[oci_core_drg]
+* https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg_attachment[oci_core_drg_attachment]
+* https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_internet_gateway[oci_core_internet_gateway]
+* https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_nat_gateway[oci_core_nat_gateway]
+* https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_service_gateway[oci_core_service_gateway]
+* https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services[oci_core_services]
+
+== Inputs
+
+[cols="1,1,1,1,1",options="header"]
+|===
+| Name | Description | Type | Default | Required
+| vcn_cidr | A VCN covers a single, contiguous IPv4 CIDR block of your choice | `string` | `"10.0.0.0/16"` | no
+| display_name | Name of Virtual Cloud Network | `any` | n/a | yes
+| dns_label | A DNS label for the VCN, used in conjunction with the VNIC's hostname and subnet's DNS label to form a fully qualified domain name (FQDN) for each VNIC within this subnet | `string` | `"vcn"` | no
+| block_nat_traffic | Whether or not to block traffic through NAT gateway | `bool` | `false` | no
+| compartment_id | Compartment's OCID where VCN will be created. | `any` | n/a | yes
+| is_create_drg | Whether a DRG is to be created | `bool` | `false` | no
+| service_gateway_cidr | The OSN service cidr accessible through Service Gateway | `string` | `""` | no
+| service_label | A service label to be used as part of resource names. | `string` | `"cis"` | no
+|===
+
+
+== Outputs
+
+[cols="1,1,1",options="header"]
+|===
+| Name | Description | output 
+| vcn | VCN information. | 
+| all_services | All services | 
+| drg | DRG information. | 
+| internet_gateway |  module.ocloud1_segment.internet_gateway | 
+| nat_gateway | NAT Gateway information. | 
+| service_gateway | Service Gateway information. |
+|===
+
