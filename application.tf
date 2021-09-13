@@ -61,7 +61,7 @@ module "app_domain" {
     route_table_id              = module.segment_1.private_route_table.id
   }
   bastion  = {
-    create            = false # Determine whether a bastion service will be deployed and attached
+    create            = true # Determine whether a bastion service will be deployed and attached
     client_allow_cidr = [module.segment_1.anywhere]
     max_session_ttl   = 1800
   }
@@ -85,9 +85,9 @@ module "operator" {
   providers      = { oci = oci.home }
   depends_on     = [module.app_section, module.app_domain]
   config  = {
-    compartment_id = module.ops_section.compartment.id  # (Updatable) The OCID of the compartment where to create all resources
+    compartment_id = module.app_section.compartment.id  # (Updatable) The OCID of the compartment where to create all resources
     vcn_id         = module.segment_1.vcn.id            # The id of the VCN to use when creating the operator resources
-    bastion_id     = module.pres_domain.bastion.id
+    bastion_id     = module.app_domain.bastion.id
     ad_number      = 1                                  # The availability domain number of the instance. If none is provided, it will start with AD-1 and continue in round-robin
     display_name   = "${local.service_name}_operator"   # (Updatable) A user-friendly name for the instance. Does not have to be unique, and it's changeable
     dns_label      = "${local.service_label}ophst"      # The hostname for the VNIC's primary private IP

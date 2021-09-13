@@ -42,9 +42,7 @@ output "net_roles"       { value = module.net_section.roles }
 module "segment_1" {
   source         = "./component/network_segment/"
   providers      = { oci = oci.home }
-  depends_on = [
-    module.net_section
-  ]
+  depends_on = [ module.net_section ]
   config  = {
     compartment_id = module.net_section.compartment.id
     display_name   = "${local.service_name}_1"
@@ -113,7 +111,7 @@ module "pres_domain" {
     route_table_id              = module.segment_1.public_route_table.id
   }
   bastion  = {
-    create            = true # Determine whether a bastion service will be deployed and attached
+    create            = false # Determine whether a bastion service will be deployed and attached
     client_allow_cidr = [module.segment_1.anywhere]
     max_session_ttl   = 1800
   }
