@@ -39,7 +39,7 @@ module "ops_section" {
         "ALLOW GROUP iam to manage users IN TENANCY",
         "ALLOW GROUP iam to manage groups IN TENANCY where all {target.group.name ! = 'Administrators', target.group.name ! = 'secops'}",
     ]
-    README   = [
+    audit   = [
         "ALLOW GROUP README to read all-resources IN TENANCY",
     ]
   }
