@@ -1,5 +1,5 @@
-// Copyright (c) 2017, 2020, Oracle and/or its affiliates. All rights reserved.
-// Licensed under the Mozilla Public License v2.0
+# Copyright 2017, 2021 Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 
 resource "oci_bastion_session" "ssh" {
   depends_on                                   = [ oci_core_instance.instance[0] ]
