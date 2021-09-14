@@ -1,4 +1,6 @@
+ifndef::env-github[]
 include::links.adoc[]
+endif::[]
 
 == Naming Conventions
 
