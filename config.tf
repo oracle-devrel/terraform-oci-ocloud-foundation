@@ -20,7 +20,7 @@ variable "compartment_ocid" { }
 variable "base_url" {
   type        = string
   description = "URL for the git repository"
-  default     = "https://gitlab.com/tboettjer/ocloud-base"
+  default     = "https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/"
 }
 
 ## --- data sources ---

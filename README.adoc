@@ -33,10 +33,10 @@ The ops and the net deployment templates are obligatory, the db and the app temp
 ==== Components
 Templates refer to terraform modules, rather than addressing resource blocks directly. Platform components combine multiple resources logically into Terraform modules. These modules contain best practices collected throughout numberous projects and remain subject to change. Initially we provide the following modules:
 
-* link:admin_section[Administrator Section] is the compartment block combined with groups an policies that define a working environment for cloud and security operators
-* link:network_segment[Network Segment] defines the compart and role for network administrators together with a Virtual Cloud Network (VCN) incl. Dynamic Routing Gateway and gateways for NAT, Intenrnet and Oracle Services
-* link:network_domain[Network Domain] the necessary subnets with portfilters and routing rules to host the application tiers
-* link:application_host[Application Host] launches a compute node and executes the respective configuration scripts are executed
+* link:component/admin_section[Administrator Section] is the compartment block combined with groups an policies that define a working environment for cloud and security operators
+* link:component/network_segment[Network Segment] defines the compart and role for network administrators together with a Virtual Cloud Network (VCN) incl. Dynamic Routing Gateway and gateways for NAT, Intenrnet and Oracle Services
+* link:component/network_domain[Network Domain] the necessary subnets with portfilters and routing rules to host the application tiers
+* link:component/application_host[Application Host] launches a compute node and executes the respective configuration scripts are executed
 
 ==== Resource Interfaces
 
