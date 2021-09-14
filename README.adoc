@@ -62,11 +62,13 @@ Code is written in HashiCorp Configuration Language (HCL), includes data stored 
 * link:https://registry.terraform.io/providers/hashicorp/oci/latest[Terraform Service Provider for OCI]
 * link:https://registry.terraform.io/providers/hashicorp/time/latest[Terraform Time Service Provider]
 
+The script is meant for a initial tenancy setup and provisions global resources like compartments and groups. The naming should be unique though. While compartment names are constructed to avoid conflicts, groups are resources and name conflicts can be avoided to check existing groups against the link:doc/naming.adoc[ocloud default names].
+
 === Notes/Issues
-* Destroying compartments should be an exception and can take a long time. Best practice is destroying all other resources first, before destroying the compartments in a separate run. In the default setup, the "enable_delete" flag prevent unintensional destroy of compartments 
 * Using Terraform 1.0 produces a warning about missing provider definitions in the module directories, which can be ignored
 * It is recommended to run the first "terraform apply" without bastion session enabled. Enabling the bastion session in the first run will produce an error message. Run the "apply" a second time resolves the issue. 
 * Terraform destroy will an error message around missing dependencies. Repeating runs will overcome this issue.
+* Destroying compartments should be an exception and can take a long time. Best practice is destroying all other resources first, before destroying the compartments in a separate run. In the default setup, the "enable_delete" flag prevent unintensional destroy of compartments 
 
 === URLs
 This repository is intended to be used with the Oracle Resource Manager. Using the "Deploy to Oracle Cloud" button requires users to link:https://www.oracle.com/cloud/sign-in.html[sign in].
