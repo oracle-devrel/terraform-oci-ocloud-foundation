@@ -1,13 +1,13 @@
-# Database Infrastructure
+== Database Infrastructure
 
-# Virtual Machine Database Systems
+=== Virtual Machine Database Systems
 (Source: [OCI documentation] (https://docs.oracle.com/en-us/iaas/Content/Database/Concepts/overview.htm))
 
 Oracle Infrastructure Cloud offers installation of DB system on Bare Metal, VM and Exadata which includes the hardware, storage software, and networking configuration required to run Oracle Databases in the Oracle cloud.
 
 The following usecase describes how to launch an DB System on VM through an Oracle Resource Management stack.
 
-## Database as a Service on VM Stack
+=== Database as a Service on VM Stack
 
 ![Database System](image/database_sys_vm.png "Database System Diagram")
 
@@ -15,7 +15,7 @@ Oracle Cloud Infrastructure provides single-node DB systems on virtual machines,
 
 You can manage these systems by using the Console, the API, the Oracle Cloud Infrastructure CLI, the Database CLI (DBCLI), Enterprise Manager, or SQL Developer.
 
-#### Supported Database Editions and Versions
+==== Supported Database Editions and Versions
 
 All single-node Oracle RAC DB systems support the following Oracle Database editions:
 
@@ -41,7 +41,7 @@ For fast provisioning of single-node virtual machine database systems (using Log
 - Oracle Database 18c
 - Oracle Database 12c Release 2 (12.2)
 
-## Workload Types
+=== Workload Types
 
 Database as a Service on VM supports the following Workload Types:
 
@@ -49,7 +49,7 @@ Database as a Service on VM supports the following Workload Types:
 
 **OLTP**: Built for transactional workloads. Offers high concurrency for short-running queries and transactions.
 
-## Prerequistes
+=== Prerequistes
 
 In order to use a customized database image create a database sotware image in your database compartment
 
@@ -58,7 +58,7 @@ In order to use a customized database image create a database sotware image in y
 
 For automated backups validate that the Database subnet has access to object storage
 
-## Default Installation
+=== Default Installation
 
 DBaaS on VM ORM Stack includes three standard installation scenarios and a custom mode: 
 - Small: 19c Oracle Enterprise Edition Database System, 2 OCPUs and 512 GB of Storage
@@ -124,7 +124,7 @@ In addition to setting the size of the instances to small, medium or large, Depl
 - **Character Set:** AL32UTF8
 - **National Character Set:** AL16UTF16
 
-## Parameter Reference
+=== Parameter Reference
 
 **DB System Name:**  
 
@@ -136,7 +136,7 @@ The public key portion of the key pair to use for SSH access to the DB system. M
 
 **Admin Password:** 
 
-A strong password for SYS, SYSTEM, PDB Admin and TDE Wallet. The password must be at least nine characters and contain at least two uppercase, two lowercase, two numbers, and two special characters. The special characters must be _, #, or -.
+A strong password for SYS, SYSTEM, PDB Admin and TDE Wallet. The password must be at least nine characters and contain at least two uppercase, two lowercase, two numbers, and two special characters. The special characters must be "_", "#", or "-".
 
 **Shape Type:**
 
@@ -250,7 +250,7 @@ The character set for the database. The default is AL32UTF8
 
 The national character set for the database. The default is AL16UTF16.
 
-## Output
+=== Output
 
 1. all_connection_strings
 
@@ -268,11 +268,11 @@ Connection strings to connect to the database's administration service. For Orac
 | Easy Connect | pdbDefault | oracledb.db.lndzntst0vcfra.oraclevcn.com:1521/pdb01.db.lndzntst0vcfra.oraclevcn.com |
 | Long | pdbIpDefault | (DESCRIPTION=(CONNECT_TIMEOUT=5)(TRANSPORT_CONNECT_TIMEOUT=3)(RETRY_COUNT=3)(ADDRESS_LIST=(LOAD_BALANCE=on)(ADDRESS=(PROTOCOL=TCP)(HOST=10.0.2.161)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=pdb01.db.lndzntst0vcfra.oraclevcn.com))) |
 
-## Validate 
+=== Validate 
 
 1. Use sqlplus or sqlcl to connect to CDB or PDB via Bastion Service which was deployed as part of the Landing Zone. Check the output for the appropriate connect string.
 
-## Terraform Code
+=== Terraform Code
 
 **Database as a Service on VM Schema** stack uses a subset of the available parameters of the oci_database_db_system resource nevertheless they respresent all parameters that can be set through OCI console:
 
@@ -320,7 +320,7 @@ resource "oci_database_db_system" "dbaas_db_system" {
 ```
 
 
-## Addional Resources
+=== Addional Resources
 
 - [Terraform DB System Resources](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/database_db_system)
 - [OCI DB System Documentation](https://docs.oracle.com/en-us/iaas/Content/Database/Concepts/overview.htm)
