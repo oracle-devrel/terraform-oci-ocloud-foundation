@@ -7,7 +7,7 @@ endif::[]
 Managing IT assets requires a harmonize set of identifiers accross multiple system. Cloud resources will pe represented in existing systems like the configuration management database (CMDB), the directory server (LDAP) and network management services like network information systems (NIS), dynamic host configuration protocol (DHCP), domain name service (DNS) or IP address manager (IPAM). It is necessary to adhere unique values for records such as computer names, usernames and asset tags, so operators can differentiate between them. In operations engineering we distinguish the following types of names: 
 
 * Resource Name - unique identifier for resource blocks in Terraform 
-* DNS Label     - unique resource argument, prologuing the URL, needs to comply with ifndef:env-github[]{rfc-1035}[RFC 1035]endif:[], up to 15 alpha numeric characters 
+* DNS Label     - unique resource argument, prologuing the URL, needs to comply with {rfc-1035}[RFC 1035], up to 15 alpha numeric characters 
 * Name          - unique resource argument to identify resource instances, up to 255 alpha numeric characters
 * Display Name  - freetext argument inside resource blocks refering, to resources in the console and in log files, up to 255 alpha numeric and special characters
 
