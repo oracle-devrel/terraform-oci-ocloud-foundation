@@ -9,7 +9,7 @@
 |===
 
 == Dependencies
-* https://gitlab.com/oracloud/landing-zone/-/tree/master/module/admin_section[Administrator Section]
+* https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/tree/main/component/admin_section[Administrator Section]
 
 == Module
 

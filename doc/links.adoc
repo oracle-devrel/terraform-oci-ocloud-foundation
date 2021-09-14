@@ -1,21 +1,11 @@
-:ocloud-base:    https://gitlab.com/oracloud/landing-zone/-/blob/master/README.adoc
-:ocloud-intro:   https://gitlab.com/oracloud/landing-zone/-/blob/master/doc/introduction.adoc
-:ocloud-tf:      https://gitlab.com/oracloud/landing-zone/-/blob/master/doc/terraform.adoc
-:ocloud-net:     https://gitlab.com/oracloud/landing-zone/-/blob/master/doc/networking.adoc
-:ocloud-name:    https://gitlab.com/oracloud/landing-zone/-/blob/master/doc/naming.adoc
-:ocloud-catalog: https://gitlab.com/oracloud/landing-zone/-/blob/master/doc/catalog.adoc
-:ocloud-data:    https://gitlab.com/oracloud/landing-zone/-/blob/master/doc/data.adoc
-:ocloud-apps:    https://gitlab.com/oracloud/landing-zone/-/blob/master/doc/app.adoc
-:ocloud-portal:  https://gitlab.com/oracloud/landing-zone/-/blob/master/doc/portal.adoc
-:ocloud-links:   https://gitlab.com/oracloud/landing-zone/-/blob/master/doc/links.adoc
+:ocloud-base:       https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone
+:ocloud-links:      links.adoc
+:ocloud-tf:         terraform.adoc
+:ocloud-net:        networking.adoc
+:ocloud-intro:      introduction.adoc
+:ocloud-name:       naming.adoc
 
 
-:code-hello:        code/tenancy/hello.tf
-:code-tenancy:      code/tenancy/main.tf
-:code-provider:     code/tenancy/provider.tf
-:code-tenancy:      code/tenancy/tenancy.tf
-:code-user:         code/iam/user.tf
-:code-compartment:  code/iam/compartment.tf
 
 :oci-certification: https://www.oracle.com/cloud/iaas/training/architect-associate.html
 :oci-cli:           https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/
@@ -95,11 +85,11 @@
 :tf-variable:          https://www.terraform.io/docs/configuration/variables.html
 :tf-vcn-module:        https://registry.terraform.io/modules/oracle-terraform-modules/vcn/oci/latest
 
-:itil_application:  https://wiki.en.it-processmaps.com/index.php/ITIL_Application_Management
-:itil_operation:    https://wiki.en.it-processmaps.com/index.php/ITIL_Service_Operation
-:itil_roles:        https://wiki.en.it-processmaps.com/index.php/ITIL_Roles
-:itil_technical:    https://wiki.en.it-processmaps.com/index.php/ITIL_Technical_Management
-:itil_web:          https://www.axelos.com/best-practice-solutions/itil
+:itil-application:  https://wiki.en.it-processmaps.com/index.php/ITIL_Application_Management
+:itil-operation:    https://wiki.en.it-processmaps.com/index.php/ITIL_Service_Operation
+:itil-roles:        https://wiki.en.it-processmaps.com/index.php/ITIL_Roles
+:itil-technical:    https://wiki.en.it-processmaps.com/index.php/ITIL_Technical_Management
+:itil-web:          https://www.axelos.com/best-practice-solutions/itil
 
 :cli-doc:           https://docs.cloud.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/
 :iam-doc:           https://docs.cloud.oracle.com/en-us/iaas/Content/Identity/Concepts/overview.htm
