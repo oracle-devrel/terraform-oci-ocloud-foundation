@@ -1,6 +1,4 @@
-== Database Infrastructure
-
-=== Virtual Machine Database Systems
+== Database Infrastructure: Virtual Machine Database Systems
 (Source: [OCI documentation] (https://docs.oracle.com/en-us/iaas/Content/Database/Concepts/overview.htm))
 
 Oracle Infrastructure Cloud offers installation of DB system on Bare Metal, VM and Exadata which includes the hardware, storage software, and networking configuration required to run Oracle Databases in the Oracle cloud.
