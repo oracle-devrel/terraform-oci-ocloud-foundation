@@ -40,7 +40,7 @@ module "ops_section" {
         "ALLOW GROUP iam to manage groups IN TENANCY where all {target.group.name ! = 'Administrators', target.group.name ! = 'secops'}",
     ]
     audit   = [
-        "ALLOW GROUP README to read all-resources IN TENANCY",
+        "ALLOW GROUP audit to read all-resources IN TENANCY",
     ]
   }
 }
