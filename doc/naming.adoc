@@ -66,7 +66,7 @@ an ITSM oriented setup would be the following:
 | netops   | Group for managing networking infrastrcutrue in the root compartment
 | dbops    | Group for managing database infrastructure in compartment /database/
 | iam      | Group for managing IAM resources in the tenancy.
-| README   | Group for inspecting and auditing the use of a tenancy
+| audit    | Group for inspecting and auditing the use of a tenancy
 |===
 
 === Resource Name

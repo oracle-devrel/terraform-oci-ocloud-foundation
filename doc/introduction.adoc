@@ -8,7 +8,7 @@ image::https://www.oracle.com/a/ocom/img/rc24-oci-region-map.png[link="https://w
 
 Oracle operates a fast growing network of data centre to provide access to prebuild cloud infrastructure in more than 30 regions. In addition, Oracle builds private infrastructure pools on-demand and offers to extend these pools with edge compute or database nodes. In every data center, dedicated compute- and storage resources are isolated on a native layer three network. Orchstrators incl. hypervisor, container and network functions remain private by default - also in shared pools. Combining on open-source orchestration technologies with cloud agnostic monitoring and management services allows operators to build a control center for hybrid cloud services. End to end programmability ensures fast and flexible resource deployments, with platform components like middleware, integration and database infrastructure, provided either as managed or as unmanaged service to offer a choice between convenience and control. In any case, standard hardware controls like the {oci-ilom}[integrated lights out manager (ILOM)] and {oci-offbox}[off-box vitrualization] allow to address regional privacy regulations and compliance requirements. This framework targets operation engineers who aim to use OCI for as virtual data center.
 
-- {ocloud-intro}[Automating with Terraform]
+- {ocloud-tf}[Automating with Terraform]
 - {ocloud-net}[Network Design]
 - ...
 

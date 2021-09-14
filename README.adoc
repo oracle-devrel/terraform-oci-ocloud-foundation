@@ -23,20 +23,20 @@ image::doc/image/code_structure.png[Code Structure]
 
 The default repository separates four templates:
 
-* https://gitlab.com/tboettjer/ocloud-platform/-/blob/master/operation.tf[Operations] prepares a working environment priviledged operators with an "ops" compartment that contains base roles like the cloud "super admin".
-* https://gitlab.com/tboettjer/ocloud-platform/-/blob/master/network.tf[Network] provisions an initial network segment and creates a "presentation" domain for internet facing portals beside the "netops" compartment and role.
-* https://gitlab.com/tboettjer/ocloud-platform/-/blob/master/database.tf[Database] defines the infrastructure for database hosting with access via port 1521-1522 in addition to the "db" compartment and admin role.
-* https://gitlab.com/tboettjer/ocloud-platform/-/blob/master/application.tf[Application] creates an application management domain, the an app compartment, the sysops role and deploys an operator for remote scripts.
+* link:operation.tf[Operations] prepares a working environment priviledged operators with an "ops" compartment that contains base roles like the cloud "super admin".
+* link:network.tf[Network] provisions an initial network segment and creates a "presentation" domain for internet facing portals beside the "netops" compartment and role.
+* link:database.tf[Database] defines the infrastructure for database hosting with access via port 1521-1522 in addition to the "db" compartment and admin role.
+* link:application.tf[Application] creates an application management domain, the an app compartment, the sysops role and deploys an operator for remote scripts.
 
 The ops and the net deployment templates are obligatory, the db and the app templates are optional. The bastion service connects to an operator in the application domain and allows to enter all domains via SSH.
 
 ==== Components
 Templates refer to terraform modules, rather than addressing resource blocks directly. Platform components combine multiple resources logically into Terraform modules. These modules contain best practices collected throughout numberous projects and remain subject to change. Initially we provide the following modules:
 
-* https://gitlab.com/tboettjer/ocloud-platform/-/tree/master/module/admin_section[Administrator Section] is the compartment block combined with groups an policies that define a working environment for cloud and security operators
-* https://gitlab.com/tboettjer/ocloud-platform/-/tree/master/module/network_segment[Network Segment] defines the compart and role for network administrators together with a Virtual Cloud Network (VCN) incl. Dynamic Routing Gateway and gateways for NAT, Intenrnet and Oracle Services
-* https://gitlab.com/tboettjer/ocloud-platform/-/tree/master/module/network_domain[Network Domain] the necessary subnets with portfilters and routing rules to host the application tiers
-* https://gitlab.com/tboettjer/ocloud-platform/-/tree/master/module/application_host[Application Host] launches a compute node and executes the respective configuration scripts are executed
+* link:component/admin_section[Administrator Section] is the compartment block combined with groups an policies that define a working environment for cloud and security operators
+* link:component/network_segment[Network Segment] defines the compart and role for network administrators together with a Virtual Cloud Network (VCN) incl. Dynamic Routing Gateway and gateways for NAT, Intenrnet and Oracle Services
+* link:component/network_domain[Network Domain] the necessary subnets with portfilters and routing rules to host the application tiers
+* link:component/application_host[Application Host] launches a compute node and executes the respective configuration scripts are executed
 
 ==== Resource Interfaces
 
@@ -65,7 +65,8 @@ Code is written in HashiCorp Configuration Language (HCL), includes data stored 
 === Notes/Issues
 * Destroying compartments should be an exception and can take a long time. Best practice is destroying all other resources first, before destroying the compartments in a separate run. In the default setup, the "enable_delete" flag prevent unintensional destroy of compartments 
 * Using Terraform 1.0 produces a warning about missing provider definitions in the module directories, which can be ignored
-* Under specific circumstances, resource dependencies can cause deployment errors. In that case, terraform apply or destroy commands are required to run repeatedly to reach the desired state
+* It is recommended to run the first "terraform apply" without bastion session enabled. Enabling the bastion session in the first run will produce an error message. Run the "apply" a second time resolves the issue. 
+* Terraform destroy will an error message around missing dependencies. Repeating runs will overcome this issue.
 
 === URLs
 This repository is intended to be used with the Oracle Resource Manager. Using the "Deploy to Oracle Cloud" button requires users to link:https://www.oracle.com/cloud/sign-in.html[sign in].
