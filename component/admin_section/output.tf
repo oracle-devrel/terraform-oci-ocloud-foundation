@@ -15,7 +15,7 @@ output "roles" {
 
 data "oci_identity_compartments" "section" {
   depends_on = [time_sleep.wait]
-  compartment_id = var.config.tenancy_id
+  compartment_id = var.compartment.parent
   filter {
     name   = "name"
     values = [var.compartment.name]

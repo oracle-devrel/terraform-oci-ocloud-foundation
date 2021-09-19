@@ -24,7 +24,7 @@ module "main_section" {
         "ALLOW GROUP ${local.service_name}_administrator to manage groups IN TENANCY where target.group.name = '${local.service_name}_administrator'",
         "ALLOW GROUP ${local.service_name}_administrator to manage groups IN TENANCY where target.group.name = '${local.service_name}_secops'",
     ]
-    "${local.service_label}_audit"   = [
+    "${local.service_name}_audit"   = [
         "ALLOW GROUP ${local.service_name}_audit to read all-resources IN TENANCY",
     ]
   }
@@ -33,6 +33,7 @@ module "main_section" {
 module "ops_section" {
   source         = "./component/admin_section/"
   providers      = { oci = oci.home }
+  depends_on = [ module.main_section, ]
   config = {
     tenancy_id    = var.tenancy_ocid
     base          = var.base_url
