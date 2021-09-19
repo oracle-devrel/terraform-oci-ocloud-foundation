@@ -25,8 +25,6 @@ variable "config" {
   })
 }
 
-variable "tenancy_ocid" {}
-
 variable "availability_domains" {
     type = string
     description = "The availability domain where the DB system is located"

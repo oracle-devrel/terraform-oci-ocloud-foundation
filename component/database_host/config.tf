@@ -38,18 +38,18 @@ locals {
 }
 
 data oci_identity_availability_domains "ADs" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.config.tenancy_id
 }
 
 data "oci_identity_compartments" "nw_compartments" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.config.tenancy_id
   name              = "${var.service}-network-cmp"
   compartment_id_in_subtree = true
   state                     = "ACTIVE"
 }
 
 data "oci_identity_compartments" "db_compartments" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.config.tenancy_id
   name                      = "${var.service}-database-cmp"
   compartment_id_in_subtree = true
   state                     = "ACTIVE"
