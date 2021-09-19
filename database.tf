@@ -17,7 +17,7 @@ module "db_section" {
   }
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
-    parent        = module.main_section.compartment.id
+    parent        = data.oci_identity_compartment.main.id
     name          = "${local.service_name}_database_compartment"
   }
   roles = {
