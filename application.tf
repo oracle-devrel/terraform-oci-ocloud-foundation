@@ -17,17 +17,17 @@ module "app_section" {
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
     parent        = module.main_section.compartment.id
-    name          = "${local.service_label}_application_compartment"
+    name          = "${local.service_name}_application_compartment"
   }
   roles = {
-    "${local.service_label}_sysops"  = [
-      "Allow group ${local.service_label}_sysops to read app-catalog-listing in tenancy",
-      "Allow group ${local.service_label}_sysops to read all-resources in compartment ${local.service_label}_application_compartment",
-      "Allow group ${local.service_label}_sysops to use volume-family in compartment ${local.service_label}_application_compartment",
-      "Allow group ${local.service_label}_sysops to use virtual-network-family in compartment ${local.service_label}_application_compartment",
-      "Allow group ${local.service_label}_sysops to manage instances in compartment ${local.service_label}_application_compartment",
-      "Allow group ${local.service_label}_sysops to manage instance-images in compartment ${local.service_label}_application_compartment",
-      "Allow group ${local.service_label}_sysops to manage object-family in compartment ${local.service_label}_application_compartment"
+    "${local.service_name}_sysops"  = [
+      "Allow group ${local.service_name}_sysops to read app-catalog-listing in tenancy",
+      "Allow group ${local.service_name}_sysops to read all-resources in compartment ${local.service_label}_application_compartment",
+      "Allow group ${local.service_name}_sysops to use volume-family in compartment ${local.service_label}_application_compartment",
+      "Allow group ${local.service_name}_sysops to use virtual-network-family in compartment ${local.service_label}_application_compartment",
+      "Allow group ${local.service_name}_sysops to manage instances in compartment ${local.service_label}_application_compartment",
+      "Allow group ${local.service_name}_sysops to manage instance-images in compartment ${local.service_label}_application_compartment",
+      "Allow group ${local.service_name}_sysops to manage object-family in compartment ${local.service_label}_application_compartment"
     ]
   }
 }

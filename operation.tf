@@ -14,18 +14,18 @@ module "main_section" {
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
     parent        = var.tenancy_ocid
-    name          = "${local.service_label}_compartment"
+    name          = "${local.service_name}_compartment"
   }
   roles = {
-    "${local.service_label}_administrator"  = [
-        "ALLOW GROUP ${local.service_label}_administrator to read users IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_administrator to read groups IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_administrator to manage users IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_administrator to manage groups IN TENANCY where target.group.name = '${local.service_label}_administrator'",
-        "ALLOW GROUP ${local.service_label}_administrator to manage groups IN TENANCY where target.group.name = '${local.service_label}_secops'",
+    "${local.service_name}_administrator"  = [
+        "ALLOW GROUP ${local.service_name}_administrator to read users IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_administrator to read groups IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_administrator to manage users IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_administrator to manage groups IN TENANCY where target.group.name = '${local.service_name}_administrator'",
+        "ALLOW GROUP ${local.service_name}_administrator to manage groups IN TENANCY where target.group.name = '${local.service_name}_secops'",
     ]
     "${local.service_label}_audit"   = [
-        "ALLOW GROUP ${local.service_label}_audit to read all-resources IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_audit to read all-resources IN TENANCY",
     ]
   }
 }
@@ -34,31 +34,31 @@ module "ops_section" {
   source         = "./component/admin_section/"
   providers      = { oci = oci.home }
   config = {
-    tenancy_id    = module.main_section.compartment.id
+    tenancy_id    = var.tenancy_ocid
     base          = var.base_url
     defined_tags  = null
     freeform_tags = {"framework"= "ocloud"}
   }
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
-    parent        = var.tenancy_ocid
-    name          = "${local.service_label}_operation_compartment"
+    parent        = module.main_section.compartment.id
+    name          = "${local.service_name}_operation_compartment"
   }
   roles = {
-    "${local.service_label}_secops" = [
-        "ALLOW GROUP ${local.service_label}_secops to manage security-lists IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_secops to manage internet-gateways IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_secops to manage cpes IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_secops to manage ipsec-connections IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_secops to use virtual-network-family IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_secops to manage load-balancers IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_secops to read all-resources IN TENANCY",
+    "${local.service_name}_secops" = [
+        "ALLOW GROUP ${local.service_name}_secops to manage security-lists IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_secops to manage internet-gateways IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_secops to manage cpes IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_secops to manage ipsec-connections IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_secops to use virtual-network-family IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_secops to manage load-balancers IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_secops to read all-resources IN TENANCY",
     ]
-    "${local.service_label}_iam" = [
-        "ALLOW GROUP ${local.service_label}_iam to read users IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_iam to read groups IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_iam to manage users IN TENANCY",
-        "ALLOW GROUP ${local.service_label}_iam to manage groups IN TENANCY where all {target.group.name ! = '${local.service_label}_secops', target.group.name ! = '${local.service_label}_secops'}",
+    "${local.service_name}_iam" = [
+        "ALLOW GROUP ${local.service_name}_iam to read users IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_iam to read groups IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_iam to manage users IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_iam to manage groups IN TENANCY where all {target.group.name ! = '${local.service_name}_secops', target.group.name ! = '${local.service_name}_secops'}",
     ]
   }
 }

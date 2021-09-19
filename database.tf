@@ -18,12 +18,12 @@ module "db_section" {
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
     parent        = module.main_section.compartment.id
-    name          = "${local.service_label}_database_compartment"
+    name          = "${local.service_name}_database_compartment"
   }
   roles = {
-    "${local.service_label}_dbops"  = [
-      "ALLOW GROUP ${local.service_label}_dbops manage database-family IN TENANCY",
-      "ALLOW GROUP ${local.service_label}_dbops read all-resources IN TENANCY"
+    "${local.service_name}_dbops"  = [
+      "ALLOW GROUP ${local.service_name}_dbops manage database-family IN TENANCY",
+      "ALLOW GROUP ${local.service_name}_dbops read all-resources IN TENANCY"
     ]
   }
 }
