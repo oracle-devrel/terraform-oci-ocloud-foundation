@@ -36,15 +36,9 @@ output "oracle-linux-8-latest-id"      { value = data.oci_core_images.oraclelinu
 output "ssh"                           { value = length(data.oci_bastion_sessions.ssh.sessions) > 0 ? data.oci_bastion_sessions.ssh.sessions[0].id : null }
 #output "ssh_command"                   { value = "ssh -i  -o ProxyCommand="ssh -i  -W %h:%p -p 22 "${data.oci_bastion_bastion.host.bastion_id}@host.bastion.us-ashburn-1.oci.oraclecloud.com" -p 22 "opc@10.0.0.119"}
 
-/*
-data "oci_bastion_session" "ssh" {
-  session_id = oci_bastion_session.ssh[0].id
-}
-*/
-
 data "oci_bastion_sessions" "ssh" {
   depends_on              = [time_sleep.wait]
-  bastion_id              = data.oci_bastion_bastion.host.bastion_id
+  bastion_id              = data.oci_bastion_bastions.host.bastions[0].id
   session_lifecycle_state = "ACTIVE"
   filter {
     name    = "display_name"
