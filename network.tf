@@ -18,18 +18,18 @@ module "net_section" {
     name          = "${local.service_label}_network_compartment"
   }
   roles = {
-    netops  = [
-      "Allow group netops to read all-resources in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage virtual-network-family in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage dns in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage load-balancers in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage alarms in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage metrics in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage orm-stacks in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage orm-jobs in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage orm-config-source-providers in compartment ${local.service_label}_network_compartment",
-      "Allow Group netops to read audit-events in compartment ${local.service_label}_network_compartment",
-      "Allow Group netops to read vss-family in compartment ${local.service_label}_network_compartment"
+    "${local.service_label}_netops"  = [
+      "Allow group ${local.service_label}_netops to read all-resources in compartment ${local.service_label}_network_compartment",
+      "Allow group ${local.service_label}_netops to manage virtual-network-family in compartment ${local.service_label}_network_compartment",
+      "Allow group ${local.service_label}_netops to manage dns in compartment ${local.service_label}_network_compartment",
+      "Allow group ${local.service_label}_netops to manage load-balancers in compartment ${local.service_label}_network_compartment",
+      "Allow group ${local.service_label}_netops to manage alarms in compartment ${local.service_label}_network_compartment",
+      "Allow group ${local.service_label}_netops to manage metrics in compartment ${local.service_label}_network_compartment",
+      "Allow group ${local.service_label}_netops to manage orm-stacks in compartment ${local.service_label}_network_compartment",
+      "Allow group ${local.service_label}_netops to manage orm-jobs in compartment ${local.service_label}_network_compartment",
+      "Allow group ${local.service_label}_netops to manage orm-config-source-providers in compartment ${local.service_label}_network_compartment",
+      "Allow Group ${local.service_label}_netops to read audit-events in compartment ${local.service_label}_network_compartment",
+      "Allow Group ${local.service_label}_netops to read vss-family in compartment ${local.service_label}_network_compartment"
     ]
   }
 }
