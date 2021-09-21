@@ -16,18 +16,18 @@ module "app_section" {
   }
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
-    parent        = var.tenancy_ocid
-    name          = "${local.service_label}_application_compartment"
+    parent        = data.oci_identity_compartment.main.id
+    name          = "${local.service_name}_application_compartment"
   }
   roles = {
-    sysops  = [
-      "Allow group sysops to read app-catalog-listing in tenancy",
-      "Allow group sysops to read all-resources in compartment ${local.service_label}_application_compartment",
-      "Allow group sysops to use volume-family in compartment ${local.service_label}_application_compartment",
-      "Allow group sysops to use virtual-network-family in compartment ${local.service_label}_application_compartment",
-      "Allow group sysops to manage instances in compartment ${local.service_label}_application_compartment",
-      "Allow group sysops to manage instance-images in compartment ${local.service_label}_application_compartment",
-      "Allow group sysops to manage object-family in compartment ${local.service_label}_application_compartment"
+    "${local.service_name}_sysops"  = [
+      "Allow group ${local.service_name}_sysops to read app-catalog-listing in tenancy",
+      "Allow group ${local.service_name}_sysops to read all-resources in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment",
+      "Allow group ${local.service_name}_sysops to use volume-family in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment",
+      "Allow group ${local.service_name}_sysops to use virtual-network-family in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment",
+      "Allow group ${local.service_name}_sysops to manage instances in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment",
+      "Allow group ${local.service_name}_sysops to manage instance-images in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment",
+      "Allow group ${local.service_name}_sysops to manage object-family in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment"
     ]
   }
 }
@@ -41,7 +41,7 @@ module "app_domain" {
   source         = "./component/network_domain/"
   providers      = { oci = oci.home }
     depends_on = [
-    module.net_section,
+    module.app_section,
     module.segment_1
   ]
   config  = {
@@ -121,7 +121,7 @@ module "operator" {
     use_chap                    = false             # (Applicable when attachment_type=iscsi) Whether to use CHAP authentication for the volume attachment
   }
   session = {
-    enable          = true # Determine whether a ssh session via bastion service will be started
+    enable          = false # Determine whether a ssh session via bastion service will be started
     type            = "MANAGED_SSH" # Alternatively "PORT_FORWARDING"
     ttl_in_seconds  = 1800
     target_port     = 22

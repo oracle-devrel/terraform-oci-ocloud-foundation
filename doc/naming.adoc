@@ -1,6 +1,8 @@
+ifndef::env-github[]
 include::links.adoc[]
+endif::[]
 
-= Naming Conventions
+== Naming Conventions
 
 Managing IT assets requires a harmonize set of identifiers accross multiple system. Cloud resources will pe represented in existing systems like the configuration management database (CMDB), the directory server (LDAP) and network management services like network information systems (NIS), dynamic host configuration protocol (DHCP), domain name service (DNS) or IP address manager (IPAM). It is necessary to adhere unique values for records such as computer names, usernames and asset tags, so operators can differentiate between them. In operations engineering we distinguish the following types of names: 
 
@@ -12,7 +14,7 @@ Managing IT assets requires a harmonize set of identifiers accross multiple syst
 
 The following guidelines should help to define names for an OCI tenancy
 
-== Oracle Resource Manager (ORM) stacks
+=== Oracle Resource Manager (ORM) stacks
 [cols="1,1,1,1",options="header"]
 |===
 | Name | working-dir | depends on | can depend on
@@ -21,7 +23,7 @@ The following guidelines should help to define names for an OCI tenancy
 | app  | /app        | base       | db
 |===
 
-== Input Parameter
+=== Input Parameter
 
 [cols="1,1,1,1,1",options="header"]
 |===
@@ -33,7 +35,7 @@ The following guidelines should help to define names for an OCI tenancy
 | stage           | type of environment        | dev/test/prd  | -                                       | optional
 |===
 
-== Assembly Rules for Implicit Types
+=== Assembly Rules for Implicit Types
 
 [cols="1,1,1",options="header"]
 |===
@@ -42,9 +44,9 @@ The following guidelines should help to define names for an OCI tenancy
 | DNS Label    | "service_label" + "..."    | dbas
 |===
 
-== Assembly Rules for Explicit Types
+=== Assembly Rules for Explicit Types
 
-=== Display Name
+==== Display Name
 [cols="1,1,1",options="header"]
 |===
 | Type        | Convention                                   | Example
@@ -53,7 +55,7 @@ The following guidelines should help to define names for an OCI tenancy
 | policy      | "group name"-policy                          | netops-policy
 |===
 
-=== Name
+==== Name
 an ITSM oriented setup would be the following:  
 
 **Groups**
@@ -69,7 +71,7 @@ an ITSM oriented setup would be the following:
 | audit    | Group for inspecting and auditing the use of a tenancy
 |===
 
-=== Resource Name
+==== Resource Name
 Using a consistent identifier, like the default "ocloud" and add numbers when multiple instances are possible.
 
 

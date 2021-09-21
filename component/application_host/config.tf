@@ -20,9 +20,18 @@ data "oci_core_subnet" "host" {
 }
 
 # --- Bastion Datasource  ----
+/*
 data "oci_bastion_bastion" "host" {
   bastion_id              = var.config.bastion_id
 }
+*/
+
+data "oci_bastion_bastions" "host" {
+  compartment_id          = var.config.compartment_id
+  bastion_id              = var.config.bastion_id
+  bastion_lifecycle_state = "ACTIVE"
+}
+
 
 locals {
   ADs = [

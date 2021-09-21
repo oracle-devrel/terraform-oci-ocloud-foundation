@@ -14,22 +14,22 @@ module "net_section" {
   }
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
-    parent        = var.tenancy_ocid
-    name          = "${local.service_label}_network_compartment"
+    parent        = data.oci_identity_compartment.main.id
+    name          = "${local.service_name}_network_compartment"
   }
   roles = {
-    netops  = [
-      "Allow group netops to read all-resources in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage virtual-network-family in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage dns in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage load-balancers in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage alarms in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage metrics in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage orm-stacks in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage orm-jobs in compartment ${local.service_label}_network_compartment",
-      "Allow group netops to manage orm-config-source-providers in compartment ${local.service_label}_network_compartment",
-      "Allow Group netops to read audit-events in compartment ${local.service_label}_network_compartment",
-      "Allow Group netops to read vss-family in compartment ${local.service_label}_network_compartment"
+    "${local.service_name}_netops"  = [
+      "Allow group ${local.service_name}_netops to read all-resources in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
+      "Allow group ${local.service_name}_netops to manage virtual-network-family in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
+      "Allow group ${local.service_name}_netops to manage dns in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
+      "Allow group ${local.service_name}_netops to manage load-balancers in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
+      "Allow group ${local.service_name}_netops to manage alarms in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
+      "Allow group ${local.service_name}_netops to manage metrics in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
+      "Allow group ${local.service_name}_netops to manage orm-stacks in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
+      "Allow group ${local.service_name}_netops to manage orm-jobs in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
+      "Allow group ${local.service_name}_netops to manage orm-config-source-providers in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
+      "Allow Group ${local.service_name}_netops to read audit-events in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
+      "Allow Group ${local.service_name}_netops to read vss-family in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment"
     ]
   }
 }

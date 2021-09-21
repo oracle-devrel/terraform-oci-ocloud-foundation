@@ -24,12 +24,13 @@ variable "base_url" {
 }
 
 ## --- data sources ---
-data "oci_identity_regions"              "global"  { }                                        # Retrieve a list OCI regions
-data "oci_identity_tenancy"              "ocloud"  { tenancy_id     = var.tenancy_ocid }      # Retrieve meta data for tenant
-data "oci_identity_availability_domains" "ads"     { compartment_id = var.tenancy_ocid }      # Get a list of Availability Domains
-data "oci_identity_compartments"         "root"    { compartment_id = var.tenancy_ocid }      # List root compartments
-data "oci_objectstorage_namespace"       "ns"      { compartment_id = var.tenancy_ocid }      # Retrieve object storage namespace
-data "template_file" "ad_names"                    {                                          # List AD names in home region 
+data "oci_identity_regions"              "global"  { }                                         # Retrieve a list OCI regions
+data "oci_identity_tenancy"              "ocloud"  { tenancy_id     = var.tenancy_ocid }       # Retrieve meta data for tenant
+data "oci_identity_availability_domains" "ads"     { compartment_id = var.tenancy_ocid }       # Get a list of Availability Domains
+data "oci_identity_compartments"         "root"    { compartment_id = var.tenancy_ocid }       # List root compartments
+data "oci_identity_compartment"          "main"    { id = module.main_section.compartment.id } # Main compartment
+data "oci_objectstorage_namespace"       "ns"      { compartment_id = var.tenancy_ocid }       # Retrieve object storage namespace
+data "template_file" "ad_names"                    {                                           # List AD names in home region 
   count    = length(data.oci_identity_availability_domains.ads.availability_domains)
   template = lookup(data.oci_identity_availability_domains.ads.availability_domains[count.index], "name")
 }
