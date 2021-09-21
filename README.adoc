@@ -61,8 +61,9 @@ Code is written in HashiCorp Configuration Language (HCL), includes data stored 
 * link:https://www.terraform.io[HashiCorp Terraform]
 * link:https://registry.terraform.io/providers/hashicorp/oci/latest[Terraform Service Provider for OCI]
 * link:https://registry.terraform.io/providers/hashicorp/time/latest[Terraform Time Service Provider]
+* link:https://cloudinit.readthedocs.io/en/latest/[Cloud Init]
 
-The script is meant for a initial tenancy setup and provisions global resources like compartments and groups. The naming should be unique though. While compartment names are constructed to avoid conflicts, groups are resources and name conflicts can be avoided to check existing groups against the link:doc/naming.adoc[ocloud default names].
+The script is meant for a initial tenancy setup and provisions global resources like compartments and groups. The naming should be unique though. While compartment names are constructed to avoid conflicts, groups are resources and name conflicts can be avoided to check existing groups against the link:doc/naming.adoc[naming conventions].
 
 === Notes/Issues
 * Using Terraform 1.0 produces a warning about missing provider definitions in the module directories, which can be ignored

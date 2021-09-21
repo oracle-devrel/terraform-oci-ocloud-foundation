@@ -22,8 +22,9 @@ module "db_section" {
   }
   roles = {
     "${local.service_name}_dbops"  = [
-      "ALLOW GROUP ${local.service_name}_dbops manage database-family IN TENANCY",
-      "ALLOW GROUP ${local.service_name}_dbops read all-resources IN TENANCY"
+      "ALLOW GROUP ${local.service_name}_dbops manage database-family in compartment ${data.oci_identity_compartment.main.name}",
+      "ALLOW GROUP ${local.service_name}_dbops read all-resources in compartment ${data.oci_identity_compartment.main.name}",
+      "ALLOW GROUP ${local.service_name}_dbops manage subnets in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_database_compartment"
     ]
   }
 }
@@ -32,6 +33,7 @@ module "db_section" {
 output "db_compartment" { value = module.db_section.compartment }
 output "db_roles"       { value = module.db_section.roles }
 
+/*
 // --- network domain ---
 module "db_domain" {
   source         = "./component/network_domain/"
@@ -75,3 +77,4 @@ module "db_domain" {
 output "db_domain_subnet"        { value = module.db_domain.subnet }
 output "db_domain_security_list" { value = module.db_domain.seclist }
 output "db_domain_bastion"       { value = module.db_domain.bastion }
+*/
