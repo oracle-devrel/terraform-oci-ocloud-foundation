@@ -1,0 +1,52 @@
+== Providers
+[cols="1,1",options="header"]
+|===
+|Name
+|Version
+
+|oci 
+|n/a
+|===
+
+== Dependencies
+* https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/tree/main/component/admin_section[Administrator Section]
+
+== Module
+
+```hcl
+
+module "application_host" {}
+```
+
+When an operator creates an application host, they can select the size of the virtual machine that is provisioned for each instance. VM sizes are simplified into T-shirt-sized service blocks, where the next-largest block is twice the size.
+
+[cols="1,1,1,1",options="header"]
+|===
+| Size   | oCPU | RAM (GB) | HD (GB)
+| Micro  | 1    | 2        | 25
+| Small  | 2    | 4        | 50
+| Medium | 4    | 8        | 100
+| Large  | 8    | 16       | 200
+| XL     | 16   | 32       | 400
+|===
+
+
+
+== Resources
+
+* https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services[oci_core_services]
+
+== Inputs
+
+[cols="1,1,1,1,1",options="header"]
+|===
+| Name | Description | Type | Default | Required
+|===
+
+
+== Outputs
+
+[cols="1,1,1",options="header"]
+|===
+|===
+

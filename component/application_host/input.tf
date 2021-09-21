@@ -14,6 +14,18 @@ variable "config" {
     })
 }
 
+/*
+variable "new_host" {
+    type = object({
+        server = string,
+        type   = string,
+        os     = string,
+        size   = string,
+        ad     = number 
+    })
+}
+*/
+
 variable "host" {
     type = object({
         count                       = number,
@@ -42,6 +54,7 @@ variable "host" {
         use_chap                    = bool
     })
 }
+
 variable "session" {
     type = object({
         enable          = bool,

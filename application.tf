@@ -105,7 +105,7 @@ module "operator" {
     extended_metadata           = {}                # (Updatable) Additional metadata key/value pairs that you provide 
     resource_platform           = "linux"           # Platform to create resources in
     user_data                   = null              # Provide your own base64-encoded data to be used by Cloud-Init to run custom scripts or provide custom Cloud-Init configuration
-    timezone                    = "America/New_York"
+    timezone                    = "UTC"
     # networking parameters
     assign_public_ip            = false             # Whether the VNIC should be assigned a public IP address
     ipxe_script                 = null              # (Optional) The iPXE script which to continue the boot process on the instance
