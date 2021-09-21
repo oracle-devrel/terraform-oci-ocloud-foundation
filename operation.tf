@@ -18,14 +18,14 @@ module "main_section" {
   }
   roles = {
     "${local.service_name}_administrator"  = [
-        "ALLOW GROUP ${local.service_name}_administrator to read users IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_administrator to read groups IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_administrator to manage users IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_administrator to manage groups IN TENANCY where target.group.name = '${local.service_name}_administrator'",
-        "ALLOW GROUP ${local.service_name}_administrator to manage groups IN TENANCY where target.group.name = '${local.service_name}_secops'",
+        "ALLOW GROUP ${local.service_name}_administrator to read users in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_administrator to read groups in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_administrator to manage users in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_administrator to manage groups in compartment ${data.oci_identity_compartment.main.name} where target.group.name = '${local.service_name}_administrator'",
+        "ALLOW GROUP ${local.service_name}_administrator to manage groups in compartment ${data.oci_identity_compartment.main.name} where target.group.name = '${local.service_name}_secops'",
     ]
     "${local.service_name}_audit"   = [
-        "ALLOW GROUP ${local.service_name}_audit to read all-resources IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_audit to read all-resources in compartment ${data.oci_identity_compartment.main.name}",
     ]
   }
 }
@@ -47,19 +47,19 @@ module "ops_section" {
   }
   roles = {
     "${local.service_name}_secops" = [
-        "ALLOW GROUP ${local.service_name}_secops to manage security-lists IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_secops to manage internet-gateways IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_secops to manage cpes IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_secops to manage ipsec-connections IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_secops to use virtual-network-family IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_secops to manage load-balancers IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_secops to read all-resources IN TENANCY",
+        "ALLOW GROUP ${local.service_name}_secops to manage security-lists in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_secops to manage internet-gateways in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_secops to manage cpes in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_secops to manage ipsec-connections in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_secops to use virtual-network-family in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_secops to manage load-balancers in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_secops to read all-resources in compartment ${data.oci_identity_compartment.main.name}",
     ]
     "${local.service_name}_iam" = [
-        "ALLOW GROUP ${local.service_name}_iam to read users IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_iam to read groups IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_iam to manage users IN TENANCY",
-        "ALLOW GROUP ${local.service_name}_iam to manage groups IN TENANCY where all {target.group.name ! = '${local.service_name}_secops', target.group.name ! = '${local.service_name}_secops'}",
+        "ALLOW GROUP ${local.service_name}_iam to read users in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_iam to read groups in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_iam to manage users in compartment ${data.oci_identity_compartment.main.name}",
+        "ALLOW GROUP ${local.service_name}_iam to manage groups in compartment ${data.oci_identity_compartment.main.name} where all {target.group.name ! = '${local.service_name}_secops', target.group.name ! = '${local.service_name}_secops'}",
     ]
   }
 }

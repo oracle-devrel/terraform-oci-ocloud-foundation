@@ -3,7 +3,7 @@
 
 resource "oci_bastion_session" "ssh" {
   depends_on                                   = [ oci_core_instance.instance[0] ]
-  count                                        = (var.session.enable ? 1 : 0) * (var.config.bastion_id != "" ? 1 : 0)
+  count                                        = var.session.enable == true ? 1 : 0
   bastion_id                                   = length(data.oci_bastion_bastions.host.bastions) > 0 ? data.oci_bastion_bastions.host.bastions[0].id : null
   key_details {
     public_key_content                         = oci_core_instance.instance[0].metadata.ssh_authorized_keys
