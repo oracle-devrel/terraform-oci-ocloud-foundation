@@ -32,7 +32,7 @@ variable "admin_mail" {
 variable "slack_channel" {
   type        = string
   description = "slack channel for notifications"
-  default     = "https://hooks.slack.com/services/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"
+  default     = ""
 }
 
 ## --- data sources ---
