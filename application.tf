@@ -10,14 +10,17 @@ module "app_section" {
   ]
   config ={
     tenancy_id    = var.tenancy_ocid
-    base          = var.base_url
+    source        = var.source_url
+    mail          = var.admin_mail
+    slack         = var.slack_channel
+    display_name  = "${local.service_name}_application"
+    dns_label     = "${local.service_label}app"
     defined_tags  = null
     freeform_tags = {"framework"= "ocloud"}
   }
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
     parent        = data.oci_identity_compartment.main.id
-    name          = "${local.service_name}_application_compartment"
   }
   roles = {
     "${local.service_name}_sysops"  = [
@@ -33,8 +36,10 @@ module "app_section" {
 }
 
 // --- app section output ---
-output "app_compartment" { value = module.app_section.compartment }
-output "app_roles"       { value = module.app_section.roles }
+output "app_compartment"  { value = module.app_section.compartment }
+output "app_roles"        { value = module.app_section.roles }
+output "app_topic"        { value = module.app_section.notifications }
+output "app_subscription" { value = module.app_section.subscriptions }
 
 // --- network domain ---
 module "app_domain" {

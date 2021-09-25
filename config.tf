@@ -17,10 +17,22 @@ variable "tenancy_ocid" { }
 variable "compartment_ocid" { }
 
 ## --- settings ---
-variable "base_url" {
+variable "source_url" {
   type        = string
   description = "URL for the git repository"
   default     = "https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/"
+}
+
+variable "admin_mail" {
+  type        = string
+  description = "email address of the compartment administrator"
+  default     = "ocilabs@mail.com"
+}
+
+variable "slack_channel" {
+  type        = string
+  description = "slack channel for notifications"
+  default     = "https://hooks.slack.com/services/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"
 }
 
 ## --- data sources ---

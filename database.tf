@@ -11,14 +11,17 @@ module "db_section" {
   ]
   config  = {
     tenancy_id    = var.tenancy_ocid
-    base          = var.base_url
+    source        = var.source_url
+    mail          = var.admin_mail
+    slack         = var.slack_channel
+    display_name  = "${local.service_name}_database"
+    dns_label     = "${local.service_label}db"
     defined_tags  = null
     freeform_tags = {"framework"= "ocloud"}
   }
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
     parent        = data.oci_identity_compartment.main.id
-    name          = "${local.service_name}_database_compartment"
   }
   roles = {
     "${local.service_name}_dbops"  = [
@@ -30,8 +33,10 @@ module "db_section" {
 }
 
 // --- section output (optional) ---
-output "db_compartment" { value = module.db_section.compartment }
-output "db_roles"       { value = module.db_section.roles }
+output "db_compartment"  { value = module.db_section.compartment }
+output "db_roles"        { value = module.db_section.roles }
+output "db_topic"        { value = module.db_section.notifications }
+output "db_subscription" { value = module.db_section.subscriptions }
 
 /*
 // --- network domain ---
@@ -54,7 +59,7 @@ module "db_domain" {
   }
   subnet  = {
     cidr_block                  = cidrsubnet(module.segment_1.subnets.db,1,0)
-    prohibit_public_ip_on_vnic  = false
+    prohibit_public_ip_on_vnic  = true
     dhcp_options_id             = null
     route_table_id              = module.segment_1.osn_route_table.id
   }

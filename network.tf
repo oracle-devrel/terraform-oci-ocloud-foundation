@@ -8,14 +8,17 @@ module "net_section" {
   depends_on = [ module.ops_section, ]
   config  = {
     tenancy_id    = var.tenancy_ocid
-    base          = var.base_url
+    source        = var.source_url
+    mail          = var.admin_mail
+    slack         = var.slack_channel
+    display_name  = "${local.service_name}_network"
+    dns_label     = "${local.service_label}"
     defined_tags  = null
     freeform_tags = {"framework"= "ocloud"}
   }
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
     parent        = data.oci_identity_compartment.main.id
-    name          = "${local.service_name}_network_compartment"
   }
   roles = {
     "${local.service_name}_netops"  = [
@@ -35,8 +38,10 @@ module "net_section" {
 }
 // --- section output (optional) ---
 # output "net_compartment"  { value = data.oci_identity_compartments.net }
-output "net_compartment" { value = module.net_section.compartment }
-output "net_roles"       { value = module.net_section.roles }
+output "net_compartment"    { value = module.net_section.compartment }
+output "net_roles"          { value = module.net_section.roles }
+output "net_topic"          { value = module.net_section.notifications }
+output "net_subscription"   { value = module.net_section.subscriptions }
 
 // --- network segment ---
 module "segment_1" {

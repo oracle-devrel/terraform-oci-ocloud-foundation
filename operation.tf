@@ -7,14 +7,17 @@ module "main_section" {
   providers      = { oci = oci.home }
   config = {
     tenancy_id    = var.tenancy_ocid
-    base          = var.base_url
+    source        = var.source_url
+    mail          = var.admin_mail
+    slack         = var.slack_channel
+    display_name  = "${local.service_name}"
+    dns_label     = "${local.service_label}"
     defined_tags  = null
     freeform_tags = {"framework"= "ocloud"}
   }
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
     parent        = var.tenancy_ocid
-    name          = "${local.service_name}_compartment"
   }
   roles = {
     "${local.service_name}_administrator"  = [
@@ -36,14 +39,17 @@ module "ops_section" {
   depends_on = [ module.main_section, ]
   config = {
     tenancy_id    = var.tenancy_ocid
-    base          = var.base_url
+    source        = var.source_url
+    mail          = var.admin_mail
+    slack         = var.slack_channel
+    display_name  = "${local.service_name}_operation"
+    dns_label     = "${local.service_label}ops"
     defined_tags  = null
     freeform_tags = {"framework"= "ocloud"}
   }
   compartment  = {
     enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
     parent        = data.oci_identity_compartment.main.id
-    name          = "${local.service_name}_operation_compartment"
   }
   roles = {
     "${local.service_name}_secops" = [
@@ -65,7 +71,11 @@ module "ops_section" {
 }
 
 // --- sections output ---
-output "main_compartment" { value = module.main_section.compartment }
-output "main_roles"       { value = module.main_section.roles }
-output "ops_compartment"  { value = module.ops_section.compartment }
-output "ops_roles"        { value = module.ops_section.roles }
+output "main_compartment"   { value = module.main_section.compartment }
+output "main_roles"         { value = module.main_section.roles }
+output "main_topic"         { value = module.main_section.notifications }
+output "main_subscription"  { value = module.main_section.subscriptions }
+output "ops_compartment"    { value = module.ops_section.compartment }
+output "ops_roles"          { value = module.ops_section.roles }
+output "ops_topic"          { value = module.ops_section.notifications }
+output "ops_subscription"   { value = module.ops_section.subscriptions }
