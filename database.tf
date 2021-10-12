@@ -40,6 +40,7 @@ module "database_section" {
   }
 }
 
+/*
 // --- network domain ---
 module "database_domain" {
   source           = "./component/network_domain/"
@@ -84,3 +85,4 @@ output "db_compartment_roles"    { value = module.database_section.roles }
 output "db_domain_subnet"        { value = module.database_domain.subnet }
 output "db_domain_security_list" { value = module.database_domain.seclist }
 output "db_domain_bastion"       { value = module.database_domain.bastion }
+*/
