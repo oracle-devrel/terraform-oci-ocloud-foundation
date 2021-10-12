@@ -1,7 +1,7 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+// Copyright (c) 2020 Oracle and/or its affiliates.
+// Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-// --- admin section ---
+/// --- database admin section ---
 variable "database" {
   default       = "Database"
   type          = string
@@ -39,9 +39,12 @@ module "database_section" {
     ]
   }
 }
+output "db_compartment_id"       { value = module.database_section.compartment_id }
+output "db_compartment_name"     { value = module.database_section.compartment_name }
+output "db_compartment_roles"    { value = module.database_section.roles }
+/// --- database admin section ---
 
-/*
-// --- network domain ---
+/// --- database tier ---
 module "database_domain" {
   source           = "./component/network_domain/"
   providers        = { oci = oci.home }
@@ -77,12 +80,7 @@ module "database_domain" {
     ]
   }
 }
-
-// --- database output ---
-output "db_compartment_id"       { value = module.database_section.compartment_id }
-output "db_compartment_name"     { value = module.database_section.compartment_name }
-output "db_compartment_roles"    { value = module.database_section.roles }
 output "db_domain_subnet"        { value = module.database_domain.subnet }
 output "db_domain_security_list" { value = module.database_domain.seclist }
 output "db_domain_bastion"       { value = module.database_domain.bastion }
-*/
+/// --- database tier ---
