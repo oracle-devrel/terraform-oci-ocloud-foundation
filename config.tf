@@ -35,7 +35,7 @@ data "oci_identity_compartments" "init" {
   state          = "ACTIVE"
   filter {
     name   = "name"
-    values = [ "${lower("${var.organization}_${var.project}_${var.environment}")}" ]
+    values = [ lower("${var.organization}_${var.project}_${var.environment}") ]
   }
 }
 
@@ -63,9 +63,9 @@ locals {
   home_region_key     = data.oci_identity_tenancy.init.home_region_key                              # Home region key obtained from the tenancy data source
   home_region         = local.regions_map[local.home_region_key]                                     # Region key obtained from the region name
   # Service identifier
-  service_id          = length(data.oci_identity_compartments.init.compartments) > 0 ? data.oci_identity_compartments.init.compartments[0].id : null
-  service_name        = length(data.oci_identity_compartments.init.compartments) > 0 ? data.oci_identity_compartments.init.compartments[0].name : null
-  service_tags        = length(data.oci_identity_tag_namespaces.init.tag_namespaces) > 0 ? data.oci_identity_tag_namespaces.init.tag_namespaces[0].id : null
+  service_id          = length(data.oci_identity_compartments.init.compartments) > 0 ? data.oci_identity_compartments.init.compartments[0].id : oci_identity_compartment.init.id
+  service_name        = length(data.oci_identity_compartments.init.compartments) > 0 ? data.oci_identity_compartments.init.compartments[0].name : oci_identity_compartment.init.name
+  service_tags        = length(data.oci_identity_tag_namespaces.init.tag_namespaces) > 0 ? data.oci_identity_tag_namespaces.init.tag_namespaces[0].id : oci_identity_tag_namespace.init.id
 }
 
 // --- global outputs ----

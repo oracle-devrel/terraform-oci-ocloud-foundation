@@ -1,9 +1,10 @@
-// Copyright (c) 2020 Oracle and/or its affiliates.
-// Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
+// --- service compartment --- //
 resource "oci_identity_compartment" "init" {
     compartment_id = var.tenancy_ocid
-    name           = "${lower("${var.organization}_${var.project}_${var.environment}")}"
+    name           = lower("${var.organization}_${var.project}_${var.environment}")
     description    = "compartment defined with ocloud framework ${var.source_url}"
     # Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed; If false, compartment will not be deleted on `terraform destroy` execution
     enable_delete  = true 
@@ -12,7 +13,9 @@ resource "oci_identity_compartment" "init" {
         "framework" = "ocloud"
     }
 }
+// --- service compartment --- //
 
+// --- enable tagging --- //
 resource "oci_identity_tag_namespace" "init" {
     depends_on     = [ oci_identity_compartment.init ]
     compartment_id = var.tenancy_ocid
@@ -33,7 +36,9 @@ resource "oci_identity_tag_default" "environment" {
     value             = var.environment
     is_required       = false
 }
+// --- enable tagging --- //
 
+// --- enable notifications --- //
 resource "oci_ons_notification_topic" "init" {
     depends_on     = [ oci_identity_compartment.init, oci_identity_tag.environment ]
     compartment_id = local.service_id
@@ -68,3 +73,4 @@ resource "oci_ons_subscription" "slack" {
         "framework" = "ocloud"
     }
 }
+// --- enable notifications --- //

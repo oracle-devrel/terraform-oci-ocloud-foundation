@@ -1,7 +1,7 @@
-// Copyright (c) 2020 Oracle and/or its affiliates.
-// Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-/// --- database admin section ---
+// --- database admin --- //
 variable "database" {
   default       = "Database"
   type          = string
@@ -11,7 +11,6 @@ variable "database" {
     error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter, have at least consonants and contains up to 15 letters."
   }
 }
-
 module "database_section" {
   source = "./component/admin_section/"
   providers      = { oci = oci.home }
@@ -39,12 +38,12 @@ module "database_section" {
     ]
   }
 }
-output "db_compartment_id"       { value = module.database_section.compartment_id }
-output "db_compartment_name"     { value = module.database_section.compartment_name }
-output "db_compartment_roles"    { value = module.database_section.roles }
-/// --- database admin section ---
+output "db_domain_subnet"        { value = module.database_domain.subnet }
+output "db_domain_security_list" { value = module.database_domain.seclist }
+output "db_domain_bastion"       { value = module.database_domain.bastion }
+// --- database admin --- //
 
-/// --- database tier ---
+// --- database tier --- //
 module "database_domain" {
   source           = "./component/network_domain/"
   providers        = { oci = oci.home }
@@ -80,7 +79,7 @@ module "database_domain" {
     ]
   }
 }
-output "db_domain_subnet"        { value = module.database_domain.subnet }
-output "db_domain_security_list" { value = module.database_domain.seclist }
-output "db_domain_bastion"       { value = module.database_domain.bastion }
-/// --- database tier ---
+output "db_compartment_id"       { value = module.database_section.compartment_id }
+output "db_compartment_name"     { value = module.database_section.compartment_name }
+output "db_compartment_roles"    { value = module.database_section.roles }
+// --- database tier --- //

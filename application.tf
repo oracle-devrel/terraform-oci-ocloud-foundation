@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-// --- admin section ---
+// --- application admin --- //
 variable "application" {
   default       = "Application"
   type          = string
@@ -11,7 +11,6 @@ variable "application" {
     error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter, have at least consonants and contains up to 15 letters."
   }
 }
-
 module "application_section" {
   source         = "./component/admin_section/"
   providers      = { oci = oci.home }
@@ -43,8 +42,12 @@ module "application_section" {
     ]
   }
 }
+output "app_compartment_id"       { value = module.application_section.compartment_id }
+output "app_compartment_name"     { value = module.application_section.compartment_name }
+output "app_compartment_roles"    { value = module.application_section.roles }
+// --- application admin --- //
 
-// --- network domain ---
+// --- application tier --- //
 module "application_domain" {
   source         = "./component/network_domain/"
   providers      = { oci = oci.home }
@@ -80,17 +83,12 @@ module "application_domain" {
     ]
   }
 }
-
-// --- sections output ---
-output "app_compartment_id"       { value = module.application_section.compartment_id }
-output "app_compartment_name"     { value = module.application_section.compartment_name }
-output "app_compartment_roles"    { value = module.application_section.roles }
 output "app_domain_subnet"        { value = module.application_domain.subnet }
 output "apP_domain_security_list" { value = module.application_domain.seclist }
 output "app_domain_bastion"       { value = module.application_domain.bastion }
+// --- application tier --- //
 
-/*
-// --- application host ---
+/* --- application host --- //
 module "operator" {
   source         = "./component/application_host/"
   providers      = { oci = oci.home }
@@ -138,12 +136,10 @@ module "operator" {
     target_port     = 22
   }
 }
-
-// --- operator host output ---
 output "app_instance_summary"      { value = module.operator.summary }
 output "app_instance_details"      { value = module.operator.details }
 output "app_instance_windows_user" { value = module.operator.username }
 output "app_instance_ol8_version"  { value = module.operator.oracle-linux-8-latest-version }
 output "app_instance_ol8_id"       { value = module.operator.oracle-linux-8-latest-id }
 output "app_instance_ssh"          { value = module.operator.ssh }
-*/
+// --- application host --- /*/

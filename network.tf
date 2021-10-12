@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-// --- create network section ---
+// --- network admin --- //
 variable "network" {
   default     = "Network"
   type        = string
@@ -11,7 +11,6 @@ variable "network" {
     error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter, have at least consonants and contains up to 15 letters."
   }
 }
-
 module "network_section" {
   source = "./component/admin_section/"
   providers      = { oci = oci.home }
@@ -45,8 +44,12 @@ module "network_section" {
     ]
   }
 }
+output "network_id"                        { value = module.network_section.compartment_id }
+output "network_name"                      { value = module.network_section.compartment_name }
+output "network_roles"                     { value = module.network_section.roles }
+// --- network admin --- //
 
-// --- provision network segment ---
+// --- service segment --- //
 module "service_segment" {
   source     = "./component/network_segment/"
   providers  = { oci = oci.home }
@@ -81,8 +84,23 @@ module "service_segment" {
     service_gateway_cidr = "all-${lower(local.home_region_key)}-services-in-oracle-services-network" 
   }
 }
+output "service_segment_vcn_id"           { value = module.service_segment.vcn_id }
+output "service_segment_cidr_block"       { value = module.service_segment.cidr_block }
+output "service_segment_subnets"          { value = module.service_segment.subnets }
+output "service_segment_security_group"   { value = module.service_segment.security_group }
+output "service_segment_anywhere"         { value = module.service_segment.anywhere }
+output "service_segment_drg_id"           { value = module.service_segment.drg_id }
+output "service_segment_internet_id"      { value = module.service_segment.internet_id }
+output "service_segment_nat_id"           { value = module.service_segment.nat_id }
+output "service_segment_osn_id"           { value = module.service_segment.osn_id }
+output "service_segment_osn"              { value = module.service_segment.osn }
+output "service_segment_osn_route_id"     { value = module.service_segment.osn_route_table_id }
+output "service_segment_private_route_id" { value = module.service_segment.private_route_table_id }
+output "service_segment_public_route_id"  { value = module.service_segment.public_route_table_id }
+output "service_segment_route_tables"     { value = tomap({ "service_segment_public_route_id" = module.service_segment.public_route_table_id, "service_segment_private_route_id" = module.service_segment.private_route_table_id, "service_segment_osn_route_id" = module.service_segment.osn_route_table_id })}
+// --- service segment --- //
 
-// --- configure network domain ---
+// --- presentation tier --- //
 module "presentation_domain" {
   source           = "./component/network_domain/"
   providers        = { oci = oci.home }
@@ -118,29 +136,7 @@ module "presentation_domain" {
     ]
   }
 }
-
-// --- network section ---
-output "network_id"                        { value = module.network_section.compartment_id }
-output "network_name"                      { value = module.network_section.compartment_name }
-output "network_roles"                     { value = module.network_section.roles }
-
-// --- network segment ---
-output "service_segment_vcn_id"           { value = module.service_segment.vcn_id }
-output "service_segment_cidr_block"       { value = module.service_segment.cidr_block }
-output "service_segment_subnets"          { value = module.service_segment.subnets }
-output "service_segment_security_group"   { value = module.service_segment.security_group }
-output "service_segment_anywhere"         { value = module.service_segment.anywhere }
-output "service_segment_drg_id"           { value = module.service_segment.drg_id }
-output "service_segment_internet_id"      { value = module.service_segment.internet_id }
-output "service_segment_nat_id"           { value = module.service_segment.nat_id }
-output "service_segment_osn_id"           { value = module.service_segment.osn_id }
-output "service_segment_osn"              { value = module.service_segment.osn }
-output "service_segment_osn_route_id"     { value = module.service_segment.osn_route_table_id }
-output "service_segment_private_route_id" { value = module.service_segment.private_route_table_id }
-output "service_segment_public_route_id"  { value = module.service_segment.public_route_table_id }
-output "service_segment_route_tables"     { value = tomap({ "service_segment_public_route_id" = module.service_segment.public_route_table_id, "service_segment_private_route_id" = module.service_segment.private_route_table_id, "service_segment_osn_route_id" = module.service_segment.osn_route_table_id })}
-
-// --- network domain ---
 output "presentation_domain_subnet"        { value = module.presentation_domain.subnet }
 output "presentation_domain_security_list" { value = module.presentation_domain.seclist }
 output "presentation_domain_bastion"       { value = module.presentation_domain.bastion }
+// --- presentation tier --- //

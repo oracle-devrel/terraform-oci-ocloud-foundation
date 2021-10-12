@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-// --- ops section ---
+// --- service operation --- //
 variable "operation" {
   default     = "Operation"
   type        = string
@@ -11,7 +11,6 @@ variable "operation" {
     error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter, have at least consonants and contains up to 15 letters."
   }
 }
-
 module "operation_section" {
   source         = "./component/admin_section/"
   providers      = { oci = oci.home }
@@ -57,8 +56,7 @@ module "operation_section" {
     ]
   }
 }
-
-// --- sections output ---
 output "ops_compartment_id"    { value = module.operation_section.compartment_id }
 output "ops_compartment_name"  { value = module.operation_section.compartment_name }
-output "ops_compartment_roles" { value = module.operation_section.roles } 
+output "ops_compartment_roles" { value = module.operation_section.roles }
+// --- service operation --- //
