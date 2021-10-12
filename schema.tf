@@ -5,27 +5,45 @@
 variable "organization"            { 
   type        = string
   description =  "provide a string that identifies the commercial owner of a service"
-  default     = "org"   # Define a name that identifies the project
+  default     = "Organization"   # Define a name that identifies the project
   validation {
-        condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,7}$", var.organization)) > 0
-        error_message = "The service_label variable is required and must contain alphanumeric characters only, start with a letter and 5 character max."
+        condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,14}$", var.organization)) > 0
+        error_message = "The service_name variable is required and must contain upto 15 alphanumeric characters only and start with a letter."
   }
 }
 variable "project"            { 
   type        = string
   description =  "provide a string that refers to a project"
-  default     = "name"   # Define a name that identifies the project
+  default     = "Project"   # Define a name that identifies the project
   validation {
-        condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,7}$", var.project)) > 0
-        error_message = "The service_label variable is required and must contain alphanumeric characters only, start with a letter and 8 character max."
+        condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,14}$", var.project)) > 0
+        error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter and 15 character max."
   }
 }
-variable "stage"           { 
+variable "environment"           { 
   type = string
-  description = "define the lifecycle status"
-  default = "dev"           # Lifecycle stage for the code base
+  description = "define the CI/CD process stage"
+  default = "DEV"           # Lifecycle stage for the code base
   validation {
-        condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,7}$", var.stage)) > 0
-        error_message = "The service_label variable is required and must contain alphanumeric characters only, start with a letter and 3 character max."
+        condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,2}$", var.environment)) > 0
+        error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter and 3 character max."
   }
+}
+
+variable "source_url" {
+  type        = string
+  description = "URL for the repository containing the infrastructure code"
+  default     = "https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/"
+}
+
+variable "admin_mail" {
+  type        = string
+  description = "email address of the compartment administrator"
+  default     = "ocilabs@mail.com"
+}
+
+variable "slack_channel" {
+  type        = string
+  description = "Create a slack app and paste webhook"
+  default     = "https://bit.ly/3iqR5H8"
 }

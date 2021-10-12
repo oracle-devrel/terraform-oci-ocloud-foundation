@@ -6,7 +6,7 @@ resource "oci_core_instance" "instance" {
   // If no explicit AD number, spread instances on all ADs in round-robin. Looping to the first when last AD is reached
   availability_domain  = var.config.ad_number == null ? element(local.ADs, count.index) : element(local.ADs, var.config.ad_number - 1)
   compartment_id       = var.config.compartment_id
-  display_name         = var.config.display_name == "" ? "" : var.host.count != "1" ? "${var.config.display_name}_${count.index + 1}" : var.config.display_name
+  service_name         = local.service_name == "" ? "" : var.host.count != "1" ? "${local.service_name}_${count.index + 1}" : local.service_name
   extended_metadata    = var.host.extended_metadata
   ipxe_script          = var.host.ipxe_script
   preserve_boot_volume = var.host.preserve_boot_volume
@@ -28,8 +28,8 @@ resource "oci_core_instance" "instance" {
   }
   create_vnic_details {
     assign_public_ip = var.host.assign_public_ip
-    display_name     = var.host.vnic_name == "" ? "" : var.host.count != "1" ? "${var.host.vnic_name}_${count.index + 1}" : var.host.vnic_name
-    hostname_label   = var.config.dns_label == "" ? "" : var.host.count != "1" ? "${var.config.dns_label}-${count.index + 1}" : var.config.dns_label
+    service_name     = var.host.vnic_name == "" ? "" : var.host.count != "1" ? "${var.host.vnic_name}_${count.index + 1}" : var.host.vnic_name
+    hostname_label   = local.service_name == "" ? "" : var.host.count != "1" ? "${local.service_name}-${count.index + 1}" : local.service_name
     private_ip = element(
       concat(var.host.private_ip, [""]),
       length(var.host.private_ip) == 0 ? 0 : count.index,
@@ -39,7 +39,7 @@ resource "oci_core_instance" "instance" {
     subnet_id = data.oci_core_subnet.host[count.index % length(data.oci_core_subnet.host.*.id)].id
 
     freeform_tags = local.merged_freeform_tags
-    defined_tags  = var.config.defined_tags
+    defined_tags  = null
   }
   metadata = {
     ssh_authorized_keys = tls_private_key.host.public_key_openssh
@@ -51,7 +51,7 @@ resource "oci_core_instance" "instance" {
     source_type             = var.host.source_type
   }
   freeform_tags = local.merged_freeform_tags
-  defined_tags  = var.config.defined_tags
+  defined_tags  = null
   timeouts {
     create = var.host.timeout
   }
@@ -62,13 +62,13 @@ resource "oci_core_volume" "instance" {
   count               = var.host.count * length(var.host.block_storage_sizes_in_gbs)
   availability_domain = oci_core_instance.instance[count.index % var.host.count].availability_domain
   compartment_id      = data.oci_identity_compartment.host.id
-  display_name        = "${oci_core_instance.instance[count.index % var.host.count].display_name}_volume${floor(count.index / var.host.count)}"
+  service_name        = "${oci_core_instance.instance[count.index % var.host.count].service_name}_volume${floor(count.index / var.host.count)}"
   size_in_gbs = element(
     var.host.block_storage_sizes_in_gbs,
     floor(count.index / var.host.count),
   )
   freeform_tags = local.merged_freeform_tags
-  defined_tags  = var.config.defined_tags
+  defined_tags  = null
 }
 
 # --- Volume Attachment ---

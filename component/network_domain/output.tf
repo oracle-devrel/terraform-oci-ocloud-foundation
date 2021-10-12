@@ -7,8 +7,8 @@ data "oci_core_subnets" "domain" {
   compartment_id = var.config.compartment_id
   vcn_id         = var.config.vcn_id
   filter {
-    name   = "display_name"
-    values = ["${var.config.display_name}_subnet"]
+    name   = "service_name"
+    values = [ local.display_name ]
   }
 }
 
@@ -22,8 +22,8 @@ data "oci_core_security_lists" "domain" {
   depends_on     = [time_sleep.wait]
   compartment_id = var.config.compartment_id
   filter {
-    name   = "display_name"
-    values = ["${var.config.display_name}_security_list"]
+    name   = "service_name"
+    values = ["${local.display_name}_security_list"]
   }
 }
 
@@ -38,7 +38,7 @@ data "oci_bastion_bastions" "domain" {
   compartment_id = var.config.compartment_id
   filter {
     name   = "name"
-    values = ["${var.config.dns_label}bastion"]
+    values = [local.bastion_label]
   }
 }
 

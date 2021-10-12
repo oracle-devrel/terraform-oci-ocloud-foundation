@@ -1,10 +1,10 @@
 # Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 
-title: "Oracloud Base Framework"
-description: "Oracloud Resource Manager Stack"
+title: "OCloud Base Framework"
+description: "Oracle Resource Manager Stack"
 stackDescription: "ITIL inspired service delivery framework for application deployments in Oracle Cloud Infrastructure (OCI)"
 schemaVersion: 1.1.0
-version: "20210704"
+version: "20212409"
 locale: "en"
 
 variableGroups:
@@ -12,23 +12,54 @@ variableGroups:
   visible: false
   variables:
   - tenancy_ocid
+  - compartment_ocid
+  - region
   
 - title: "General Configuration"
   visible: true
   variables:
   - organization
   - project
-  - stage
+  - environment
+  - source_url
+
+- title: "Notifications"
+  visible: true
+  variables:
+  - admin_mail
+  - slack_channel
+
+- title: "Sections"
+  visible: false
+  variables:
+  - operation
+  - network
+  - database
+  - application
 
 variables:
-# Hidden Configuration
+  # Hidden Configuration
   tenancy_ocid:
     title: "Tenancy ID"
     description: "The Oracle Cloud Identifier (OCID) for your tenancy"
     type: string
     required: true
     visibile: false
-  
+
+  compartment_ocid:
+    title: "Compartment ID"
+    description: "The Oracle Cloud Identifier (OCID) for your compartment"
+    type: string
+    required: true
+    visibile: false
+
+  region:
+    title: "Home Region"
+    description: "The Oracle Cloud Identifier (OCID) for your home region"
+    type: string
+    required: true
+    visibile: false
+
   # General Configuration
   organization:
     title: "Organization"
@@ -44,9 +75,60 @@ variables:
     required: true
     visibile: true
 
-  stage:
-    title: "Lifecycle stage"
-    description: "Define the lifecycle stage, e.g. dev, uat, prod"
+  environment:
+    title: "Environment"
+    description: "Define the CI/CD process stage, e.g. dev, uat, prod"
     type: string
     required: true
     visibile: true
+
+  source_url:
+    title: "Source"
+    description: "Provide an URL to your source repository"
+    type: string
+    required: true
+    visibile: true
+
+  # Notifications
+  admin_mail:
+    title: "eMail"
+    description: "Provide an eMail address for the technical administrator of your project"
+    type: string
+    required: true
+    visibile: true
+
+  slack_channel:
+    title: "Slack"
+    description: "Provide a web hook for the slack channel, used for the project"
+    type: string
+    required: false
+    visibile: true
+
+  # Sections
+  operation:
+    title: "Operation Section"
+    description: "The identifier for your Operation Compartment"
+    type: string
+    required: false
+    visibile: false
+
+  network:
+    title: "Network Section"
+    description: "The identifier for your Network Compartment"
+    type: string
+    required: false
+    visibile: false
+
+  database:
+    title: "Database Section"
+    description: "The identifier for your Database Compartment"
+    type: string
+    required: false
+    visibile: false
+
+  application:
+    title: "Application Section"
+    description: "The identifier for your Application Compartment"
+    type: string
+    required: false
+    visibile: false

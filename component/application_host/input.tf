@@ -7,8 +7,8 @@ variable "config" {
         vcn_id         = string,
         bastion_id     = string,
         ad_number      = number, 
-        display_name   = string,
-        dns_label      = string,
+        service_name   = string,
+        service_name      = string,
         defined_tags   = map(any),
         freeform_tags  = map(any)
     })

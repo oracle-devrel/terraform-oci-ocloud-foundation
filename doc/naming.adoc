@@ -41,7 +41,7 @@ The following guidelines should help to define names for an OCI tenancy
 |===
 | Type         | Convention                 | Example
 | Display Name | "service_name" + _ + "..." | dteldbas
-| DNS Label    | "service_label" + "..."    | dbas
+| DNS Label    | "service_name" + "..."    | dbas
 |===
 
 === Assembly Rules for Explicit Types
