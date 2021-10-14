@@ -33,7 +33,7 @@ variable "organization"            {
   default     = "org"   # Define a name that identifies the project
   validation {
         condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,7}$", var.owner)) > 0
-        error_message = "The service_label variable is required and must contain alphanumeric characters only, start with a letter and 5 character max."
+        error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter and 5 character max."
   }
 }
 variable "project"            { 
@@ -42,7 +42,7 @@ variable "project"            {
   default     = "name"   # Define a name that identifies the project
   validation {
         condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,7}$", var.project)) > 0
-        error_message = "The service_label variable is required and must contain alphanumeric characters only, start with a letter and 8 character max."
+        error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter and 8 character max."
   }
 }
 variable "stage"           { 
@@ -51,7 +51,7 @@ variable "stage"           {
   default = "dev"           # Lifecycle stage for the code base
   validation {
         condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,7}$", var.stage)) > 0
-        error_message = "The service_label variable is required and must contain alphanumeric characters only, start with a letter and 3 character max."
+        error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter and 3 character max."
   }
 }
 
@@ -127,8 +127,8 @@ locals {
   valid_service_gateway_cidrs = ["oci-${local.region_key}-objectstorage", "all-${local.region_key}-services-in-oracle-services-network"]
 
   # Service label
-  dns_label = format("%s%s%s", substr(var.owner, 0, 3), substr(var.project, 0, 5), substr(var.stage, 0, 3))
-  display_name  = upper("${var.owner}_${var.project}_${var.stage}")
+  service_name = format("%s%s%s", substr(var.owner, 0, 3), substr(var.project, 0, 5), substr(var.stage, 0, 3))
+  service_name  = upper("${var.owner}_${var.project}_${var.stage}")
 }
 
 ## --- global output parameter ---
@@ -228,7 +228,7 @@ module "vcn" {
 
   # required inputs
   compartment_id               = oci_identity_compartment.net.id
-  drg_display_name             = "${var.project}_${var.stage}_DRG"
+  drg_service_name             = "${var.project}_${var.stage}_DRG"
   region                       = local.home_region
   vcn_dns_project                = local.hostname
   vcn_name                     = "${var.project}_${var.stage}_VCN"
@@ -370,7 +370,7 @@ output "key_id" {
 resource "oci_kms_vault" "ops" {
   compartment_id = var.compartment_id
 
-  display_name = "${var.project}ops_vault"
+  service_name = "${var.project}ops_vault"
   vault_type   = "DEFAULT"   # or "VIRTUAL_PRIVATE"
 }
 
@@ -378,7 +378,7 @@ resource "oci_kms_vault" "ops" {
 resource "oci_kms_key" "main" {
   #Required
   compartment_id      = var.compartment_id
-  display_name        = "${var.project}_${var.stage}_key"
+  service_name        = "${var.project}_${var.stage}_key"
   management_endpoint = data.oci_kms_vault.ops.management_endpoint
 
   key_shape {
@@ -401,8 +401,8 @@ data "oci_kms_keys" "ops" {
   management_endpoint = data.oci_kms_vault.ops.management_endpoint
 
   filter {
-    name   = "display_name"
-    values = oci_kms_key.main.display_name
+    name   = "service_name"
+    values = oci_kms_key.main.service_name
   }
 }
 ```

@@ -4,18 +4,17 @@
 variable "config" {
   type = object({
     tenancy_id    = string,
-    base          = string,   
-    defined_tags  = map(any), # The different defined tags that are applied to each object by default.
-    freeform_tags = map(any)  # The different defined tags that are applied to each object by default.
+    source        = string,
+    display_name  = string,    # Name, assigned during creation, must be unique across all compartments in the tenancy
+    freeform_tags = map(any)   # freeform tags that are applied to each compartment by default
   })
   description = "Settings for compartment"
 }
 
 variable "compartment" {
   type = object({
-    enable_delete  = bool,    #true or false, determines to protect the compartment against destroy or not
-    parent         = string,  #OCID of the parent compartment
-    name           = string,  #Name, assigned during creation, must be unique across all compartments in the tenancy
+    enable_delete = bool,     # true or false, determines to protect the compartment against destroy or not
+    parent        = string    # OCID of the parent compartment
   })
   description = "Settings for compartment"
 }

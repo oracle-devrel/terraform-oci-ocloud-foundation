@@ -1,96 +1,106 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-module "app_section" {
+// --- application admin --- //
+variable "application" {
+  default       = "Application"
+  type          = string
+  description   = "Identify the Section, use a unique name"
+  validation {
+    condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,14}$", var.application)) > 0
+    error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter, have at least consonants and contains up to 15 letters."
+  }
+}
+module "application_section" {
   source         = "./component/admin_section/"
   providers      = { oci = oci.home }
   depends_on = [
-    module.ops_section,
-    module.net_section
+    oci_identity_compartment.init, 
+    module.operation_section,
+    module.network_section
   ]
   config ={
     tenancy_id    = var.tenancy_ocid
-    base          = var.base_url
-    defined_tags  = null
-    freeform_tags = {"framework"= "ocloud"}
+    source        = var.source_url
+    display_name  = lower("${local.service_name}_${var.application}")
+    tagspace      = [ ]
+    freeform_tags = { 
+      "framework" = "ocloud"
+    }
   }
   compartment  = {
-    enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
-    parent        = data.oci_identity_compartment.main.id
-    name          = "${local.service_name}_application_compartment"
+    enable_delete = true # Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
+    parent        = local.service_id
   }
   roles = {
     "${local.service_name}_sysops"  = [
-      "Allow group ${local.service_name}_sysops to read app-catalog-listing in tenancy",
-      "Allow group ${local.service_name}_sysops to read all-resources in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment",
-      "Allow group ${local.service_name}_sysops to use volume-family in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment",
-      "Allow group ${local.service_name}_sysops to use virtual-network-family in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment",
-      "Allow group ${local.service_name}_sysops to manage instances in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment",
-      "Allow group ${local.service_name}_sysops to manage instance-images in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment",
-      "Allow group ${local.service_name}_sysops to manage object-family in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_application_compartment"
+      "Allow group ${local.service_name}_sysops to read all-resources in compartment ${lower("${local.service_name}_${var.application}")}_compartment",
+      "Allow group ${local.service_name}_sysops to use volume-family in compartment ${lower("${local.service_name}_${var.application}")}_compartment",
+      "Allow group ${local.service_name}_sysops to use virtual-network-family in compartment ${lower("${local.service_name}_${var.application}")}_compartment",
+      "Allow group ${local.service_name}_sysops to manage instances in compartment ${lower("${local.service_name}_${var.application}")}_compartment",
+      "Allow group ${local.service_name}_sysops to manage instance-images in compartment ${lower("${local.service_name}_${var.application}")}_compartment",
+      "Allow group ${local.service_name}_sysops to manage object-family in compartment ${lower("${local.service_name}_${var.application}")}_compartment"
     ]
   }
 }
+output "app_compartment_id"       { value = module.application_section.compartment_id }
+output "app_compartment_name"     { value = module.application_section.compartment_name }
+output "app_compartment_roles"    { value = module.application_section.roles }
+// --- application admin --- //
 
-// --- app section output ---
-output "app_compartment" { value = module.app_section.compartment }
-output "app_roles"       { value = module.app_section.roles }
-
-// --- network domain ---
-module "app_domain" {
+// --- application tier --- //
+module "application_domain" {
   source         = "./component/network_domain/"
   providers      = { oci = oci.home }
-    depends_on = [
-    module.app_section,
-    module.segment_1
-  ]
+  depends_on     = [ module.application_section, module.service_segment ]
   config  = {
-    tenancy_id     = var.tenancy_ocid
-    compartment_id = module.app_section.compartment.id
-    vcn_id         = module.segment_1.vcn.id
-    display_name   = "${local.service_name}_application"
-    dns_label      = "${local.service_label}app"
-    anywhere       = module.segment_1.anywhere
+    service_id     = local.service_id
+    compartment_id = module.application_section.compartment_id
+    vcn_id         = module.service_segment.vcn_id
+    anywhere       = module.service_segment.anywhere
     defined_tags   = null
     freeform_tags  = {"framework" = "ocloud"}
   }
   subnet  = {
-    cidr_block                  = module.segment_1.subnets.app
+    # Select the predefined name per index
+    domain                      = element(keys(module.service_segment.subnets), 0) 
+    # Select the predefined range per index
+    cidr_block                  = element(values(module.service_segment.subnets), 0) 
     prohibit_public_ip_on_vnic  = false
     dhcp_options_id             = null
-    route_table_id              = module.segment_1.private_route_table.id
+    route_table_id              = module.service_segment.private_route_table_id
   }
   bastion  = {
-    create            = true # Determine whether a bastion service will be deployed and attached
-    client_allow_cidr = [module.segment_1.anywhere]
+    # Determine whether a bastion service will be deployed and attached
+    create            = true
+    client_allow_cidr = [module.service_segment.anywhere]
     max_session_ttl   = 1800
   }
   tcp_ports = {
     ingress  = [
-      ["ssh",   module.segment_1.subnets.pres, 22,  22],
-      ["http",  module.segment_1.anywhere,     80,  80], 
-      ["https", module.segment_1.anywhere,    443, 443]
+      ["ssh",   module.service_segment.subnets.pres, 22,  22],
+      ["http",  module.service_segment.anywhere,     80,  80], 
+      ["https", module.service_segment.anywhere,    443, 443]
     ]
   }
 }
+output "app_domain_subnet"        { value = module.application_domain.subnet }
+output "apP_domain_security_list" { value = module.application_domain.seclist }
+output "app_domain_bastion"       { value = module.application_domain.bastion }
+// --- application tier --- //
 
-// --- db domain output ---
-output "app_domain_subnet"        { value = module.app_domain.subnet }
-output "app_domain_security_list" { value = module.app_domain.seclist }
-output "app_domain_bastion"       { value = module.app_domain.bastion }
-
-// --- application host ---
+/* --- application host --- //
 module "operator" {
   source         = "./component/application_host/"
   providers      = { oci = oci.home }
-  depends_on     = [module.app_section, module.app_domain]
+  depends_on     = [module.application_section, module.application_domain]
   config  = {
-    compartment_id = module.app_section.compartment.id  # (Updatable) The OCID of the compartment where to create all resources
-    vcn_id         = module.segment_1.vcn.id            # The id of the VCN to use when creating the operator resources
-    bastion_id     = module.app_domain.bastion.id
+    compartment_id = module.application_section.compartment.id  # (Updatable) The OCID of the compartment where to create all resources
+    vcn_id         = module.service_segment.vcn.id            # The id of the VCN to use when creating the operator resources
+    bastion_id     = module.application_domain.bastion.id
     ad_number      = 1                                  # The availability domain number of the instance. If none is provided, it will start with AD-1 and continue in round-robin
-    display_name   = "${local.service_name}_operator"   # (Updatable) A user-friendly name for the instance. Does not have to be unique, and it's changeable
-    dns_label      = "${local.service_label}ophst"      # The hostname for the VNIC's primary private IP
+    service_name   = "${local.service_name}_operator"   # (Updatable) A user-friendly name for the instance. Does not have to be unique, and it's changeable
+    service_name      = "${local.service_name}ophst"      # The hostname for the VNIC's primary private IP
     defined_tags   = null                               # predefined and scoped to a namespace to tag the resources created using defined tags
     freeform_tags  = {"framework" = "ocloud"}           # simple key-value pairs to tag the resources created using freeform tags
   }
@@ -111,7 +121,7 @@ module "operator" {
     ipxe_script                 = null              # (Optional) The iPXE script which to continue the boot process on the instance
     private_ip                  = []                # Private IP addresses of your choice to assign to the VNICs
     skip_source_dest_check      = false             # Whether the source/destination check is disabled on the VNIC
-    subnet_id                   = [module.app_domain.subnet.id] # The unique identifiers (OCIDs) of the subnets in which the instance primary VNICs are created
+    subnet_id                   = [module.application_domain.subnet.id] # The unique identifiers (OCIDs) of the subnets in which the instance primary VNICs are created
     vnic_name                   = ""                # A user-friendly name for the VNIC
     # storage parameters
     attachment_type             = "paravirtualized" # (Optional) The type of volume. The only supported values are iscsi and paravirtualized
@@ -127,11 +137,10 @@ module "operator" {
     target_port     = 22
   }
 }
-
-// --- operator host output ---
 output "app_instance_summary"      { value = module.operator.summary }
 output "app_instance_details"      { value = module.operator.details }
 output "app_instance_windows_user" { value = module.operator.username }
 output "app_instance_ol8_version"  { value = module.operator.oracle-linux-8-latest-version }
 output "app_instance_ol8_id"       { value = module.operator.oracle-linux-8-latest-id }
 output "app_instance_ssh"          { value = module.operator.ssh }
+// --- application host --- /*/

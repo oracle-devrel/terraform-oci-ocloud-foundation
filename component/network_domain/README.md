@@ -18,11 +18,11 @@ module "network_domain" {
   defined_tags   = null
   freeform_tags  = {"framework"= "ocloud"}
   subnet  = {
-    display_name                = "NET_${local.service_name}"
-    dns_label                   = "net${local.service_label}"
+    service_name                = "NET_${local.service_name}"
+    service_name                   = "net${local.service_name}"
     vcn_id                      = module.ocloud1_segment.vcn.id
     cidr_block                  = cidrsubnet(module.ocloud1_segment.vcn.cidr_block, 4, 0)
-    compartment_id              = module.ops_section.compartment_id
+    compartment_id              = module.operation_section.compartment_id
     prohibit_public_ip_on_vnic  = "false"
     dhcp_options_id             = null
     internet_gateway            = module.network_segment.internet_gateway.id
@@ -48,7 +48,7 @@ Please change the keys **network**, **net** and **NET** to a unique name
 | vcn\_id | ... | `string` | `"..."` | no |
 | service\_label | A service label to be used as part of resource names. | `string` | `"cis"` | no |
 | dns\_label | A label prefix for the subnet, used in conjunction with the VNIC's hostname and VCN's DNS label to form a fully qualified domain name (FQDN) for each VNIC within this subnet. | `string` | `"subnet"` | no |
-| subnets | Parameters for each subnet to be managed. | <pre>map(object({<br>    compartment_id    = string,<br>    defined_tags      = map(string),<br>    freeform_tags     = map(string),<br>    dynamic_cidr      = bool,<br>    cidr              = string,<br>    cidr_len          = number,<br>    cidr_num          = number,<br>    enable_dns        = bool,<br>    dns_label         = string,<br>    private           = bool,<br>    ad                = number,<br>    dhcp_options_id   = string,<br>    route_table_id    = string,<br>    security_list_ids = list(string)<br>  }))</pre> | n/a | yes |
+| subnets | Parameters for each subnet to be managed. | <pre>map(object({<br>    compartment_id    = string,<br>    defined_tags      = map(string),<br>    freeform_tags     = map(string),<br>    dynamic_cidr      = bool,<br>    cidr              = string,<br>    cidr_len          = number,<br>    cidr_num          = number,<br>    enable_dns        = bool,<br>    service_name         = string,<br>    private           = bool,<br>    ad                = number,<br>    dhcp_options_id   = string,<br>    route_table_id    = string,<br>    security_list_ids = list(string)<br>  }))</pre> | n/a | yes |
 | cidr\_block | A domain covers a single, contiguous IPv4 CIDR block of your choice. | `string` | `"10.0.0.0/16"` | no |
 | prohibit\_public\_ip\_on\_vnic | ... | `string` | `"..."` | no |
 | dhcp\_options\_id | ... | `string` | `"..."` | no |

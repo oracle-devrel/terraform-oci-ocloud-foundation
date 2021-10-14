@@ -55,13 +55,16 @@ data "oci_core_images" "oraclelinux-8" {
   operating_system         = "Oracle Linux"
   operating_system_version = "8"
   filter {
-    name = "display_name"
+    name = "name"
     values = ["^([a-zA-z]+)-([a-zA-z]+)-([\\.0-9]+)-([\\.0-9-]+)$"]
     regex = true
   }
 }
 
 locals {
+  # enforce naming conventions
+  label  = "${substr(lower(var.section), 0, 1)}${regexall("[^aeiou]", substr(lower(var.section), 1, -1))[0]}${regexall("[^aeiou]", substr(lower(var.section), 1, -1))[1]}"
+  service_name  = "${lower("${split("_", var.config.display_name)[0]}_${split("_", var.config.display_name)[1]}")}_${lower(var.section)}"
   ADs = [
     # Iterate through data.oci_identity_availability_domains.ad and create a list containing AD names
     for i in data.oci_identity_availability_domains.host.availability_domains : i.name
@@ -84,7 +87,7 @@ locals {
   instances_details = [
     # display name, Primary VNIC Public/Private IP for each instance
     for i in oci_core_instance.instance : <<EOT
-    ${~i.display_name~}
+    ${~i.service_name~}
     Primary-PublicIP: %{if i.public_ip != ""}${i.public_ip~}%{else}N/A%{endif~}
     Primary-PrivateIP: ${i.private_ip~}
     EOT

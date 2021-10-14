@@ -19,12 +19,12 @@ module "ocloud1_segment" {
   source         = "./module/network_segment/"
   providers      = { oci = oci.home }
   depends_on = [
-    module.netops_section
+    module.netoperation_section
   ]
   config  = {
-    compartment_id = module.netops_section.compartment_id
-    display_name   = "VCN_${local.service_name}"
-    dns_label      = "vcn${local.service_label}"
+    compartment_id = module.netoperation_section.compartment_id
+    service_name   = "VCN_${local.service_name}"
+    service_name      = "vcn${local.service_name}"
     defined_tags   = null
     freeform_tags  = {"framework"= "ocloud"}
   }
@@ -54,8 +54,8 @@ module "ocloud1_segment" {
   }
   drg = {
     create_drg                      = true
-    display_name                    = "DRG_${local.service_name}"
-    dns_label                       = "drg${local.service_label}"
+    service_name                    = "DRG_${local.service_name}"
+    service_name                       = "drg${local.service_name}"
     description                     = "dynamic routing gateway"
   }
 }
@@ -77,13 +77,13 @@ module "ocloud1_segment" {
 |===
 | Name | Description | Type | Default | Required
 | vcn_cidr | A VCN covers a single, contiguous IPv4 CIDR block of your choice | `string` | `"10.0.0.0/16"` | no
-| display_name | Name of Virtual Cloud Network | `any` | n/a | yes
-| dns_label | A DNS label for the VCN, used in conjunction with the VNIC's hostname and subnet's DNS label to form a fully qualified domain name (FQDN) for each VNIC within this subnet | `string` | `"vcn"` | no
+| service_name | Name of Virtual Cloud Network | `any` | n/a | yes
+| service_name | A DNS label for the VCN, used in conjunction with the VNIC's hostname and subnet's DNS label to form a fully qualified domain name (FQDN) for each VNIC within this subnet | `string` | `"vcn"` | no
 | block_nat_traffic | Whether or not to block traffic through NAT gateway | `bool` | `false` | no
 | compartment_id | Compartment's OCID where VCN will be created. | `any` | n/a | yes
 | is_create_drg | Whether a DRG is to be created | `bool` | `false` | no
 | service_gateway_cidr | The OSN service cidr accessible through Service Gateway | `string` | `""` | no
-| service_label | A service label to be used as part of resource names. | `string` | `"cis"` | no
+| service_name | A service label to be used as part of resource names. | `string` | `"cis"` | no
 |===
 
 

@@ -15,7 +15,7 @@ resource "oci_bastion_session" "ssh" {
     target_resource_port                       = var.session.target_port
     target_resource_private_ip_address         = oci_core_instance.instance[0].private_ip
   }
-  display_name                                 = "${var.config.display_name}_ssh"
+  service_name                                 = "${local.service_name}_ssh"
   key_type                                     = "PUB"
   session_ttl_in_seconds                       = var.session.ttl_in_seconds
 }

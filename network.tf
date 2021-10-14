@@ -1,131 +1,142 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-// --- admin section ---
-module "net_section" {
+// --- network admin --- //
+variable "network" {
+  default     = "Network"
+  type        = string
+  description = "Identify the Section, use a unique name"
+  validation {
+    condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,14}$", var.network)) > 0
+    error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter, have at least consonants and contains up to 15 letters."
+  }
+}
+module "network_section" {
   source = "./component/admin_section/"
   providers      = { oci = oci.home }
-  depends_on = [ module.ops_section, ]
+  depends_on     = [ oci_identity_compartment.init, module.operation_section ]
   config  = {
     tenancy_id    = var.tenancy_ocid
-    base          = var.base_url
-    defined_tags  = null
-    freeform_tags = {"framework"= "ocloud"}
+    source        = var.source_url
+    display_name  = lower("${local.service_name}_${var.network}")
+    freeform_tags = { 
+      "framework" = "ocloud"
+    }
   }
   compartment  = {
-    enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
-    parent        = data.oci_identity_compartment.main.id
-    name          = "${local.service_name}_network_compartment"
+    # Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
+    enable_delete = true 
+    parent        = local.service_id
   }
   roles = {
     "${local.service_name}_netops"  = [
-      "Allow group ${local.service_name}_netops to read all-resources in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
-      "Allow group ${local.service_name}_netops to manage virtual-network-family in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
-      "Allow group ${local.service_name}_netops to manage dns in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
-      "Allow group ${local.service_name}_netops to manage load-balancers in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
-      "Allow group ${local.service_name}_netops to manage alarms in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
-      "Allow group ${local.service_name}_netops to manage metrics in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
-      "Allow group ${local.service_name}_netops to manage orm-stacks in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
-      "Allow group ${local.service_name}_netops to manage orm-jobs in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
-      "Allow group ${local.service_name}_netops to manage orm-config-source-providers in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
-      "Allow Group ${local.service_name}_netops to read audit-events in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment",
-      "Allow Group ${local.service_name}_netops to read vss-family in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_network_compartment"
+      "Allow group ${local.service_name}_netops to read all-resources in compartment ${lower("${local.service_name}_${var.network}")}_compartment",
+      "Allow group ${local.service_name}_netops to manage virtual-network-family in compartment ${lower("${local.service_name}_${var.network}")}_compartment",
+      "Allow group ${local.service_name}_netops to manage dns in compartment ${lower("${local.service_name}_${var.network}")}_compartment",
+      "Allow group ${local.service_name}_netops to manage load-balancers in compartment ${lower("${local.service_name}_${var.network}")}_compartment",
+      "Allow group ${local.service_name}_netops to manage alarms in compartment ${lower("${local.service_name}_${var.network}")}_compartment",
+      "Allow group ${local.service_name}_netops to manage metrics in compartment ${lower("${local.service_name}_${var.network}")}_compartment",
+      "Allow group ${local.service_name}_netops to manage orm-stacks in compartment ${lower("${local.service_name}_${var.network}")}_compartment",
+      "Allow group ${local.service_name}_netops to manage orm-jobs in compartment ${lower("${local.service_name}_${var.network}")}_compartment",
+      "Allow group ${local.service_name}_netops to manage orm-config-source-providers in compartment ${lower("${local.service_name}_${var.network}")}_compartment",
+      "Allow Group ${local.service_name}_netops to read audit-events in compartment ${lower("${local.service_name}_${var.network}")}_compartment",
+      "Allow Group ${local.service_name}_netops to read vss-family in compartment ${lower("${local.service_name}_${var.network}")}_compartment"
     ]
   }
 }
-// --- section output (optional) ---
-# output "net_compartment"  { value = data.oci_identity_compartments.net }
-output "net_compartment" { value = module.net_section.compartment }
-output "net_roles"       { value = module.net_section.roles }
+output "network_id"                        { value = module.network_section.compartment_id }
+output "network_name"                      { value = module.network_section.compartment_name }
+output "network_roles"                     { value = module.network_section.roles }
+// --- network admin --- //
 
-// --- network segment ---
-module "segment_1" {
-  source         = "./component/network_segment/"
-  providers      = { oci = oci.home }
-  depends_on = [ module.net_section ]
-  config  = {
-    compartment_id = module.net_section.compartment.id
-    display_name   = "${local.service_name}_1"
-    dns_label      = "${local.service_label}net1"
-    defined_tags   = null
-    freeform_tags  = {"framework"= "ocloud"}
+// --- service segment --- //
+module "service_segment" {
+  source     = "./component/network_segment/"
+  providers  = { oci = oci.home }
+  depends_on = [ module.network_section ]
+  # Define unique number per segment
+  segment    = 1 
+  config     = {
+    service_id     = local.service_id
+    display_name   = lower("${local.service_name}_${var.network}")
+    compartment_id = module.network_section.compartment_id
+    source         = var.source_url
+    freeform_tags  = { 
+      "framework"  = "ocloud"
+    }
   }
-  vcn = {
-    description                     = "virtual cloud network"
+  network = {
+    description          = "virtual cloud network"
     address_spaces = {
-      "cidr_block"                  = "10.0.0.0/24" 
-      "anywhere"                    = "0.0.0.0/0"
-      "interconnect"                = "192.168.0.0/16"
+      "cidr_block"       = "10.0.0.0/24" 
+      "anywhere"         = "0.0.0.0/0"
+      "interconnect"     = "192.168.0.0/16"
     }
     subnet_list = { 
       # A list with newbits for the cidrsubnet function, for subnet calculations visit http://jodies.de/ipcalc
-      app                           = 1
-      db                            = 2
-      pres                          = 2
+      app                = 1
+      db                 = 2
+      pres               = 2
     }
-    block_nat_traffic               = false
-    service_gateway_cidr            = "all-${lower(local.home_region_key)}-services-in-oracle-services-network" #Alternative: "oci-${local.region_key}-objectstorage"
-  }
-  drg = {
-    create_drg                      = true
-    dns_label                       = "${local.service_label}drg1"
-    description                     = "dynamic routing gateway"
+    create_drg           = true
+    block_nat_traffic    = false
+    # Alternative: "oci-${local.region_key}-objectstorage"
+    service_gateway_cidr = "all-${lower(local.home_region_key)}-services-in-oracle-services-network" 
   }
 }
+output "service_segment_vcn_id"           { value = module.service_segment.vcn_id }
+output "service_segment_cidr_block"       { value = module.service_segment.cidr_block }
+output "service_segment_subnets"          { value = module.service_segment.subnets }
+output "service_segment_security_group"   { value = module.service_segment.security_group }
+output "service_segment_anywhere"         { value = module.service_segment.anywhere }
+output "service_segment_drg_id"           { value = module.service_segment.drg_id }
+output "service_segment_internet_id"      { value = module.service_segment.internet_id }
+output "service_segment_nat_id"           { value = module.service_segment.nat_id }
+output "service_segment_osn_id"           { value = module.service_segment.osn_id }
+output "service_segment_osn"              { value = module.service_segment.osn }
+output "service_segment_osn_route_id"     { value = module.service_segment.osn_route_table_id }
+output "service_segment_private_route_id" { value = module.service_segment.private_route_table_id }
+output "service_segment_public_route_id"  { value = module.service_segment.public_route_table_id }
+output "service_segment_route_tables"     { value = tomap({ "service_segment_public_route_id" = module.service_segment.public_route_table_id, "service_segment_private_route_id" = module.service_segment.private_route_table_id, "service_segment_osn_route_id" = module.service_segment.osn_route_table_id })}
+// --- service segment --- //
 
-// --- network segment output ---
-output "net_segment_1_vcn"              { value = module.segment_1.vcn }
-output "net_segment_1_cidr_block"       { value = module.segment_1.cidr_block }
-output "net_segment_1_subnets"          { value = module.segment_1.subnets }
-output "net_segment_1_security_group"   { value = module.segment_1.security_group }
-output "net_segment_1_anywhere"         { value = module.segment_1.anywhere }
-output "net_segment_1_internet_gateway" { value = module.segment_1.internet_gateway }
-output "net_segment_1_nat_gateway"      { value = module.segment_1.nat_gateway }
-output "net_segment_1_service_gateway"  { value = module.segment_1.service_gateway }
-output "net_segment_1_osn"              { value = module.segment_1.osn }
-output "net_segment_1_drg"              { value = module.segment_1.drg }
-output "net_segment_1_osn_route_id"     { value = module.segment_1.osn_route_table }
-output "net_segment_1_private_route_id" { value = module.segment_1.private_route_table }
-output "net_segment_1_public_route_id"  { value = module.segment_1.public_route_table }
-output "net_segment_1_route_tables"     { value = tomap({ "segment_1_public_route_id" = module.segment_1.public_route_table.id, "segment_1_private_route_id" = module.segment_1.private_route_table.id, "segment_1_osn_route_id" = module.segment_1.osn_route_table.id })}
-
-// --- network domain ---
-module "pres_domain" {
+// --- presentation tier --- //
+module "presentation_domain" {
   source           = "./component/network_domain/"
   providers        = { oci = oci.home }
-  depends_on       = [module.net_section, module.segment_1]
+  depends_on       = [ module.network_section, module.service_segment ]
   config  = {
-    tenancy_id     = var.tenancy_ocid
-    compartment_id = module.net_section.compartment.id
-    vcn_id         = module.segment_1.vcn.id
-    anywhere       = module.segment_1.anywhere
-    display_name   = "${local.service_name}_presentation"
-    dns_label      = "${local.service_label}pres"
+    service_id     = local.service_id
+    compartment_id = module.network_section.compartment_id
+    vcn_id         = module.service_segment.vcn_id
+    anywhere       = module.service_segment.anywhere
     defined_tags   = null
-    freeform_tags  = {"framework" = "ocloud"}
+    freeform_tags  = { "framework" = "ocloud" }
   }
   subnet  = {
-    cidr_block                  = module.segment_1.subnets.pres
+    # Select the predefined domain per index
+    domain                      = element(keys(module.service_segment.subnets), 2)
+    # Select the predefined domain per index
+    cidr_block                  = element(values(module.service_segment.subnets), 2) 
     prohibit_public_ip_on_vnic  = false
     dhcp_options_id             = null
-    route_table_id              = module.segment_1.public_route_table.id
+    route_table_id              = module.service_segment.public_route_table_id
   }
   bastion  = {
     create            = false # Determine whether a bastion service will be deployed and attached
-    client_allow_cidr = [module.segment_1.anywhere]
+    client_allow_cidr = [module.service_segment.anywhere]
     max_session_ttl   = 1800
   }
   tcp_ports = {
     // [protocol, source_cidr, destination port min, max]
     ingress  = [
-      ["ssh",   module.segment_1.anywhere,  22,  22], 
-      ["http",  module.segment_1.anywhere,  80,  80], 
-      ["https", module.segment_1.anywhere, 443, 443]
+      ["ssh",   module.service_segment.anywhere,  22,  22], 
+      ["http",  module.service_segment.anywhere,  80,  80], 
+      ["https", module.service_segment.anywhere, 443, 443]
     ]
   }
 }
-
-// --- domain output (optional) ---
-output "presentation_domain_subnet"        { value = module.pres_domain.subnet }
-output "presentation_domain_security_list" { value = module.pres_domain.seclist }
-output "presentation_domain_bastion"       { value = module.pres_domain.bastion }
+output "presentation_domain_subnet"        { value = module.presentation_domain.subnet }
+output "presentation_domain_security_list" { value = module.presentation_domain.seclist }
+output "presentation_domain_bastion"       { value = module.presentation_domain.bastion }
+// --- presentation tier --- //

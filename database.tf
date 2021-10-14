@@ -1,80 +1,86 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-// --- admin section ---
-module "db_section" {
+// --- database admin --- //
+variable "database" {
+  default       = "Database"
+  type          = string
+  description   = "Identify the Section, use a unique name"
+  validation {
+    condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,14}$", var.database)) > 0
+    error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter, have at least consonants and contains up to 15 letters."
+  }
+}
+module "database_section" {
   source = "./component/admin_section/"
   providers      = { oci = oci.home }
   depends_on = [
-    module.ops_section,
-    module.net_section
+    oci_identity_compartment.init, 
+    module.operation_section,
+    module.network_section
   ]
   config  = {
     tenancy_id    = var.tenancy_ocid
-    base          = var.base_url
-    defined_tags  = null
-    freeform_tags = {"framework"= "ocloud"}
+    source        = var.source_url
+    display_name  = lower("${local.service_name}_${var.database}")
+    freeform_tags = { 
+      "framework" = "ocloud"
+    }
   }
   compartment  = {
-    enable_delete = false #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
-    parent        = data.oci_identity_compartment.main.id
-    name          = "${local.service_name}_database_compartment"
+    enable_delete = true #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed
+    parent        = local.service_id
   }
   roles = {
     "${local.service_name}_dbops"  = [
-      "ALLOW GROUP ${local.service_name}_dbops manage database-family in compartment ${data.oci_identity_compartment.main.name}",
-      "ALLOW GROUP ${local.service_name}_dbops read all-resources in compartment ${data.oci_identity_compartment.main.name}",
-      "ALLOW GROUP ${local.service_name}_dbops manage subnets in compartment ${data.oci_identity_compartment.main.name}:${local.service_name}_database_compartment"
+      "ALLOW GROUP ${local.service_name}_dbops manage database-family in compartment ${lower("${local.service_name}_${var.database}")}_compartment",
+      "ALLOW GROUP ${local.service_name}_dbops read all-resources in compartment ${lower("${local.service_name}_${var.database}")}_compartment",
+      "ALLOW GROUP ${local.service_name}_dbops manage subnets in compartment ${lower("${local.service_name}_${var.database}")}_compartment"
     ]
   }
 }
+output "db_domain_subnet"        { value = module.database_domain.subnet }
+output "db_domain_security_list" { value = module.database_domain.seclist }
+output "db_domain_bastion"       { value = module.database_domain.bastion }
+// --- database admin --- //
 
-// --- section output (optional) ---
-output "db_compartment" { value = module.db_section.compartment }
-output "db_roles"       { value = module.db_section.roles }
-
-/*
-// --- network domain ---
-module "db_domain" {
-  source         = "./component/network_domain/"
-  providers      = { oci = oci.home }
-  depends_on = [
-    module.db_section,
-    module.segment_1
-  ]
+// --- database tier --- //
+module "database_domain" {
+  source           = "./component/network_domain/"
+  providers        = { oci = oci.home }
+  depends_on       = [ module.database_section, module.service_segment ]
   config  = {
-    tenancy_id     = var.tenancy_ocid
-    compartment_id = module.db_section.compartment.id
-    vcn_id         = module.segment_1.vcn.id
-    anywhere       = module.segment_1.anywhere
-    display_name   = "${local.service_name}_db_client"
-    dns_label      = "${local.service_label}db"
+    service_id     = local.service_id
+    compartment_id = module.database_section.compartment_id
+    vcn_id         = module.service_segment.vcn_id
+    anywhere       = module.service_segment.anywhere
     defined_tags   = null
-    freeform_tags  = {"framework" = "ocloud"}
+    freeform_tags  = { "framework" = "ocloud" }
   }
   subnet  = {
-    cidr_block                  = cidrsubnet(module.segment_1.subnets.db,1,0)
-    prohibit_public_ip_on_vnic  = false
+    # Select the predefined name per index
+    domain                      = element(keys(module.service_segment.subnets), 1)
+    # Select the predefined range per index
+    cidr_block                  = element(values(module.service_segment.subnets), 1)
+    prohibit_public_ip_on_vnic  = true
     dhcp_options_id             = null
-    route_table_id              = module.segment_1.osn_route_table.id
+    route_table_id              = module.service_segment.osn_route_table_id
   }
   bastion  = {
     create            = false # Determine whether a bastion service will be deployed and attached
-    client_allow_cidr = [ module.segment_1.anywhere ]
+    client_allow_cidr = [ module.service_segment.anywhere ]
     max_session_ttl   = 1800
   }
   tcp_ports = {
     // [protocol, source_cidr, destination port min, max]
     ingress  = [
-      ["ssh",   module.segment_1.anywhere,  22,  22], 
-      ["http",  module.segment_1.anywhere,  80,  80], 
-      ["https", module.segment_1.anywhere, 443, 443]
+      ["ssh",   module.service_segment.anywhere,  22,  22], 
+      ["http",  module.service_segment.anywhere,  80,  80], 
+      ["https", module.service_segment.anywhere, 443, 443]
     ]
   }
 }
-
-// --- db domain output ---
-output "db_domain_subnet"        { value = module.db_domain.subnet }
-output "db_domain_security_list" { value = module.db_domain.seclist }
-output "db_domain_bastion"       { value = module.db_domain.bastion }
-*/
+output "db_compartment_id"       { value = module.database_section.compartment_id }
+output "db_compartment_name"     { value = module.database_section.compartment_name }
+output "db_compartment_roles"    { value = module.database_section.roles }
+// --- database tier --- //

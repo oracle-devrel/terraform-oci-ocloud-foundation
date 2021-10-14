@@ -47,7 +47,7 @@ variable "small" {
         ipxe_script                 = null              # (Optional) The iPXE script which to continue the boot process on the instance
         private_ip                  = []                # Private IP addresses of your choice to assign to the VNICs
         skip_source_dest_check      = false             # Whether the source/destination check is disabled on the VNIC
-        subnet_id                   = [module.app_domain.subnet.id] # The unique identifiers (OCIDs) of the subnets in which the instance primary VNICs are created
+        subnet_id                   = [module.application_domain.subnet.id] # The unique identifiers (OCIDs) of the subnets in which the instance primary VNICs are created
         vnic_name                   = ""                # A user-friendly name for the VNIC
 
         attachment_type             = "paravirtualized" # (Optional) The type of volume. The only supported values are iscsi and paravirtualized

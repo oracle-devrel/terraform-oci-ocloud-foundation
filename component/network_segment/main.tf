@@ -1,45 +1,83 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-resource "oci_core_internet_gateway" "segment" {
-  depends_on     = [oci_core_vcn.segment]
-  compartment_id = data.oci_identity_compartment.segment.id
+resource "oci_core_vcn" "segment" {
+  compartment_id = var.config.compartment_id
+  display_name   = local.display_name
+  dns_label      = local.dns_label
+  cidr_block     = var.network.address_spaces.cidr_block
+  is_ipv6enabled = false
+  defined_tags   = null
+  freeform_tags  = var.config.freeform_tags
+}
+
+resource "oci_core_network_security_group" "segment" {
+  depends_on     = [ oci_core_vcn.segment ]
+  compartment_id = var.config.compartment_id
+  display_name   = "${local.display_name}_sec_grp"
   vcn_id         = oci_core_vcn.segment.id
-  display_name   = "${var.config.display_name}_internet_gateway"
+  defined_tags   = null
+  freeform_tags  = var.config.freeform_tags
+}
+
+## This Terraform configuration modifies the default security list for the VCN
+resource "oci_core_default_security_list" "default_security_list" {
+  manage_default_resource_id = oci_core_vcn.segment.default_security_list_id
+  ingress_security_rules {
+    protocol  = "1"
+    stateless = false
+    source    = var.network.address_spaces.cidr_block
+    icmp_options {
+      type = 3
+      code = 4
+    }
+  }
+  ingress_security_rules {
+    protocol  = "1"
+    stateless = false
+    source    = var.network.address_spaces.anywhere
+    icmp_options {
+      type = 3
+      code = null
+    }
+  }
+}
+
+resource "oci_core_internet_gateway" "segment" {
+  compartment_id = var.config.compartment_id
+  vcn_id         = oci_core_vcn.segment.id
+  display_name   = "${local.display_name}_ig"
 }
 
 resource "oci_core_nat_gateway" "segment" {
-  depends_on     = [oci_core_vcn.segment]
-  compartment_id = data.oci_identity_compartment.segment.id
-  display_name   = "${var.config.display_name}_nat_gateway"
+  compartment_id = var.config.compartment_id
+  display_name   = "${local.display_name}_ng"
   vcn_id         = oci_core_vcn.segment.id
-  block_traffic  = var.vcn.block_nat_traffic
+  block_traffic  = var.network.block_nat_traffic
 }
 
 resource "oci_core_service_gateway" "segment" {
-  depends_on     = [oci_core_vcn.segment]
-  compartment_id = data.oci_identity_compartment.segment.id
-  display_name   = "${var.config.display_name}_service_gateway"
+  compartment_id = var.config.compartment_id
+  display_name   = "${local.display_name}_sg"
   vcn_id         = oci_core_vcn.segment.id
   services {
-    service_id   = local.osn_cidrs[var.vcn.service_gateway_cidr]
+    service_id   = local.osn_cidrs[var.network.service_gateway_cidr]
   }
 }
 
 resource "oci_core_drg" "segment" {
-  depends_on     = [oci_core_vcn.segment]
-  count          = var.drg.create_drg == true ? 1 : 0
-  compartment_id = data.oci_identity_compartment.segment.id
-  display_name   = "${var.config.display_name}_drg"
-  defined_tags   = var.config.defined_tags
+  count          = var.network.create_drg == true ? 1 : 0
+  compartment_id = var.config.compartment_id
+  display_name   = "${local.display_name}_drg"
+  defined_tags   = null
   freeform_tags  = var.config.freeform_tags
 }
 
 resource "oci_core_drg_attachment" "segment" {
   drg_id         = oci_core_drg.segment[0].id
-  display_name   = "${var.config.display_name}_drg_attachment"
+  display_name   = "${local.display_name}_drg_attached"
   freeform_tags  = var.config.freeform_tags
-  defined_tags   = var.config.defined_tags
+  defined_tags   = null
   # Uncomment to define a static route table assignment, default is an auto-generated dynamic table
   # drg_route_table_id = oci_core_drg_route_table.segment_route.id
 
@@ -52,12 +90,11 @@ resource "oci_core_drg_attachment" "segment" {
 }
 
 resource "oci_core_route_table" "public" {
-  depends_on     = [oci_core_vcn.segment]
-  compartment_id = data.oci_identity_compartment.segment.id
+  compartment_id = var.config.compartment_id
   vcn_id         = oci_core_vcn.segment.id
-  defined_tags   = var.config.defined_tags
+  defined_tags   = null
   freeform_tags  = var.config.freeform_tags
-  display_name   = "${var.config.display_name}_public_route_table"
+  display_name   = "${local.display_name}_pub_rt"
 
   dynamic "route_rules" {
     for_each = [for rule in local.public_rule_set: {
@@ -76,12 +113,11 @@ resource "oci_core_route_table" "public" {
 }
 
 resource "oci_core_route_table" "private" {
-  depends_on     = [oci_core_vcn.segment]
-  compartment_id = data.oci_identity_compartment.segment.id
+  compartment_id = var.config.compartment_id
   vcn_id         = oci_core_vcn.segment.id
-  defined_tags   = var.config.defined_tags
+  defined_tags   = null
   freeform_tags  = var.config.freeform_tags
-  display_name   = "${var.config.display_name}_private_route_table"
+  display_name   = "${local.display_name}_priv_rt"
 
   dynamic "route_rules" {
     for_each = [for rule in local.private_rule_set: {
@@ -100,13 +136,12 @@ resource "oci_core_route_table" "private" {
 }
 
 resource "oci_core_route_table" "osn" {
-  depends_on     = [oci_core_vcn.segment]
   compartment_id = var.config.compartment_id
   #compartment_id = data.oci_identity_compartment.segment.id
   vcn_id         = oci_core_vcn.segment.id
-  defined_tags   = var.config.defined_tags
+  defined_tags   = null
   freeform_tags  = var.config.freeform_tags
-  display_name   = "${var.config.display_name}_osn_route_table"
+  display_name   = "${local.display_name}_osn_rt"
 
   dynamic "route_rules" {
     for_each = [for rule in local.osn_rule_set: {
@@ -129,9 +164,9 @@ resource "oci_core_route_table" "osn" {
 resource "oci_core_route_table" "cpe" {
   compartment_id = var.config.compartment_id
   vcn_id         = oci_core_vcn.segment.id
-  defined_tags   = var.config.defined_tags
+  defined_tags   = null
   freeform_tags  = var.config.freeform_tags
-  display_name   = "${var.config.display_name}_route_table"
+  service_name   = "${local.display_name}_route_table"
 
   dynamic "route_rules" {
     for_each = [for rule in local.cpe_rule_set: {

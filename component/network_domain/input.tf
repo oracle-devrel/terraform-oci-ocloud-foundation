@@ -3,11 +3,9 @@
 
 variable "config" {
   type = object({
-    tenancy_id     = string,
+    service_id     = string,
     compartment_id = string,
     vcn_id         = string,
-    display_name   = string,
-    dns_label      = string,
     defined_tags   = map(any),
     freeform_tags  = map(any),
     anywhere       = string
@@ -16,6 +14,7 @@ variable "config" {
 
 variable "subnet" {
   type = object({
+    domain                      = string,
     cidr_block                  = string,
     prohibit_public_ip_on_vnic  = bool, 
     dhcp_options_id             = string,

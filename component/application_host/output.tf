@@ -11,8 +11,8 @@ data "oci_core_instances" "host" {
   depends_on = [time_sleep.wait]
   compartment_id = var.config.compartment_id
   filter {
-    name   = "display_name"
-    values = ["${var.config.display_name}_operator_host"]
+    name   = "service_name"
+    values = ["${local.service_name}_operator_host"]
   }
 }
 
@@ -21,7 +21,7 @@ output "summary" {
   value       = local.instances_details
 }
 
-output "oracle-linux-8-latest-version" { value = data.oci_core_images.oraclelinux-8.images.0.display_name }
+output "oracle-linux-8-latest-version" { value = data.oci_core_images.oraclelinux-8.images.0.service_name }
 output "oracle-linux-8-latest-id"      { value = data.oci_core_images.oraclelinux-8.images.0.id }
 
 // --- user details ---
@@ -45,8 +45,8 @@ data "oci_bastion_sessions" "ssh" {
   bastion_id              = data.oci_bastion_bastions.host.bastions[0].id
   session_lifecycle_state = "ACTIVE"
   filter {
-    name    = "display_name"
-    values  = ["${var.config.display_name}_ssh"]
+    name    = "service_name"
+    values  = ["${local.service_name}_ssh"]
   }
 }
 
