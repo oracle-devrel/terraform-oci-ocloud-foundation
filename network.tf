@@ -14,7 +14,7 @@ variable "network" {
 module "network_section" {
   source = "./component/admin_section/"
   providers      = { oci = oci.home }
-  depends_on     = [ module.operation_section ]
+  depends_on     = [ oci_identity_compartment.init, module.operation_section ]
   config  = {
     tenancy_id    = var.tenancy_ocid
     source        = var.source_url

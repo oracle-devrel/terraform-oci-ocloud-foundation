@@ -12,6 +12,7 @@ variable "operation" {
   }
 }
 module "operation_section" {
+  depends_on = [ oci_identity_compartment.init ]
   source         = "./component/admin_section/"
   providers      = { oci = oci.home }
   config = {

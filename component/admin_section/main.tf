@@ -11,7 +11,6 @@ resource "oci_identity_compartment" "section" {
 }
 
 resource "oci_identity_group" "section" {
-  depends_on     = [ oci_identity_compartment.section ]
   compartment_id = var.config.tenancy_id
   defined_tags   = null
   freeform_tags  = var.config.freeform_tags
@@ -21,7 +20,6 @@ resource "oci_identity_group" "section" {
 }
 
 resource "oci_identity_policy" "section" {
-  depends_on     = [ oci_identity_group.section ]
   compartment_id = var.compartment.parent != null ? var.compartment.parent : var.config.tenancy_id
   for_each       = var.roles
   name           = each.key

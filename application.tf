@@ -15,6 +15,7 @@ module "application_section" {
   source         = "./component/admin_section/"
   providers      = { oci = oci.home }
   depends_on = [
+    oci_identity_compartment.init, 
     module.operation_section,
     module.network_section
   ]

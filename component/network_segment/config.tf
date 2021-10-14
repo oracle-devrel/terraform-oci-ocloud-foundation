@@ -55,7 +55,6 @@ data "oci_core_drgs" "segment" {
 }
 
 data "oci_core_route_tables" "public" {
-  depends_on     = [time_sleep.wait]
   compartment_id = var.config.compartment_id
   display_name   = "${local.display_name}_pub_rt"
   state          = "AVAILABLE"
@@ -63,7 +62,6 @@ data "oci_core_route_tables" "public" {
 }
 
 data "oci_core_route_tables" "private" {
-  depends_on     = [time_sleep.wait]
   compartment_id = var.config.compartment_id
   display_name   = "${local.display_name}_priv_rt"
   state          = "AVAILABLE"
@@ -71,7 +69,6 @@ data "oci_core_route_tables" "private" {
 }
 
 data "oci_core_route_tables" "osn" {
-  depends_on     = [time_sleep.wait]
   compartment_id = var.config.compartment_id
   display_name   = "${local.display_name}_osn_rt"
   state          = "AVAILABLE"
@@ -96,7 +93,8 @@ locals {
     public_rule_set  = [local.anywhere_route]
     private_rule_set = [local.nat_route, local.osn_route]
     osn_rule_set     = [local.osn_route]
-    cpe_rule_set     = [local.interconnect]    #Route traffic to the onprem data center 
+    # Route traffic to the onprem data center 
+    cpe_rule_set     = [local.interconnect]
 
     # Create route rules objects as input for the route tables
     nat_route = {

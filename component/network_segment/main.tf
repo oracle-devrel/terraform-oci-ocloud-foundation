@@ -44,14 +44,12 @@ resource "oci_core_default_security_list" "default_security_list" {
 }
 
 resource "oci_core_internet_gateway" "segment" {
-  depends_on     = [ oci_core_vcn.segment ]
   compartment_id = var.config.compartment_id
   vcn_id         = oci_core_vcn.segment.id
   display_name   = "${local.display_name}_ig"
 }
 
 resource "oci_core_nat_gateway" "segment" {
-  depends_on     = [ oci_core_vcn.segment ]
   compartment_id = var.config.compartment_id
   display_name   = "${local.display_name}_ng"
   vcn_id         = oci_core_vcn.segment.id
@@ -59,7 +57,6 @@ resource "oci_core_nat_gateway" "segment" {
 }
 
 resource "oci_core_service_gateway" "segment" {
-  depends_on     = [ oci_core_vcn.segment ]
   compartment_id = var.config.compartment_id
   display_name   = "${local.display_name}_sg"
   vcn_id         = oci_core_vcn.segment.id
@@ -69,7 +66,6 @@ resource "oci_core_service_gateway" "segment" {
 }
 
 resource "oci_core_drg" "segment" {
-  depends_on     = [ oci_core_vcn.segment ]
   count          = var.network.create_drg == true ? 1 : 0
   compartment_id = var.config.compartment_id
   display_name   = "${local.display_name}_drg"
@@ -78,7 +74,6 @@ resource "oci_core_drg" "segment" {
 }
 
 resource "oci_core_drg_attachment" "segment" {
-  depends_on     = [ oci_core_vcn.segment, oci_core_drg.segment ]
   drg_id         = oci_core_drg.segment[0].id
   display_name   = "${local.display_name}_drg_attached"
   freeform_tags  = var.config.freeform_tags
@@ -95,7 +90,6 @@ resource "oci_core_drg_attachment" "segment" {
 }
 
 resource "oci_core_route_table" "public" {
-  depends_on     = [ oci_core_vcn.segment, oci_core_internet_gateway.segment ]
   compartment_id = var.config.compartment_id
   vcn_id         = oci_core_vcn.segment.id
   defined_tags   = null
@@ -119,7 +113,6 @@ resource "oci_core_route_table" "public" {
 }
 
 resource "oci_core_route_table" "private" {
-  depends_on     = [ oci_core_vcn.segment, oci_core_nat_gateway.segment ]
   compartment_id = var.config.compartment_id
   vcn_id         = oci_core_vcn.segment.id
   defined_tags   = null
@@ -143,7 +136,6 @@ resource "oci_core_route_table" "private" {
 }
 
 resource "oci_core_route_table" "osn" {
-  depends_on     = [ oci_core_vcn.segment, oci_core_service_gateway.segment ]
   compartment_id = var.config.compartment_id
   #compartment_id = data.oci_identity_compartment.segment.id
   vcn_id         = oci_core_vcn.segment.id
