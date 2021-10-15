@@ -4,7 +4,6 @@
 data "oci_core_services" "all_services" { } # Request a list of Oracle Service Network (osn) services
 
 data "oci_identity_compartments" "segment" {
-  depends_on = [ oci_identity_compartment.segment ]
   compartment_id = var.config.service_id
   state          = "ACTIVE"
   filter {
