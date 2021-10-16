@@ -144,5 +144,5 @@ resource "null_resource" "previous" {}
 
 resource "time_sleep" "wait" {
   depends_on = [null_resource.previous]
-  create_duration = "5m"
+  create_duration = "2m"
 }

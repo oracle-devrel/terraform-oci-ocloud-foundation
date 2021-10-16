@@ -1,6 +1,6 @@
 # Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 
-title: "OCloud Base Framework"
+title: "OCloud Framework"
 description: "Oracle Resource Manager Stack"
 stackDescription: "ITIL inspired service delivery framework for application deployments in Oracle Cloud Infrastructure (OCI)"
 schemaVersion: 1.1.0
