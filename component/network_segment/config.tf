@@ -13,19 +13,22 @@ data "oci_identity_compartments" "segment" {
 }
 
 data "oci_core_vcns" "segment" {
-    compartment_id = var.config.compartment_id
-    display_name   = local.display_name
-    state          = "AVAILABLE"
+  depends_on = [ oci_core_vcn.segment ]
+  compartment_id = var.config.compartment_id
+  display_name   = local.display_name
+  state          = "AVAILABLE"
 }
 
 data "oci_core_network_security_groups" "segment" {
-    compartment_id = var.config.compartment_id
-    display_name   = "${local.display_name}_sec_grp"
-    state          = "AVAILABLE"
-    vcn_id         = oci_core_vcn.segment.id
+  depends_on = [ oci_core_network_security_group.segment ]
+  compartment_id = var.config.compartment_id
+  display_name   = "${local.display_name}_sec_grp"
+  state          = "AVAILABLE"
+  vcn_id         = oci_core_vcn.segment.id
 }
 
 data "oci_core_internet_gateways" "segment" {
+  depends_on = [ oci_core_internet_gateway.segment ]
   compartment_id = var.config.compartment_id
   display_name   = "${local.display_name}_ig"
   state          = "AVAILABLE"
@@ -34,6 +37,7 @@ data "oci_core_internet_gateways" "segment" {
 
 //NAT Gateway
 data "oci_core_nat_gateways" "segment" {
+  depends_on = [ oci_core_nat_gateway.segment ]
   compartment_id = var.config.compartment_id
   display_name   = "${local.display_name}_ng"
   state          = "AVAILABLE"
@@ -41,12 +45,14 @@ data "oci_core_nat_gateways" "segment" {
 }
 
 data "oci_core_service_gateways" "segment" {
+  depends_on = [ oci_core_service_gateway.segment ]
   compartment_id = var.config.compartment_id
   state          = "AVAILABLE"
   vcn_id         = oci_core_vcn.segment.id
 }
 
 data "oci_core_drgs" "segment" {
+  depends_on = [ oci_core_drg.segment ]
   compartment_id = var.config.compartment_id
   filter {
       name   = "display_name"
@@ -55,6 +61,7 @@ data "oci_core_drgs" "segment" {
 }
 
 data "oci_core_route_tables" "public" {
+  depends_on = [ oci_core_route_table.public ]
   compartment_id = var.config.compartment_id
   display_name   = "${local.display_name}_pub_rt"
   state          = "AVAILABLE"
@@ -62,6 +69,7 @@ data "oci_core_route_tables" "public" {
 }
 
 data "oci_core_route_tables" "private" {
+  depends_on = [ oci_core_route_table.private ]
   compartment_id = var.config.compartment_id
   display_name   = "${local.display_name}_priv_rt"
   state          = "AVAILABLE"
@@ -69,6 +77,7 @@ data "oci_core_route_tables" "private" {
 }
 
 data "oci_core_route_tables" "osn" {
+  depends_on = [ oci_core_route_table.osn ]
   compartment_id = var.config.compartment_id
   display_name   = "${local.display_name}_osn_rt"
   state          = "AVAILABLE"
@@ -135,5 +144,5 @@ resource "null_resource" "previous" {}
 
 resource "time_sleep" "wait" {
   depends_on = [null_resource.previous]
-  create_duration = "5m"
+  create_duration = "2m"
 }
