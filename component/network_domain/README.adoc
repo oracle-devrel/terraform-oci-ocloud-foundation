@@ -1,0 +1,157 @@
+== Requirements
+
+Deploy a link:/component/network_segment[network segment].
+
+== Providers
+
+[cols="a,a",options="header,autowidth"]
+|===
+|Name |Version
+|[[provider_oci]] <<provider_oci,oci>> |n/a
+|[[provider_time]] <<provider_time,time>> |n/a
+|[[provider_null]] <<provider_null,null>> |n/a
+|===
+
+== Module
+```hcl
+module "application_domain" {
+  source         = "./component/network_domain/"
+  providers      = { oci = oci.home }
+  depends_on     = [ module.application_section, module.service_segment ]
+  config  = {
+    service_id     = local.service_id
+    compartment_id = module.application_section.compartment_id
+    vcn_id         = module.service_segment.vcn_id
+    anywhere       = module.service_segment.anywhere
+    defined_tags   = null
+    freeform_tags  = {"framework" = "ocloud"}
+  }
+  subnet  = {
+    # Select the predefined name per index
+    domain                      = element(keys(module.service_segment.subnets), 0) 
+    # Select the predefined range per index
+    cidr_block                  = element(values(module.service_segment.subnets), 0) 
+    prohibit_public_ip_on_vnic  = false
+    dhcp_options_id             = null
+    route_table_id              = module.service_segment.private_route_table_id
+  }
+  bastion  = {
+    # Determine whether a bastion service will be deployed and attached
+    create            = true
+    client_allow_cidr = [module.service_segment.anywhere]
+    max_session_ttl   = 1800
+  }
+  tcp_ports = {
+    ingress  = [
+      ["ssh",   module.service_segment.subnets.pres, 22,  22],
+      ["http",  module.service_segment.anywhere,     80,  80], 
+      ["https", module.service_segment.anywhere,    443, 443]
+    ]
+  }
+}
+```
+
+== Resources
+
+[cols="a,a",options="header,autowidth"]
+|===
+|Name |Type
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/bastion_bastion[oci_bastion_bastion.domain] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_route_table_attachment[oci_core_route_table_attachment.domain] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_security_list[oci_core_security_list.domain] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_subnet[oci_core_subnet.domain] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/bastion_bastions[oci_bastion_bastions.domain] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_security_lists[oci_core_security_lists.domain] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services[oci_core_services.all_services] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_subnets[oci_core_subnets.domain] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_vcn[oci_core_vcn.domain] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_compartments[oci_identity_compartments.domain] |data source
+|https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep[time_sleep.wait] |resource
+|https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource[null_resource.previous] |resource
+|===
+
+== Inputs
+
+[cols="a,a,a,a,a",options="header,autowidth"]
+|===
+|Name |Description |Type |Default |Required
+|[[input_config]] <<input_config,config>>
+|Settings for the network domain
+|
+
+[source]
+----
+object({
+    service_id     = string,
+    compartment_id = string,
+    vcn_id         = string,
+    defined_tags   = map(any),
+    freeform_tags  = map(any),
+    anywhere       = string
+  })
+----
+
+|n/a
+|yes
+
+|[[input_subnet]] <<input_subnet,subnet>>
+|Parameters for each subnet to be managed
+|
+
+[source]
+----
+object({
+    domain                      = string,
+    cidr_block                  = string,
+    prohibit_public_ip_on_vnic  = bool,
+    dhcp_options_id             = string,
+    route_table_id              = string
+  })
+----
+
+|n/a
+|yes
+
+|[[input_tcp_ports]] <<input_tcp_ports,tcp_ports>>
+|List of ports that will be open for the subnet
+|
+
+[source]
+----
+object({
+    ingress   = list(list(any))
+  })
+----
+
+|n/a
+|yes
+
+|[[input_bastion]] <<input_bastion,bastion>>
+|true or false, creates a bastion endpoint, usually there is just one bastion per VCN, hence default setting is false
+|
+
+[source]
+----
+object({
+    create             = bool,
+    client_allow_cidr  = list(string),
+    max_session_ttl    = number
+  })
+----
+
+|n/a
+|yes
+
+|===
+
+Parameter definitions can be found in the link:/doc/glossary.adoc[glossary]
+
+== Outputs
+
+[cols="a,a",options="header,autowidth"]
+|===
+|Name |Description
+|[[output_bastion]] <<output_bastion,bastion>> |Bastion Service
+|[[output_seclist]] <<output_seclist,seclist>> |Security List
+|[[output_subnet]] <<output_subnet,subnet>> |Subnet
+|===

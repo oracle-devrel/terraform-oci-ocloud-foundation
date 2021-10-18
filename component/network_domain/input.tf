@@ -10,6 +10,7 @@ variable "config" {
     freeform_tags  = map(any),
     anywhere       = string
   })
+  description      = "Settings for the network domain"
 }
 
 variable "subnet" {
@@ -25,8 +26,9 @@ variable "subnet" {
 
 variable "tcp_ports"{
   type = object({
-    ingress  = list(list(any))
+    ingress   = list(list(any))
   })
+  description = "List of ports that will be open for the subnet"
 }
 
 variable "bastion"{
@@ -35,4 +37,5 @@ variable "bastion"{
     client_allow_cidr  = list(string),
     max_session_ttl    = number
   })
+  description          = "true or false, creates a bastion endpoint, usually there is just one bastion per VCN, hence default setting is false"
 }

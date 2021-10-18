@@ -1,0 +1,173 @@
+= Glossary
+
+== Service Configuration
+
+[cols="1,1,1", options="header"]
+|===
+|Name
+|Description
+|Type
+
+|tenancy_id 
+|The OCID of the tenancy
+|`string`
+
+|service_id 
+|The OCID of the encapsulating service compartment
+|`string`
+
+|service_name
+|The name of the encapsulating compartment, used to define component names
+|`string`
+
+|display_name
+|extends the service name with an identifier for the administrator domain
+|`string`
+
+|compartment_id 
+|The default compartment OCID to use for resources (unless otherwise specified), usually a child compartment to the `service_id`
+|`string`
+
+|vcn_id 
+|The OCID of the a vcn deployed through "network segment" component
+|`string`
+
+|anywhere
+|CIDR range representing the egress traffic of a network segment or domain
+|`string`
+
+|defined_tags
+|The different defined tags that are applied to each object by default
+|`map(any)`
+
+|freeform_tags
+|The different freeform tags that are applied to each object by default
+|`map(any)`
+
+|source
+|Source URL for the landing zone code, this URL will be exposed in resource descriptions
+|`string`
+
+|enable_delete
+|true or false, determines to protect the resource against destroy or not
+|`bool`
+
+|create
+|true or false, determines to create a resource or not
+|`bool`
+
+|===
+
+== Admin Section
+
+[cols="1,1,1,1", options="header"]
+|===
+|Name
+|Description
+|Type
+|Resource
+
+|parent
+|OCID of the parent compartment
+|`string`
+|compartment
+
+|roles
+|Role names and policies, defined on tenancy root level, unique names are defined based on the project and owner names
+|`map(list(any))`
+|group, policy
+
+|===
+
+== Network Segment
+
+[cols="1,1,1,1", options="header"]
+|===
+|Name
+|Description
+|Type
+|Resource
+
+|address_spaces
+|Network address prefix in CIDR notation that all of the requested subnetwork prefixes will be allocated within
+|`map(string)`
+|VCN
+
+|subnet_list
+|A list of objects describing requested subnetwork prefixes. new_bits is the number of additional network prefix bits to add, in addition to the existing prefix on base_cidr_block
+|`map(number)`
+|VCN
+
+|block_nat_traffic
+|Whether or not to block traffic through NAT gateway
+|`bool`
+|Service Gateway
+
+|service_gateway_cidr
+|The OSN service cidr accessible through Service Gateway
+|`string`
+|Service Gateway
+
+|===
+
+
+== Network Domain
+[cols="1,1,1,1", options="header"]
+|===
+|Name
+|Description
+|Type
+|Resource
+
+|domain
+|Description
+|`string`
+|subnet
+
+|cidr_block
+|IP range for each subnet, a domain covers one or more contiguous IPv4 CIDR blocks
+|`string`
+|subnet
+
+|prohibit_public_ip_on_vnic
+|true or false, determines whether a resource can receive a public IP or not
+|`bool`
+|subnet
+
+|dhcp_options_id
+|n/a
+|`string`
+|subnet
+
+|route_table_id
+|Parameters for each route table to be managed
+|`string`
+|subnet
+
+|ingress
+|n/a
+|`list(list(any))`
+|tcp_ports
+
+|client_allow_cidr
+|CIDR for clients that are allowed to access a resource
+|`list(string)`
+|bastion
+
+|max_session_ttl
+|Time to live for a host or a service
+|`number`
+|bastion
+
+|===
+
+== Application Host
+
+[cols="1,1,1,1", options="header"]
+|===
+|Name
+|Description
+|Type
+|Resource
+
+|===
