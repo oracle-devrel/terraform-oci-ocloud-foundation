@@ -66,7 +66,6 @@ module "service_segment" {
     }
   }
   network = {
-    description          = "virtual cloud network"
     address_spaces = {
       "cidr_block"       = "10.0.0.0/24" 
       "anywhere"         = "0.0.0.0/0"
