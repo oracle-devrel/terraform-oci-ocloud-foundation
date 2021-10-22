@@ -5,11 +5,12 @@
 // In order to apply these settings run the following command 'terraform plan -var tenancy_ocid=$OCI_TENANCY -var compartment_ocid="..." -out config.tfplan'
 // and than 'terraform apply "config.tfplan" -auto-approve'
 
-// --- OCI service provider ---
+// --- OCI service provider --- //
 provider "oci" {
   alias                = "home"
   region               = local.regions_map[local.home_region_key]
 }
+// --- OCI service provider --- //
 
 // --- ORM configuration ---
 variable "tenancy_ocid"     { }
