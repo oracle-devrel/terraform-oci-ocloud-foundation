@@ -2,23 +2,16 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 // --- service operation --- //
-variable "operation" {
-  default     = "Operation"
-  type        = string
-  description = "Identify the Section, use a unique name"
-  validation {
-    condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,14}$", var.operation)) > 0
-    error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter, have at least consonants and contains up to 15 letters."
-  }
-}
 module "operation_section" {
   depends_on = [ oci_identity_compartment.init ]
   source         = "./component/admin_section/"
   providers      = { oci = oci.home }
-  config = {
+  section_name    = "operation"
+  config ={
     tenancy_id    = var.tenancy_ocid
     source        = var.source_url
-    display_name  = lower("${local.service_name}_${var.operation}")
+    service_name  = local.service_name
+    tagspace      = [ ]
     freeform_tags = { 
       "framework" = "ocloud"
     }

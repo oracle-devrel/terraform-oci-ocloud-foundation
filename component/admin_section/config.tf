@@ -7,7 +7,7 @@ data "oci_identity_compartments" "section" {
   state = "ACTIVE"
   filter {
     name   =  "name"
-    values = [ "${var.config.display_name}_compartment" ]
+    values = [ "${local.display_name}_compartment" ]
   }
 }
 
@@ -15,6 +15,10 @@ data "oci_identity_policies" "section" {
   depends_on = [ oci_identity_policy.section ]
   compartment_id = var.compartment.parent != null ? var.compartment.parent : var.config.tenancy_id
   state          = "ACTIVE"
+}
+
+locals {
+  display_name = lower("${var.config.service_name}_${var.section_name}")
 }
 
 // --- wait state ---

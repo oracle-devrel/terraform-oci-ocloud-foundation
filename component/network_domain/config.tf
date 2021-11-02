@@ -17,31 +17,27 @@ data "oci_core_vcn" "domain" {
 }
 
 data "oci_core_subnets" "domain" {
-  depends_on     = [ oci_core_subnet.domain ]
+  depends_on = [ oci_core_subnet.domain ]
   compartment_id = var.config.compartment_id
+  display_name   = local.display_name
+  state          = "AVAILABLE"
   vcn_id         = var.config.vcn_id
-  filter {
-    name   = "service_name"
-    values = [ local.display_name ]
-  }
 }
 
 data "oci_bastion_bastions" "domain" {
   depends_on     = [ oci_bastion_bastion.domain ]
   compartment_id = var.config.compartment_id
-  filter {
-    name   = "name"
-    values = [local.bastion_label]
-  }
+  #bastion_id     = oci_bastion_bastion.test_bastion.id
+  #bastion_lifecycle_state = var.bastion_bastion_lifecycle_state
+  name           = local.bastion_label
 }
 
 data "oci_core_security_lists" "domain" {
   depends_on     = [ oci_core_security_list.domain ]
   compartment_id = var.config.compartment_id
-  filter {
-    name   = "service_name"
-    values = ["${local.display_name}_security_list"]
-  }
+  display_name   = "${local.display_name}_security_list"
+  state          = "AVAILABLE"
+  vcn_id         = var.config.vcn_id
 }
 
 locals {

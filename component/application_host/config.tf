@@ -4,8 +4,17 @@
 // --- Get all the Availability Domains for the region
 data "oci_identity_availability_domains" "host" { compartment_id = var.config.compartment_id }
 // --- Retrieve meta data for the target compartment
-data "oci_identity_compartment"          "host" { id = var.config.compartment_id }
+#data "oci_identity_compartment"          "host" { id = var.config.compartment_id }
 data "oci_core_services"                 "host" { }
+
+data "oci_identity_compartments" "host" {
+  compartment_id = var.config.service_id
+  state          = "ACTIVE"
+  filter {
+    name   = "id"
+    values = [ var.config.compartment_id ]
+  } 
+}
 
 // --- Filter on AD1 to remove duplicates. ocloud should give all the shapes supported on the region
 data "oci_core_shapes" "ad1" {
@@ -13,10 +22,9 @@ data "oci_core_shapes" "ad1" {
   availability_domain = local.ADs[0]
 }
 
-// --- Subnet Datasource  ----
 data "oci_core_subnet" "host" {
-  count     = length(var.host.subnet_id)
-  subnet_id = element(var.host.subnet_id, count.index)
+  count     = length(var.config.subnet_ids)
+  subnet_id = element(var.config.subnet_ids, count.index)
 }
 
 // --- Bastion Datasource  ----
@@ -27,13 +35,14 @@ data "oci_bastion_bastions" "host" {
 }
 
 // --- Instance Credentials Datasource ---
-data "oci_core_instance_credentials" "instance" {
-  count       = var.host.resource_platform != "linux" ? var.host.count : 0
-  instance_id = oci_core_instance.instance[count.index].id
+data "oci_core_instance_credentials" "host" {
+  #count       = var.host.resource_platform != "linux" ? var.host.count : 0
+  count       = var.os[var.host.os].resource_platform != "linux" ? var.server[var.host.server].count : 0
+  instance_id = oci_core_instance.host[count.index].id
 }
 
 // --- cloud init ---
-data "cloudinit_config" "instance" {
+data "cloudinit_config" "host" {
   gzip          = true
   base64_encode = true
 
@@ -43,7 +52,7 @@ data "cloudinit_config" "instance" {
     content = templatefile(
       local.cloudinit, {
         shell_script = local.shell_script,
-        timezone     = var.host.timezone,
+        timezone     = var.os[var.host.os].timezone,
       }
     )
   }
@@ -55,16 +64,36 @@ data "oci_core_images" "oraclelinux-8" {
   operating_system         = "Oracle Linux"
   operating_system_version = "8"
   filter {
-    name = "name"
+    name = "display_name"
     values = ["^([a-zA-z]+)-([a-zA-z]+)-([\\.0-9]+)-([\\.0-9-]+)$"]
     regex = true
   }
 }
 
+data "oci_core_instances" "host" {
+  depends_on = [ oci_core_instance.host ]
+  compartment_id = var.config.compartment_id
+  filter {
+    name   = "display_name"
+    values = ["${local.display_name}_operator_host"]
+  }
+}
+
+data "oci_bastion_sessions" "ssh" {
+  depends_on              = [ oci_bastion_session.ssh ]
+  bastion_id              = var.config.bastion_id
+  session_lifecycle_state = "ACTIVE"
+  filter {
+    name    = "display_name"
+    values  = ["${local.display_name}_ssh"]
+  }
+}
+
 locals {
   # enforce naming conventions
-  label  = "${substr(lower(var.section), 0, 1)}${regexall("[^aeiou]", substr(lower(var.section), 1, -1))[0]}${regexall("[^aeiou]", substr(lower(var.section), 1, -1))[1]}"
-  service_name  = "${lower("${split("_", var.config.display_name)[0]}_${split("_", var.config.display_name)[1]}")}_${lower(var.section)}"
+  display_name  = "${lower("${split("_", data.oci_identity_compartments.host.compartments[0].name)[0]}_${split("_", data.oci_identity_compartments.host.compartments[0].name)[1]}_${var.host_name}")}"
+  dns_label     = "${format("%s%s%s", lower(substr(split("_", data.oci_identity_compartments.host.compartments[0].name)[0], 0, 3)), lower(substr(split("_", data.oci_identity_compartments.host.compartments[0].name)[1], 0, 5)), substr("${var.host_name}", 0, 2))}"
+  bastion_label = "${format("%s%s%s", lower(substr(split("_", data.oci_identity_compartments.host.compartments[0].name)[0], 0, 3)), lower(substr(split("_", data.oci_identity_compartments.host.compartments[0].name)[1], 0, 5)), "bstn")}"
   ADs = [
     # Iterate through data.oci_identity_availability_domains.ad and create a list containing AD names
     for i in data.oci_identity_availability_domains.host.availability_domains : i.name
@@ -83,11 +112,11 @@ locals {
       "ocpus"         = i.ocpus
     }
   }
-  shape_is_flex = length(regexall("^*.Flex", var.host.shape)) > 0 # evaluates to boolean true when var.instance.shape contains .Flex
+  shape_is_flex = length(regexall("^*.Flex", var.server[var.host.server].shape)) > 0 # evaluates to boolean true when var.instance.shape contains .Flex
   instances_details = [
     # display name, Primary VNIC Public/Private IP for each instance
-    for i in oci_core_instance.instance : <<EOT
-    ${~i.service_name~}
+    for i in oci_core_instance.host : <<EOT
+    ${~i.display_name~}
     Primary-PublicIP: %{if i.public_ip != ""}${i.public_ip~}%{else}N/A%{endif~}
     Primary-PrivateIP: ${i.private_ip~}
     EOT
@@ -100,4 +129,109 @@ locals {
       }
     )
   )
+}
+
+// --- Standard Server Configurations
+variable "server" {
+    type = map(object({
+        count              = number,
+        timeout            = string,
+        flex_memory_in_gbs = number,
+        flex_ocpus         = number,
+        shape              = string,
+        source_type        = string
+    }))
+    description = "Instance Parameters"
+    default = {
+        small = {
+            count              = 1
+            timeout            = "25m"
+            flex_memory_in_gbs = null
+            flex_ocpus         = null
+            shape              = "VM.Standard2.1"
+            source_type        = "image"
+        },
+        medium = {
+            count              = 1
+            timeout            = "25m"
+            flex_memory_in_gbs = null
+            flex_ocpus         = null
+            shape              = "VM.Standard2.4"
+            source_type        = "image"
+        }
+    }
+}
+
+variable "nic" {
+    type = map(object({
+        assign_public_ip       = bool,
+        ipxe_script            = string,
+        private_ip             = list(string),
+        skip_source_dest_check = bool,
+        vnic_name              = string
+    }))
+    description = "Network Parameters"
+    default = {
+        private = {
+            assign_public_ip       = false
+            ipxe_script            = null
+            private_ip             = []
+            skip_source_dest_check = false
+            vnic_name              = "private"
+        }, 
+        public = {
+            assign_public_ip       = true
+            ipxe_script            = null
+            private_ip             = []
+            skip_source_dest_check = false
+            vnic_name              = "public"
+        }
+    }
+}
+
+variable "os" {
+    type = map(object({
+        # operating system parameters
+        extended_metadata = map(any),
+        resource_platform = string,
+        user_data         = string,
+        timezone          = string
+    }))
+    description = "Operating System Parameters"
+    default = {
+        linux = {
+            extended_metadata = {}
+            resource_platform = "linux"
+            user_data         = null
+            timezone          = "UTC"
+        }
+    }
+}
+
+variable "lun" {
+    type = map(object({
+        attachment_type            = string,
+        block_storage_sizes_in_gbs = list(number),
+        boot_volume_size_in_gbs    = number,
+        preserve_boot_volume       = bool,
+        use_chap                   = bool
+    }))
+    description = "Storage Parameters"
+    default = {
+        san = {
+            attachment_type             = "paravirtualized"
+            block_storage_sizes_in_gbs  = [50]
+            boot_volume_size_in_gbs     = null
+            preserve_boot_volume        = false
+            use_chap                    = false
+        }
+    }
+}
+
+// Define the wait state for the data requests. This resource will destroy (potentially immediately) after null_resource.next
+resource "null_resource" "previous" {}
+
+resource "time_sleep" "wait" {
+  depends_on      = [null_resource.previous]
+  create_duration = "6m"
 }

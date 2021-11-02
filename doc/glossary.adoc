@@ -173,4 +173,109 @@
 |Type
 |Resource
 
+|count
+|Number of identical instances to launch from a single module
+|`number`
+|
+
+|timeout
+|Timeout setting for creating instance
+|`string`
+|
+
+|flex_memory_in_gbs
+|(Updatable) The total amount of memory available to the instance, in gigabytes
+|`number`
+|
+
+|flex_ocpus
+|(Updatable) The total number of OCPUs available to the instance
+|`number`
+|
+
+|shape
+|The shape of an instance
+|`string`
+|
+
+|source_type
+|The source type for the instance
+|`string`
+|
+
+|extended_metadata
+|(Updatable) Additional metadata key/value pairs that you provide 
+|`map(any)`
+|
+
+|resource_platform
+|Platform to create resources in
+|`string`
+|
+
+|user_data
+|Provide your own base64-encoded data to be used by Cloud-Init to run custom scripts or provide custom Cloud-Init configuration
+|`string`
+|
+
+|timezone
+|Default timezone for the server
+|`string`
+|
+
+|assign_public_ip
+|Whether the VNIC should be assigned a public IP address
+|`bool`
+|
+
+|ipxe_script
+|(Optional) The iPXE script which to continue the boot process on the instance
+|`string`
+|
+
+|private_ip
+|Private IP addresses of your choice to assign to the VNICs
+|`list(string)`
+|
+
+|skip_source_dest_check
+|Whether the source/destination check is disabled on the VNIC
+|`bool`
+|
+
+|subnet_id
+|The unique identifiers (OCIDs) of the subnets in which the instance primary VNICs are created
+|`list(string)`
+|
+
+|vnic_name
+|A user-friendly name for the VNIC
+|`string`
+|
+
+|attachment_type
+|(Optional) The type of volume. The only supported values are iscsi and paravirtualized
+|`string`
+|
+
+|block_storage_sizes_in_gbs
+|Sizes of volumes to create and attach to each instance
+|`list(number)`
+|
+
+|boot_volume_size_in_gbs
+|The size of the boot volume in GBs
+|`number`
+|
+
+|preserve_boot_volume
+|Specifies whether to delete or preserve the boot volume when terminating an instance
+|`bool`
+|
+
+|use_chap
+|(Applicable when attachment_type=iscsi) Whether to use CHAP authentication for the volume attachment
+|`bool`
+|
+
 |===

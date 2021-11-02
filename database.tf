@@ -2,27 +2,21 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 // --- database admin --- //
-variable "database" {
-  default       = "Database"
-  type          = string
-  description   = "Identify the Section, use a unique name"
-  validation {
-    condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,14}$", var.database)) > 0
-    error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter, have at least consonants and contains up to 15 letters."
-  }
-}
 module "database_section" {
   source = "./component/admin_section/"
   providers      = { oci = oci.home }
   depends_on = [
     oci_identity_compartment.init, 
     module.operation_section,
-    module.network_section
+    module.network_section,
+    module.application_section
   ]
-  config  = {
+  section_name    = "database"
+  config ={
     tenancy_id    = var.tenancy_ocid
     source        = var.source_url
-    display_name  = lower("${local.service_name}_${var.database}")
+    service_name  = local.service_name
+    tagspace      = [ ]
     freeform_tags = { 
       "framework" = "ocloud"
     }
@@ -32,36 +26,41 @@ module "database_section" {
     parent        = local.service_id
   }
   roles = {
-    "${local.service_name}_dbops"  = [
-      "ALLOW GROUP ${local.service_name}_dbops manage database-family in compartment ${lower("${local.service_name}_${var.database}")}_compartment",
-      "ALLOW GROUP ${local.service_name}_dbops read all-resources in compartment ${lower("${local.service_name}_${var.database}")}_compartment",
-      "ALLOW GROUP ${local.service_name}_dbops manage subnets in compartment ${lower("${local.service_name}_${var.database}")}_compartment"
+    "${local.service_name}_dbops" = [
+      "ALLOW GROUP ${local.service_name}_dbops manage database-family in compartment ${lower("${local.service_name}_database_compartment")}",
+      "ALLOW GROUP ${local.service_name}_dbops read all-resources in compartment ${lower("${local.service_name}_database_compartment")}",
+      "ALLOW GROUP ${local.service_name}_dbops manage subnets in compartment ${lower("${local.service_name}_database_compartment")}",
+      "Allow group ${local.service_name}_dbops to use bastion in compartment ${lower("${local.service_name}_application_compartment")}",
+      "Allow group ${local.service_name}_dbops to manage bastion-session in compartment ${lower("${local.service_name}_application_compartment")}",
+      "Allow group ${local.service_name}_dbops to manage virtual-network-family in compartment ${lower("${local.service_name}_application_compartment")}",
+      "Allow group ${local.service_name}_dbops to read instance-family in compartment ${lower("${local.service_name}_application_compartment")}",
+      "Allow group ${local.service_name}_dbops to read instance-agent-plugins in compartment ${lower("${local.service_name}_application_compartment")}",
+      #"Allow group ${local.service_name}_dbops to inspect work-requests in tenancy"
     ]
   }
 }
-output "db_domain_subnet"        { value = module.database_domain.subnet }
-output "db_domain_security_list" { value = module.database_domain.seclist }
-output "db_domain_bastion"       { value = module.database_domain.bastion }
+output "db_compartment_id"       { value = module.database_section.compartment_id }
+output "db_compartment_name"     { value = module.database_section.compartment_name }
+output "db_compartment_roles"    { value = module.database_section.roles }
 // --- database admin --- //
 
-// --- database tier --- //
+/*/ --- database tier --- //
 module "database_domain" {
   source           = "./component/network_domain/"
   providers        = { oci = oci.home }
   depends_on       = [ module.database_section, module.service_segment ]
   config  = {
     service_id     = local.service_id
-    compartment_id = module.database_section.compartment_id
+    compartment_id = module.network_section.compartment_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
     defined_tags   = null
     freeform_tags  = { "framework" = "ocloud" }
   }
   subnet  = {
-    # Select the predefined name per index
-    domain                      = element(keys(module.service_segment.subnets), 1)
-    # Select the predefined range per index
-    cidr_block                  = element(values(module.service_segment.subnets), 1)
+    # Select a domain name from subnet map in the service segment
+    domain                      = "db"
+    cidr_block                  = lookup(module.service_segment.subnets, "db", "This CIDR is not defined") 
     prohibit_public_ip_on_vnic  = true
     dhcp_options_id             = null
     route_table_id              = module.service_segment.osn_route_table_id
@@ -74,13 +73,14 @@ module "database_domain" {
   tcp_ports = {
     // [protocol, source_cidr, destination port min, max]
     ingress  = [
-      ["ssh",   module.service_segment.anywhere,  22,  22], 
-      ["http",  module.service_segment.anywhere,  80,  80], 
-      ["https", module.service_segment.anywhere, 443, 443]
+      ["ssh",   module.service_segment.anywhere,    22,  22], 
+      ["http",  module.service_segment.anywhere,    80,  80], 
+      ["https", module.service_segment.anywhere,   443, 443],
+      ["sql",   module.service_segment.anywhere, 1521, 1522]
     ]
   }
 }
-output "db_compartment_id"       { value = module.database_section.compartment_id }
-output "db_compartment_name"     { value = module.database_section.compartment_name }
-output "db_compartment_roles"    { value = module.database_section.roles }
-// --- database tier --- //
+output "db_domain_subnet_id"        { value = module.database_domain.subnet_id }
+output "db_domain_security_list_id" { value = module.database_domain.seclist_id }
+output "db_domain_bastion_id"       { value = module.database_domain.bastion_id }
+// --- database tier --- /*/
