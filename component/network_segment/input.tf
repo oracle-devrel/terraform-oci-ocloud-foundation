@@ -9,7 +9,7 @@ variable "segment" {
 variable "config" {
   type = object({
     service_id     = string,
-    display_name   = string,
+    service_name   = string,
     compartment_id = string,
     source         = string,
     freeform_tags  = map(any)

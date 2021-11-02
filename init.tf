@@ -62,6 +62,7 @@ resource "oci_ons_subscription" "email" {
     }
 }
 
+/*
 resource "oci_ons_subscription" "slack" {
     depends_on     = [ oci_identity_compartment.init, oci_identity_tag.environment ]
     compartment_id = local.service_id
@@ -73,4 +74,6 @@ resource "oci_ons_subscription" "slack" {
         "framework" = "ocloud"
     }
 }
+*/
+
 // --- enable notifications --- //

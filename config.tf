@@ -31,6 +31,7 @@ data "template_file" "ad_names" {
 }
 
 data "oci_identity_compartments" "init" {
+  depends_on = [ oci_identity_compartment.init ]
   compartment_id = var.tenancy_ocid
   state          = "ACTIVE"
   filter {
@@ -40,6 +41,7 @@ data "oci_identity_compartments" "init" {
 }
 
 data "oci_identity_tag_namespaces" "init" {
+  depends_on = [ oci_identity_compartment.init ]
   # This allows the namespace details to be retrieved
   compartment_id          = var.tenancy_ocid
   include_subcompartments = false

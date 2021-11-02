@@ -6,9 +6,9 @@ variable "config" {
     service_id     = string,
     compartment_id = string,
     vcn_id         = string,
+    anywhere       = string,
     defined_tags   = map(any),
-    freeform_tags  = map(any),
-    anywhere       = string
+    freeform_tags  = map(any)
   })
   description      = "Settings for the network domain"
 }

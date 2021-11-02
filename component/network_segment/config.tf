@@ -86,8 +86,8 @@ data "oci_core_route_tables" "osn" {
 
 locals {
     # naming conventions
-    display_name  = "${var.config.display_name}_${var.segment}"
-    dns_label     = format("%s%s%s", lower(substr(split("_", var.config.display_name)[0], 0, 3)), lower(substr(split("_", var.config.display_name)[1], 0, 5)), tostring(var.segment))
+    display_name  = "${var.config.service_name}_network_${var.segment}"
+    dns_label     = format("%s%s%s", lower(substr(split("_", var.config.service_name)[0], 0, 3)), lower(substr(split("_", var.config.service_name)[1], 0, 5)), tostring(var.segment))
 
 
     # Retrieve CIDR for all Oracle Services

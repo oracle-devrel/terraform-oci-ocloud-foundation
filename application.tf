@@ -2,15 +2,6 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 // --- application admin --- //
-variable "application" {
-  default       = "Application"
-  type          = string
-  description   = "Identify the Section, use a unique name"
-  validation {
-    condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,14}$", var.application)) > 0
-    error_message = "The service_name variable is required and must contain alphanumeric characters only, start with a letter, have at least consonants and contains up to 15 letters."
-  }
-}
 module "application_section" {
   source         = "./component/admin_section/"
   providers      = { oci = oci.home }
@@ -19,10 +10,11 @@ module "application_section" {
     module.operation_section,
     module.network_section
   ]
+  section_name    = "application"
   config ={
     tenancy_id    = var.tenancy_ocid
     source        = var.source_url
-    display_name  = lower("${local.service_name}_${var.application}")
+    service_name  = local.service_name
     tagspace      = [ ]
     freeform_tags = { 
       "framework" = "ocloud"
@@ -34,12 +26,12 @@ module "application_section" {
   }
   roles = {
     "${local.service_name}_sysops"  = [
-      "Allow group ${local.service_name}_sysops to read all-resources in compartment ${lower("${local.service_name}_${var.application}")}_compartment",
-      "Allow group ${local.service_name}_sysops to use volume-family in compartment ${lower("${local.service_name}_${var.application}")}_compartment",
-      "Allow group ${local.service_name}_sysops to use virtual-network-family in compartment ${lower("${local.service_name}_${var.application}")}_compartment",
-      "Allow group ${local.service_name}_sysops to manage instances in compartment ${lower("${local.service_name}_${var.application}")}_compartment",
-      "Allow group ${local.service_name}_sysops to manage instance-images in compartment ${lower("${local.service_name}_${var.application}")}_compartment",
-      "Allow group ${local.service_name}_sysops to manage object-family in compartment ${lower("${local.service_name}_${var.application}")}_compartment"
+      "Allow group ${local.service_name}_sysops to read all-resources in compartment ${lower("${local.service_name}_application_compartment")}",
+      "Allow group ${local.service_name}_sysops to use volume-family in compartment ${lower("${local.service_name}_application_compartment")}",
+      "Allow group ${local.service_name}_sysops to use virtual-network-family in compartment ${lower("${local.service_name}_application_compartment")}",
+      "Allow group ${local.service_name}_sysops to manage instances in compartment ${lower("${local.service_name}_application_compartment")}",
+      "Allow group ${local.service_name}_sysops to manage instance-images in compartment ${lower("${local.service_name}_application_compartment")}",
+      "Allow group ${local.service_name}_sysops to manage object-family in compartment ${lower("${local.service_name}_application_compartment")}"
     ]
   }
 }
@@ -55,18 +47,17 @@ module "application_domain" {
   depends_on     = [ module.application_section, module.service_segment ]
   config  = {
     service_id     = local.service_id
-    compartment_id = module.application_section.compartment_id
+    compartment_id = module.network_section.compartment_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
     defined_tags   = null
     freeform_tags  = {"framework" = "ocloud"}
   }
   subnet  = {
-    # Select the predefined name per index
-    domain                      = element(keys(module.service_segment.subnets), 0) 
-    # Select the predefined range per index
-    cidr_block                  = element(values(module.service_segment.subnets), 0) 
-    prohibit_public_ip_on_vnic  = false
+    # Select a domain name from subnet map in the service segment
+    domain                      = "app"
+    cidr_block                  = lookup(module.service_segment.subnets, "app", "This CIDR is not defined") 
+    prohibit_public_ip_on_vnic  = true
     dhcp_options_id             = null
     route_table_id              = module.service_segment.private_route_table_id
   }
@@ -84,54 +75,37 @@ module "application_domain" {
     ]
   }
 }
-output "app_domain_subnet"        { value = module.application_domain.subnet }
-output "apP_domain_security_list" { value = module.application_domain.seclist }
-output "app_domain_bastion"       { value = module.application_domain.bastion }
+output "app_domain_subnet_id"        { value = module.application_domain.subnet_id }
+output "app_domain_security_list_id" { value = module.application_domain.seclist_id }
+output "app_domain_bastion_id"       { value = module.application_domain.bastion_id }
 // --- application tier --- //
 
-/* --- application host --- //
+// --- application host --- //
 module "operator" {
   source         = "./component/application_host/"
   providers      = { oci = oci.home }
-  depends_on     = [module.application_section, module.application_domain]
+  depends_on     = [ module.application_section, module.service_segment, module.application_domain ]
+  host_name      = "operator"
   config  = {
-    compartment_id = module.application_section.compartment.id  # (Updatable) The OCID of the compartment where to create all resources
-    vcn_id         = module.service_segment.vcn.id            # The id of the VCN to use when creating the operator resources
-    bastion_id     = module.application_domain.bastion.id
-    ad_number      = 1                                  # The availability domain number of the instance. If none is provided, it will start with AD-1 and continue in round-robin
-    service_name   = "${local.service_name}_operator"   # (Updatable) A user-friendly name for the instance. Does not have to be unique, and it's changeable
-    service_name      = "${local.service_name}ophst"      # The hostname for the VNIC's primary private IP
-    defined_tags   = null                               # predefined and scoped to a namespace to tag the resources created using defined tags
-    freeform_tags  = {"framework" = "ocloud"}           # simple key-value pairs to tag the resources created using freeform tags
+    service_id     = local.service_id
+    compartment_id = module.application_section.compartment_id
+    source         = var.source_url
+    vcn_id         = module.service_segment.vcn_id
+    bastion_id     = module.application_domain.bastion_id
+    ad_number      = 1
+    subnet_ids     = [ module.application_domain.subnet_id ]
+    defined_tags   = null
+    freeform_tags  = {"framework"  = "ocloud"}
   }
   host = {
-    count                       = 1                 # Number of identical instances to launch from a single module
-    timeout                     = "25m"             # Timeout setting for creating instance
-    flex_memory_in_gbs          = null              # (Updatable) The total amount of memory available to the instance, in gigabytes
-    flex_ocpus                  = null              # (Updatable) The total number of OCPUs available to the instance
-    shape                       = "VM.Standard2.1"  # The shape of an instance
-    source_type                 = "image"           # The source type for the instance
-    # operating system parameters
-    extended_metadata           = {}                # (Updatable) Additional metadata key/value pairs that you provide 
-    resource_platform           = "linux"           # Platform to create resources in
-    user_data                   = null              # Provide your own base64-encoded data to be used by Cloud-Init to run custom scripts or provide custom Cloud-Init configuration
-    timezone                    = "UTC"
-    # networking parameters
-    assign_public_ip            = false             # Whether the VNIC should be assigned a public IP address
-    ipxe_script                 = null              # (Optional) The iPXE script which to continue the boot process on the instance
-    private_ip                  = []                # Private IP addresses of your choice to assign to the VNICs
-    skip_source_dest_check      = false             # Whether the source/destination check is disabled on the VNIC
-    subnet_id                   = [module.application_domain.subnet.id] # The unique identifiers (OCIDs) of the subnets in which the instance primary VNICs are created
-    vnic_name                   = ""                # A user-friendly name for the VNIC
-    # storage parameters
-    attachment_type             = "paravirtualized" # (Optional) The type of volume. The only supported values are iscsi and paravirtualized
-    block_storage_sizes_in_gbs  = [50]              # Sizes of volumes to create and attach to each instance
-    boot_volume_size_in_gbs     = null              # The size of the boot volume in GBs
-    preserve_boot_volume        = false             # Specifies whether to delete or preserve the boot volume when terminating an instance
-    use_chap                    = false             # (Applicable when attachment_type=iscsi) Whether to use CHAP authentication for the volume attachment
+    server = "small"
+    nic    = "private"
+    os     = "linux"
+    lun    = "san"
   }
-  session = {
-    enable          = false # Determine whether a ssh session via bastion service will be started
+  ssh = {
+    # Determine whether a ssh session via bastion service will be started
+    enable          = false
     type            = "MANAGED_SSH" # Alternatively "PORT_FORWARDING"
     ttl_in_seconds  = 1800
     target_port     = 22
@@ -143,4 +117,4 @@ output "app_instance_windows_user" { value = module.operator.username }
 output "app_instance_ol8_version"  { value = module.operator.oracle-linux-8-latest-version }
 output "app_instance_ol8_id"       { value = module.operator.oracle-linux-8-latest-id }
 output "app_instance_ssh"          { value = module.operator.ssh }
-// --- application host --- /*/
+// --- application host --- //

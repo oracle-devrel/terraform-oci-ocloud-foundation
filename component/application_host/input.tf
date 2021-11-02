@@ -1,61 +1,41 @@
 # Copyright (c) 2019, 2021 Oracle Corporation and/or affiliates.  All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 
+variable "host_name" {
+    type = string
+    description   = "Identify the host, use a unique name"
+    validation {
+        condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,14}$", var.host_name)) > 0
+        error_message = "The label variable must contain alphanumeric characters only, start with a letter, contains up to 15 letters and has at least three consonants."
+    }
+}
+
 variable "config" {
     type = object({
+        service_id     = string,
         compartment_id = string,
         vcn_id         = string,
         bastion_id     = string,
-        ad_number      = number, 
-        service_name   = string,
-        service_name      = string,
+        ad_number      = number,
+        subnet_ids     = list(string),
+        source         = string,
         defined_tags   = map(any),
         freeform_tags  = map(any)
     })
+    description = "Service Configuration"
 }
-
-/*
-variable "new_host" {
-    type = object({
-        server = string,
-        type   = string,
-        os     = string,
-        size   = string,
-        ad     = number 
-    })
-}
-*/
 
 variable "host" {
     type = object({
-        count                       = number,
-        timeout                     = string,
-        flex_memory_in_gbs          = number,
-        flex_ocpus                  = number,
-        shape                       = string,
-        source_type                 = string,
-        # operating system parameters
-        extended_metadata           = map(any),
-        resource_platform           = string,
-        user_data                   = string,
-        timezone                    = string,
-        # networking parameters
-        assign_public_ip            = bool,
-        ipxe_script                 = string,
-        private_ip                  = list(string),
-        skip_source_dest_check      = bool,
-        subnet_id                   = list(string),
-        vnic_name                   = string,
-        # storage parameters
-        attachment_type             = string,
-        block_storage_sizes_in_gbs  = list(number),
-        boot_volume_size_in_gbs     = number,
-        preserve_boot_volume        = bool,
-        use_chap                    = bool
+        server = string,
+        nic    = string,
+        os     = string,
+        lun    = string
     })
+    description = "Host Configuration"
 }
 
-variable "session" {
+variable "ssh" {
     type = object({
         enable          = bool,
         type            = string,
