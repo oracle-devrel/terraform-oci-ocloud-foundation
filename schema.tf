@@ -42,8 +42,10 @@ variable "admin_mail" {
   default     = "ocilabs@mail.com"
 }
 
+/*
 variable "slack_channel" {
   type        = string
   description = "Create a slack app and paste webhook"
   default     = "https://bit.ly/3iqR5H8"
 }
+*/
