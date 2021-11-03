@@ -4,7 +4,7 @@
 // --- service compartment --- //
 resource "oci_identity_compartment" "init" {
     compartment_id = var.tenancy_ocid
-    name           = lower("${var.organization}_${var.project}_${var.environment}")
+    name           = local.service_name
     description    = "compartment defined with ocloud framework ${var.code_source}"
     # Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed; If false, compartment will not be deleted on `terraform destroy` execution
     enable_delete  = true 

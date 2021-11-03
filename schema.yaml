@@ -29,7 +29,7 @@ variableGroups:
   visible: true
   variables:
   - admin_mail
-  - slack_channel
+  #- slack_channel
 
 - title: "Sections"
   visible: false
@@ -99,12 +99,12 @@ variables:
     required: true
     visibile: true
 
-  slack_channel:
-    title: "Slack"
-    description: "Provide a web hook for the slack channel, used for the project"
-    type: string
-    required: false
-    visibile: true
+  #slack_channel:
+    #title: "Slack"
+    #description: "Provide a web hook for the slack channel, used for the project"
+    #type: string
+    #required: false
+    #visibile: true
 
   # Sections
   operation:
