@@ -23,7 +23,7 @@ variableGroups:
   - organization
   - project
   - environment
-  - source_url
+  - code_source
 
 - title: "Notifications"
   visible: true
@@ -84,7 +84,7 @@ variables:
     required: true
     visibile: true
 
-  source_url:
+  code_source:
     title: "Source"
     description: "Provide an URL to your source repository"
     type: string

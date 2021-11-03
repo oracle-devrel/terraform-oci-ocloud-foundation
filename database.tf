@@ -14,7 +14,7 @@ module "database_section" {
   section_name    = "database"
   config ={
     tenancy_id    = var.tenancy_ocid
-    source        = var.source_url
+    source        = var.code_source
     service_name  = local.service_name
     tagspace      = [ ]
     freeform_tags = { 
@@ -30,12 +30,12 @@ module "database_section" {
       "ALLOW GROUP ${local.service_name}_dbops manage database-family in compartment ${lower("${local.service_name}_database_compartment")}",
       "ALLOW GROUP ${local.service_name}_dbops read all-resources in compartment ${lower("${local.service_name}_database_compartment")}",
       "ALLOW GROUP ${local.service_name}_dbops manage subnets in compartment ${lower("${local.service_name}_database_compartment")}",
-      "Allow group ${local.service_name}_dbops to use bastion in compartment ${lower("${local.service_name}_application_compartment")}",
-      "Allow group ${local.service_name}_dbops to manage bastion-session in compartment ${lower("${local.service_name}_application_compartment")}",
-      "Allow group ${local.service_name}_dbops to manage virtual-network-family in compartment ${lower("${local.service_name}_application_compartment")}",
-      "Allow group ${local.service_name}_dbops to read instance-family in compartment ${lower("${local.service_name}_application_compartment")}",
-      "Allow group ${local.service_name}_dbops to read instance-agent-plugins in compartment ${lower("${local.service_name}_application_compartment")}",
-      #"Allow group ${local.service_name}_dbops to inspect work-requests in tenancy"
+      # "Allow group ${local.service_name}_dbops to use bastion in compartment ${lower("${local.service_name}_application_compartment")}",
+      # "Allow group ${local.service_name}_dbops to manage bastion-session in compartment ${lower("${local.service_name}_application_compartment")}",
+      # "Allow group ${local.service_name}_dbops to manage virtual-network-family in compartment ${lower("${local.service_name}_application_compartment")}",
+      # "Allow group ${local.service_name}_dbops to read instance-family in compartment ${lower("${local.service_name}_application_compartment")}",
+      # "Allow group ${local.service_name}_dbops to read instance-agent-plugins in compartment ${lower("${local.service_name}_application_compartment")}",
+      # "Allow group ${local.service_name}_dbops to inspect work-requests in tenancy"
     ]
   }
 }

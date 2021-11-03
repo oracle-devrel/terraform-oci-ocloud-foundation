@@ -9,15 +9,21 @@ image:https://img.shields.io/badge/license-UPL-green[link="LICENSE"]
 image:https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone[Quality gate, link="https://sonarcloud.io/dashboard?id=oracle-devrel_terraform-oci-ocloud-landing-zone"]
 
 === Introduction
-The service delivery framework "ocloud" helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). While launching a new resource in OCI is a matter of pressing a button, preparing a tenancy to extend or replace on-prem infrastructure can be challenging. Provisioning private cloud involves numberous services and requires a deep understanding of various configuration options build into Oracle's automated infrastructure platform.
+The "ocloud" framework helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). While launching a new resource in OCI is a matter of pressing a button, replacing on-prem infrastructure and provisioning a virtual data center or a private cloud is more challenging. Numberous services need to be configured and to be activated, which requires a deep understanding of various configuration options build into Oracle's automated infrastructure platform.
+
 
 [#img-architecture] 
 .Base Architecture 
 image::doc/image/base_architecture.png[Base Architecture]
 
-This framework helps operators to automate the provisioning processes for an initial set of resources that turn a fresh OCI tenancy into a private cloud. It includes a typical network design for three tier applications, implements a security baseline and ensures consistent names for accross infrastructure components. The setup reflects the separation of duties, typically found in an ITIL oriented organization and builds a foundation for a multi-tenant service operation. 
+
+This code represents a baseline configuration for hosting three tier applications. System administrators automate the provisioning processes for infrastructure components with the link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[resource manager]. A network will be setup, firewall rules defined and naming conventions are ensured accross multiple service components. The code structure reflects a separation of duties, typically found in an IT organization that works according to ITIL and allows for a multi-tenant service operation. 
 
 === Getting Started
+The code is written for the resource manager service in Oracle Cloud Infrastructure. It can either be directly link:https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/archive/refs/heads/main.zip[deployed into an existing account] or be cloned into a new repository and than be configured as dynamic code source.
+
+
+=== Customizing the Framework
 The first layer of code addresses the needs of system adminstrators. It is written in HCL and captures the parameters that customize the provisioning processes for OCI core resources. 
 
 [#img-structure] 

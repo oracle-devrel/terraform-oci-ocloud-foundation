@@ -13,7 +13,7 @@ module "application_section" {
   section_name    = "application"
   config ={
     tenancy_id    = var.tenancy_ocid
-    source        = var.source_url
+    source        = var.code_source
     service_name  = local.service_name
     tagspace      = [ ]
     freeform_tags = { 
@@ -89,7 +89,7 @@ module "operator" {
   config  = {
     service_id     = local.service_id
     compartment_id = module.application_section.compartment_id
-    source         = var.source_url
+    source         = var.code_source
     vcn_id         = module.service_segment.vcn_id
     bastion_id     = module.application_domain.bastion_id
     ad_number      = 1

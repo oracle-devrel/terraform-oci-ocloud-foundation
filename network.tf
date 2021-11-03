@@ -9,7 +9,7 @@ module "network_section" {
   section_name    = "network"
   config ={
     tenancy_id    = var.tenancy_ocid
-    source        = var.source_url
+    source        = var.code_source
     service_name  = local.service_name
     tagspace      = [ ]
     freeform_tags = { 
@@ -53,7 +53,7 @@ module "service_segment" {
     service_id     = local.service_id
     service_name   = local.service_name
     compartment_id = module.network_section.compartment_id
-    source         = var.source_url
+    source         = var.code_source
     freeform_tags  = { 
       "framework"  = "ocloud"
     }

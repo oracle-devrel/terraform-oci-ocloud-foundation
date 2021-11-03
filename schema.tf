@@ -30,7 +30,7 @@ variable "environment"           {
   }
 }
 
-variable "source_url" {
+variable "code_source" {
   type        = string
   description = "URL for the repository containing the infrastructure code"
   default     = "https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/"
