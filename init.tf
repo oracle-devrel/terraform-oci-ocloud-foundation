@@ -5,7 +5,7 @@
 resource "oci_identity_compartment" "init" {
     compartment_id = var.tenancy_ocid
     name           = lower("${var.organization}_${var.project}_${var.environment}")
-    description    = "compartment defined with ocloud framework ${var.source_url}"
+    description    = "compartment defined with ocloud framework ${var.code_source}"
     # Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed; If false, compartment will not be deleted on `terraform destroy` execution
     enable_delete  = true 
     defined_tags   = null
@@ -26,7 +26,7 @@ resource "oci_identity_tag_namespace" "init" {
 resource "oci_identity_tag" "environment" {
     depends_on       = [ oci_identity_compartment.init ]
     tag_namespace_id = oci_identity_tag_namespace.init.id
-    description      = "identity tag defined with framework ${var.source_url}"
+    description      = "identity tag defined with framework ${var.code_source}"
     name             = "environment"
 }
 
@@ -44,7 +44,7 @@ resource "oci_ons_notification_topic" "init" {
     compartment_id = local.service_id
     name           = "${local.service_name}_notification"
     #defined_tags   = { "${oci_identity_tag_namespace.init.name}.${oci_identity_tag.init[0].name}" = "environment" }
-    description    = "notification topic defined with framework ${var.source_url}"
+    description    = "notification topic defined with framework ${var.code_source}"
     freeform_tags = {
         "framework" = "ocloud"
     }

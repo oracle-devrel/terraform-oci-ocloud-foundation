@@ -9,7 +9,7 @@ module "operation_section" {
   section_name    = "operation"
   config ={
     tenancy_id    = var.tenancy_ocid
-    source        = var.source_url
+    source        = var.code_source
     service_name  = local.service_name
     tagspace      = [ ]
     freeform_tags = { 

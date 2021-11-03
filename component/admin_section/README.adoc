@@ -23,7 +23,7 @@ module "operation_section" {
   providers      = { oci = oci.home }
   config = {
     tenancy_id    = var.tenancy_ocid
-    source        = var.source_url
+    source        = var.code_source
     display_name  = lower("${local.service_name}_${var.operation}")
     freeform_tags = { 
       "framework" = "ocloud"
