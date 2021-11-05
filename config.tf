@@ -31,13 +31,10 @@ data "template_file" "ad_names" {
 }
 
 data "oci_identity_compartments" "init" {
-  depends_on = [ oci_identity_compartment.init ]
+  depends_on     = [ oci_identity_compartment.init ]
   compartment_id = var.tenancy_ocid
+  name           = local.service_name
   state          = "ACTIVE"
-  filter {
-    name   = "name"
-    values = [ local.service_name ]
-  }
 }
 
 data "oci_identity_tag_namespaces" "init" {
@@ -65,8 +62,8 @@ locals {
   home_region_key     = data.oci_identity_tenancy.init.home_region_key                              # Home region key obtained from the tenancy data source
   home_region         = local.regions_map[local.home_region_key]                                     # Region key obtained from the region name
   # Service identifier
-  service_id          = length(data.oci_identity_compartments.init.compartments) > 0 ? data.oci_identity_compartments.init.compartments[0].id : oci_identity_compartment.init.id
   service_name        = lower("${var.organization}_${var.project}_${var.environment}")
+  service_id          = length(data.oci_identity_compartments.init.compartments) > 0 ? data.oci_identity_compartments.init.compartments[0].id : oci_identity_compartment.init.id
   service_tags        = length(data.oci_identity_tag_namespaces.init.tag_namespaces) > 0 ? data.oci_identity_tag_namespaces.init.tag_namespaces[0].id : oci_identity_tag_namespace.init.id
 }
 

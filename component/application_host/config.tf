@@ -1,24 +1,17 @@
 // Copyright 2017, 2021 Oracle Corporation and/or affiliates.  All rights reserved.
 // Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
-// --- Get all the Availability Domains for the region
-data "oci_identity_availability_domains" "host" { compartment_id = var.config.compartment_id }
-// --- Retrieve meta data for the target compartment
-#data "oci_identity_compartment"          "host" { id = var.config.compartment_id }
-data "oci_core_services"                 "host" { }
+data "oci_identity_compartment" "service" { id        = var.config.service_id }
+data "oci_core_subnet"          "domain"  { subnet_id = var.config.subnet_ids[0] }
 
-data "oci_identity_compartments" "host" {
-  compartment_id = var.config.service_id
-  state          = "ACTIVE"
-  filter {
-    name   = "id"
-    values = [ var.config.compartment_id ]
-  } 
-}
+// --- Get all the Availability Domains for the region
+data "oci_identity_availability_domains" "host" { compartment_id = data.oci_core_subnet.domain.compartment_id }
+// --- Retrieve meta data for the target compartment
+data "oci_core_services"                 "host" { }
 
 // --- Filter on AD1 to remove duplicates. ocloud should give all the shapes supported on the region
 data "oci_core_shapes" "ad1" {
-  compartment_id      = var.config.compartment_id
+  compartment_id      = data.oci_core_subnet.domain.compartment_id
   availability_domain = local.ADs[0]
 }
 
@@ -29,7 +22,7 @@ data "oci_core_subnet" "host" {
 
 // --- Bastion Datasource  ----
 data "oci_bastion_bastions" "host" {
-  compartment_id          = var.config.compartment_id
+  compartment_id          = data.oci_core_subnet.domain.compartment_id
   bastion_id              = var.config.bastion_id
   bastion_lifecycle_state = "ACTIVE"
 }
@@ -60,7 +53,7 @@ data "cloudinit_config" "host" {
 
 // --- get latest Oracle Linux 8 image ---
 data "oci_core_images" "oraclelinux-8" {
-  compartment_id           = var.config.compartment_id
+  compartment_id           = data.oci_core_subnet.domain.compartment_id
   operating_system         = "Oracle Linux"
   operating_system_version = "8"
   filter {
@@ -72,7 +65,7 @@ data "oci_core_images" "oraclelinux-8" {
 
 data "oci_core_instances" "host" {
   depends_on = [ oci_core_instance.host ]
-  compartment_id = var.config.compartment_id
+  compartment_id = data.oci_core_subnet.domain.compartment_id
   filter {
     name   = "display_name"
     values = ["${local.display_name}_operator_host"]
@@ -90,10 +83,10 @@ data "oci_bastion_sessions" "ssh" {
 }
 
 locals {
-  # enforce naming conventions
-  display_name  = "${lower("${split("_", data.oci_identity_compartments.host.compartments[0].name)[0]}_${split("_", data.oci_identity_compartments.host.compartments[0].name)[1]}_${var.host_name}")}"
-  dns_label     = "${format("%s%s%s", lower(substr(split("_", data.oci_identity_compartments.host.compartments[0].name)[0], 0, 3)), lower(substr(split("_", data.oci_identity_compartments.host.compartments[0].name)[1], 0, 5)), substr("${var.host_name}", 0, 2))}"
-  bastion_label = "${format("%s%s%s", lower(substr(split("_", data.oci_identity_compartments.host.compartments[0].name)[0], 0, 3)), lower(substr(split("_", data.oci_identity_compartments.host.compartments[0].name)[1], 0, 5)), "bstn")}"
+  # naming conventions
+  display_name  = "${data.oci_identity_compartment.service.name}_${var.host_name}"
+  dns_label     = "${format("%s%s%s", lower(substr(split("_", data.oci_identity_compartment.service.name)[0], 0, 3)), lower(substr(split("_", data.oci_identity_compartment.service.name)[1], 0, 5)), substr("${var.host_name}", 0, 2))}"
+  bastion_label = "${local.dns_label}bstn"
   ADs = [
     # Iterate through data.oci_identity_availability_domains.ad and create a list containing AD names
     for i in data.oci_identity_availability_domains.host.availability_domains : i.name

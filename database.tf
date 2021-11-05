@@ -13,9 +13,8 @@ module "database_section" {
   ]
   section_name    = "database"
   config ={
-    tenancy_id    = var.tenancy_ocid
-    source        = var.code_source
-    service_name  = local.service_name
+    service_id    = local.service_id
+    code_source   = var.code_source
     tagspace      = [ ]
     freeform_tags = { 
       "framework" = "ocloud"
@@ -51,7 +50,6 @@ module "database_domain" {
   depends_on       = [ module.database_section, module.service_segment ]
   config  = {
     service_id     = local.service_id
-    compartment_id = module.network_section.compartment_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
     defined_tags   = null

@@ -8,9 +8,8 @@ module "operation_section" {
   providers      = { oci = oci.home }
   section_name    = "operation"
   config ={
-    tenancy_id    = var.tenancy_ocid
-    source        = var.code_source
-    service_name  = local.service_name
+    service_id    = local.service_id
+    code_source   = var.code_source
     tagspace      = [ ]
     freeform_tags = { 
       "framework" = "ocloud"

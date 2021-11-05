@@ -5,7 +5,7 @@ resource "oci_core_instance" "host" {
   count = var.server[var.host.server].count
   // If no explicit AD number, spread instances on all ADs in round-robin. Looping to the first when last AD is reached
   availability_domain  = var.config.ad_number == null ? element(local.ADs, count.index) : element(local.ADs, var.config.ad_number - 1)
-  compartment_id       = var.config.compartment_id
+  compartment_id       = data.oci_core_subnet.domain.compartment_id
   display_name         = local.display_name == "" ? "" : var.server[var.host.server].count != "1" ? "${local.display_name}_${count.index + 1}" : local.display_name
   extended_metadata    = var.os[var.host.os].extended_metadata
   ipxe_script          = var.nic[var.host.nic].ipxe_script
@@ -61,7 +61,7 @@ resource "oci_core_instance" "host" {
 resource "oci_core_volume" "host" {
   count               = var.server[var.host.server].count * length(var.lun[var.host.lun].block_storage_sizes_in_gbs)
   availability_domain = oci_core_instance.host[count.index % var.server[var.host.server].count].availability_domain
-  compartment_id      = var.config.compartment_id
+  compartment_id      = data.oci_core_subnet.domain.compartment_id
   display_name        = "${oci_core_instance.host[count.index % var.server[var.host.server].count].display_name}_volume${floor(count.index / var.server[var.host.server].count)}"
   size_in_gbs = element(
     var.lun[var.host.lun].block_storage_sizes_in_gbs,

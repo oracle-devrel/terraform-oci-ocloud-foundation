@@ -1,7 +1,9 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-data "oci_core_services" "all_services" { } # Request a list of Oracle Service Network (osn) services
+# Request a list of Oracle Service Network (osn) services
+data "oci_core_services" "all_services" { }
+data "oci_identity_compartment" "service" { id = var.config.service_id }
 
 data "oci_identity_compartments" "segment" {
   compartment_id = var.config.service_id
@@ -86,8 +88,8 @@ data "oci_core_route_tables" "osn" {
 
 locals {
     # naming conventions
-    display_name  = "${var.config.service_name}_network_${var.segment}"
-    dns_label     = format("%s%s%s", lower(substr(split("_", var.config.service_name)[0], 0, 3)), lower(substr(split("_", var.config.service_name)[1], 0, 5)), tostring(var.segment))
+    display_name  = "${data.oci_identity_compartment.service.name}_network_${var.segment}"
+    dns_label     = format("%s%s%s", lower(substr(split("_", data.oci_identity_compartment.service.name)[0], 0, 3)), lower(substr(split("_", data.oci_identity_compartment.service.name)[1], 0, 5)), tostring(var.segment))
 
 
     # Retrieve CIDR for all Oracle Services

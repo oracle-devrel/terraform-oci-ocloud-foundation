@@ -7,10 +7,9 @@ module "network_section" {
   providers      = { oci = oci.home }
   depends_on     = [ oci_identity_compartment.init, module.operation_section ]
   section_name    = "network"
-  config ={
-    tenancy_id    = var.tenancy_ocid
-    source        = var.code_source
-    service_name  = local.service_name
+  config = {
+    service_id    = local.service_id
+    code_source   = var.code_source
     tagspace      = [ ]
     freeform_tags = { 
       "framework" = "ocloud"
@@ -51,9 +50,8 @@ module "service_segment" {
   segment    = 1 
   config     = {
     service_id     = local.service_id
-    service_name   = local.service_name
     compartment_id = module.network_section.compartment_id
-    source         = var.code_source
+    code_source    = var.code_source
     freeform_tags  = { 
       "framework"  = "ocloud"
     }
@@ -101,7 +99,6 @@ module "presentation_domain" {
   depends_on       = [ module.network_section, module.service_segment ]
   config  = {
     service_id     = local.service_id
-    compartment_id = module.network_section.compartment_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
     defined_tags   = null

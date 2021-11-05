@@ -4,7 +4,6 @@
 variable "config" {
   type = object({
     service_id     = string,
-    compartment_id = string,
     vcn_id         = string,
     anywhere       = string,
     defined_tags   = map(any),

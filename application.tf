@@ -12,9 +12,8 @@ module "application_section" {
   ]
   section_name    = "application"
   config ={
-    tenancy_id    = var.tenancy_ocid
-    source        = var.code_source
-    service_name  = local.service_name
+    service_id    = local.service_id
+    code_source   = var.code_source
     tagspace      = [ ]
     freeform_tags = { 
       "framework" = "ocloud"
@@ -47,7 +46,6 @@ module "application_domain" {
   depends_on     = [ module.application_section, module.service_segment ]
   config  = {
     service_id     = local.service_id
-    compartment_id = module.network_section.compartment_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
     defined_tags   = null
@@ -88,12 +86,10 @@ module "operator" {
   host_name      = "operator"
   config  = {
     service_id     = local.service_id
-    compartment_id = module.application_section.compartment_id
-    source         = var.code_source
-    vcn_id         = module.service_segment.vcn_id
+    subnet_ids     = [ module.application_domain.subnet_id ]
     bastion_id     = module.application_domain.bastion_id
     ad_number      = 1
-    subnet_ids     = [ module.application_domain.subnet_id ]
+    code_source    = var.code_source
     defined_tags   = null
     freeform_tags  = {"framework"  = "ocloud"}
   }
