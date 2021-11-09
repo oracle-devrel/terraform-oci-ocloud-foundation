@@ -13,7 +13,7 @@ variable "section_name" {
 variable "config" {
   type = object({
     service_id    = string,
-    code_source   = string,
+    bundle_type   = string,
     freeform_tags = map(any)
   })
   description = "Settings for adminstrator section"

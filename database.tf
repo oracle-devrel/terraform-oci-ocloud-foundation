@@ -3,8 +3,8 @@
 
 // --- database admin --- //
 module "database_section" {
-  source = "./component/admin_section/"
-  providers      = { oci = oci.home }
+  source     = "./component/admin_section/"
+  providers  = { oci = oci.home }
   depends_on = [
     oci_identity_compartment.init, 
     module.operation_section,
@@ -14,10 +14,10 @@ module "database_section" {
   section_name    = "database"
   config ={
     service_id    = local.service_id
-    code_source   = var.code_source
+    bundle_type   = module.bundle.bundle_id
     tagspace      = [ ]
     freeform_tags = { 
-      "framework" = "ocloud"
+      "source" = var.code_source
     }
   }
   compartment  = {
@@ -52,8 +52,11 @@ module "database_domain" {
     service_id     = local.service_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
+    bundle_type    = module.bundle.bundle_id
     defined_tags   = null
-    freeform_tags  = { "framework" = "ocloud" }
+    freeform_tags  = { 
+      "source"     = var.code_source
+    }
   }
   subnet  = {
     # Select a domain name from subnet map in the service segment

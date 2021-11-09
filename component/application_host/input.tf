@@ -13,10 +13,11 @@ variable "host_name" {
 variable "config" {
     type = object({
         service_id     = string,
+        compartment_id = string,
+        bundle_type    = number,
+        subnet_ids     = list(string),
         bastion_id     = string,
         ad_number      = number,
-        subnet_ids     = list(string),
-        code_source    = string,
         defined_tags   = map(any),
         freeform_tags  = map(any)
     })

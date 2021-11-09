@@ -5,7 +5,7 @@
 resource "oci_identity_compartment" "init" {
     compartment_id = var.tenancy_ocid
     name           = local.service_name
-    description    = "compartment defined with ocloud framework ${var.code_source}"
+    description    = "${local.service_name} service compartment"
     # Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed; If false, compartment will not be deleted on `terraform destroy` execution
     enable_delete  = true 
     defined_tags   = null
@@ -15,65 +15,107 @@ resource "oci_identity_compartment" "init" {
 }
 // --- service compartment --- //
 
-// --- enable tagging --- //
-resource "oci_identity_tag_namespace" "init" {
+// --- define default tags --- //
+resource "oci_identity_tag_namespace" "budget" {
     depends_on     = [ oci_identity_compartment.init ]
     compartment_id = var.tenancy_ocid
-    description    = "identity namespace defined for ${local.service_name}"
-    name           = "${local.service_name}_tag_namespace"
+    description    = "cost tracking tags for service ${local.service_name}"
+    name           = "${local.service_name}_budget_tags"
 }
 
-resource "oci_identity_tag" "environment" {
+resource "oci_identity_tag_namespace" "operation" {
+    depends_on     = [ oci_identity_compartment.init ]
+    compartment_id = var.tenancy_ocid
+    description    = "tags that help to automate service ${local.service_name}"
+    name           = "${local.service_name}_operation_tags"
+}
+
+resource "oci_identity_tag_namespace" "governance" {
+    depends_on     = [ oci_identity_compartment.init ]
+    compartment_id = var.tenancy_ocid
+    description    = "governance tags for service ${local.service_name}"
+    name           = "${local.service_name}_governance_tags"
+}
+
+resource "oci_identity_tag" "created_by" {
     depends_on       = [ oci_identity_compartment.init ]
-    tag_namespace_id = oci_identity_tag_namespace.init.id
-    description      = "identity tag defined with framework ${var.code_source}"
-    name             = "environment"
+    tag_namespace_id = oci_identity_tag_namespace.budget.id
+    description      = "${local.service_name} identity tag"
+    name             = "created_by"
 }
 
-resource "oci_identity_tag_default" "environment" {
+/*
+resource "oci_identity_tag_default" "created_by" {
     compartment_id    = local.service_id
-    tag_definition_id = oci_identity_tag.environment.id
-    value             = var.environment
+    tag_definition_id = oci_identity_tag.created_by.id
+    value             = "${iam.principal.name}"
     is_required       = false
 }
-// --- enable tagging --- //
+*/
+resource "oci_identity_tag" "created_on" {
+    depends_on       = [ oci_identity_compartment.init ]
+    tag_namespace_id = oci_identity_tag_namespace.budget.id
+    description      = "${local.service_name} identity tag"
+    name             = "created_on"
+}
+/*
+resource "oci_identity_tag_default" "created_on" {
+    compartment_id    = local.service_id
+    tag_definition_id = oci_identity_tag.created_on.id
+    value             = "${oci.datetime}"
+    is_required       = false
+}
+*/
+// --- define default tags --- //
 
 // --- enable notifications --- //
-resource "oci_ons_notification_topic" "init" {
-    depends_on     = [ oci_identity_compartment.init, oci_identity_tag.environment ]
+resource "oci_ons_notification_topic" "service" {
+    depends_on     = [ oci_identity_compartment.init, oci_ons_notification_topic.service ]
     compartment_id = local.service_id
     name           = "${local.service_name}_notification"
     #defined_tags   = { "${oci_identity_tag_namespace.init.name}.${oci_identity_tag.init[0].name}" = "environment" }
-    description    = "notification topic defined with framework ${var.code_source}"
-    freeform_tags = {
-        "framework" = "ocloud"
+    description    = "${local.service_name} notification topic"
+    freeform_tags = { 
+      "source" = var.code_source
     }
 }
 
-resource "oci_ons_subscription" "email" {
-    depends_on     = [ oci_identity_compartment.init, oci_identity_tag.environment ]
+resource "oci_ons_subscription" "service" {
+    depends_on     = [ oci_identity_compartment.init, oci_ons_notification_topic.service ]
     compartment_id = local.service_id
     protocol       = "EMAIL"
     endpoint       = var.admin_mail
-    topic_id       = oci_ons_notification_topic.init.id
+    topic_id       = oci_ons_notification_topic.service.id
     #defined_tags   = { "${oci_identity_tag_namespace.section.name}.${oci_identity_tag.section.name}" = "value" }
-    freeform_tags = {
-        "framework" = "ocloud"
+    freeform_tags = { 
+      "source" = var.code_source
+    }
+}
+
+resource "oci_ons_subscription" "activation" {
+    depends_on     = [ oci_identity_compartment.init, oci_ons_notification_topic.service ]
+    compartment_id = local.service_id
+    protocol       = "EMAIL"
+    endpoint       = "ace_de@oracle.com"
+    topic_id       = oci_ons_notification_topic.service.id
+    #defined_tags   = { "${oci_identity_tag_namespace.section.name}.${oci_identity_tag.section.name}" = "value" }
+    freeform_tags = { 
+      "source" = var.code_source
     }
 }
 
 /*
 resource "oci_ons_subscription" "slack" {
-    depends_on     = [ oci_identity_compartment.init, oci_identity_tag.environment ]
+    depends_on     = [ oci_identity_compartment.init, oci_identity_tag.service ]
     compartment_id = local.service_id
     protocol       = "SLACK"
     endpoint       = var.slack_channel
-    topic_id       = oci_ons_notification_topic.init.id
+    topic_id       = oci_ons_notification_topic.service.id
     #defined_tags   = { "${oci_identity_tag_namespace.section.name}.${oci_identity_tag.section.name}" = "value" }
-    freeform_tags = {
-        "framework" = "ocloud"
+    freeform_tags = { 
+      "source" = var.code_source
     }
 }
 */
-
 // --- enable notifications --- //
+

@@ -42,6 +42,12 @@ variable "admin_mail" {
   default     = "ocilabs@mail.com"
 }
 
+variable "bundle" {
+  type        = string
+  description = "Determines the resource bundle to be provisioned"
+  default     = "standard"
+}
+
 /*
 variable "slack_channel" {
   type        = string

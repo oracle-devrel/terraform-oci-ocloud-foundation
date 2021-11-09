@@ -3,16 +3,16 @@
 
 // --- network admin --- //
 module "network_section" {
-  source = "./component/admin_section/"
-  providers      = { oci = oci.home }
-  depends_on     = [ oci_identity_compartment.init, module.operation_section ]
-  section_name    = "network"
+  source       = "./component/admin_section/"
+  providers    = { oci = oci.home }
+  depends_on   = [ oci_identity_compartment.init, module.operation_section ]
+  section_name = "network"
   config = {
     service_id    = local.service_id
-    code_source   = var.code_source
+    bundle_type   = module.bundle.bundle_id
     tagspace      = [ ]
     freeform_tags = { 
-      "framework" = "ocloud"
+      "source"    = var.code_source
     }
   }
   compartment  = {
@@ -51,9 +51,9 @@ module "service_segment" {
   config     = {
     service_id     = local.service_id
     compartment_id = module.network_section.compartment_id
-    code_source    = var.code_source
+    bundle_type    = module.bundle.bundle_id
     freeform_tags  = { 
-      "framework"  = "ocloud"
+      code_source  = var.code_source
     }
   }
   network = {
@@ -79,7 +79,7 @@ module "service_segment" {
 output "service_segment_vcn_id"           { value = module.service_segment.vcn_id }
 output "service_segment_cidr_block"       { value = module.service_segment.cidr_block }
 output "service_segment_subnets"          { value = module.service_segment.subnets }
-output "service_segment_security_group"   { value = module.service_segment.security_group }
+output "service_segment_security_groups"  { value = module.service_segment.security_groups }
 output "service_segment_anywhere"         { value = module.service_segment.anywhere }
 output "service_segment_drg_id"           { value = module.service_segment.drg_id }
 output "service_segment_internet_id"      { value = module.service_segment.internet_id }
@@ -101,8 +101,11 @@ module "presentation_domain" {
     service_id     = local.service_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
+    bundle_type    = module.bundle.bundle_id
     defined_tags   = null
-    freeform_tags  = { "framework" = "ocloud" }
+    freeform_tags  = { 
+      "source"     = var.code_source
+    }
   }
   subnet  = {
     # Select a domain name from subnet map in the service segment

@@ -64,13 +64,22 @@ locals {
   # Service identifier
   service_name        = lower("${var.organization}_${var.project}_${var.environment}")
   service_id          = length(data.oci_identity_compartments.init.compartments) > 0 ? data.oci_identity_compartments.init.compartments[0].id : oci_identity_compartment.init.id
-  service_tags        = length(data.oci_identity_tag_namespaces.init.tag_namespaces) > 0 ? data.oci_identity_tag_namespaces.init.tag_namespaces[0].id : oci_identity_tag_namespace.init.id
+}
+
+// --- configuration data ---
+module "bundle" {
+  source     = "./input/"
+  providers  = { oci = oci.home }
+  bundle     = var.bundle
 }
 
 // --- global outputs ----
 output "config_account"             { value = data.oci_identity_tenancy.init }
 output "config_storage_namespace"   { value = data.oci_objectstorage_namespace.tenancy.namespace }
-output "config_location_ad_names"   { value = sort(data.template_file.ad_names.*.rendered) } # List of ADs in the selected region
+# List of ADs in the selected region
+output "config_location_ad_names"   { value = sort(data.template_file.ad_names.*.rendered) }
+# Resource scope for the landing zone
+output "config_bundle_id"           { value = module.bundle.bundle_id }
 
 // Define the wait state for the data requests. This resource will destroy (potentially immediately) after null_resource.next
 resource "null_resource" "previous" {}

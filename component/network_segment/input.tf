@@ -10,7 +10,7 @@ variable "config" {
   type = object({
     service_id     = string,
     compartment_id = string,
-    code_source    = string,
+    bundle_type    = string,
     freeform_tags  = map(any)
   })
   description = "Service Configuration"

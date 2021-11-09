@@ -4,7 +4,7 @@
 resource "oci_identity_compartment" "section" {
   compartment_id = var.compartment.parent != null ? var.compartment.parent : data.oci_identity_compartment.service.compartment_id
   name           = "${local.display_name}_compartment"
-  description    = "compartment defined with ocloud framework ${var.config.code_source}"
+  description    = "compartment defined for ${var.config.service_id}"
   enable_delete  = var.compartment.enable_delete #Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed; If false, compartment will not be deleted on `terraform destroy` execution
   defined_tags   = null
   freeform_tags  = var.config.freeform_tags
@@ -17,7 +17,7 @@ resource "oci_identity_group" "section" {
   freeform_tags  = var.config.freeform_tags
   for_each       = var.roles
   name           = each.key
-  description    = "group for the ${each.key} role ${var.config.code_source}"
+  description    = "group for the ${each.key} role"
 }
 
 resource "oci_identity_policy" "section" {
@@ -25,6 +25,6 @@ resource "oci_identity_policy" "section" {
   compartment_id = var.compartment.parent != null ? var.compartment.parent : data.oci_identity_compartment.service.compartment_id
   for_each       = var.roles
   name           = each.key
-  description    = "policies for the ${each.key} role ${var.config.code_source}"
+  description    = "policies for the ${each.key} role"
   statements     = each.value
 }

@@ -5,13 +5,13 @@ data "oci_identity_compartment" "service" { id        = var.config.service_id }
 data "oci_core_subnet"          "domain"  { subnet_id = var.config.subnet_ids[0] }
 
 // --- Get all the Availability Domains for the region
-data "oci_identity_availability_domains" "host" { compartment_id = data.oci_core_subnet.domain.compartment_id }
+data "oci_identity_availability_domains" "host" { compartment_id = var.config.compartment_id }
 // --- Retrieve meta data for the target compartment
 data "oci_core_services"                 "host" { }
 
 // --- Filter on AD1 to remove duplicates. ocloud should give all the shapes supported on the region
 data "oci_core_shapes" "ad1" {
-  compartment_id      = data.oci_core_subnet.domain.compartment_id
+  compartment_id      = var.config.compartment_id
   availability_domain = local.ADs[0]
 }
 
@@ -53,7 +53,7 @@ data "cloudinit_config" "host" {
 
 // --- get latest Oracle Linux 8 image ---
 data "oci_core_images" "oraclelinux-8" {
-  compartment_id           = data.oci_core_subnet.domain.compartment_id
+  compartment_id           = var.config.compartment_id
   operating_system         = "Oracle Linux"
   operating_system_version = "8"
   filter {
@@ -65,7 +65,7 @@ data "oci_core_images" "oraclelinux-8" {
 
 data "oci_core_instances" "host" {
   depends_on = [ oci_core_instance.host ]
-  compartment_id = data.oci_core_subnet.domain.compartment_id
+  compartment_id = var.config.compartment_id
   filter {
     name   = "display_name"
     values = ["${local.display_name}_operator_host"]
