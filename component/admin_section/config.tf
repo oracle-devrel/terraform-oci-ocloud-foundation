@@ -27,3 +27,12 @@ resource "time_sleep" "wait" {
   depends_on = [null_resource.previous]
   create_duration = "2m"
 }
+
+// --- required terraform provider --- 
+terraform {
+  required_providers {
+    oci = {
+      source = "hashicorp/oci"
+    }
+  }
+}
