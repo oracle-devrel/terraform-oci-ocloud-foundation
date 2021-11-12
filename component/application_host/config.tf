@@ -30,7 +30,7 @@ data "oci_bastion_bastions" "host" {
 // --- Instance Credentials Datasource ---
 data "oci_core_instance_credentials" "host" {
   #count       = var.host.resource_platform != "linux" ? var.host.count : 0
-  count       = var.os[var.host.os].resource_platform != "linux" ? var.server[var.host.server].count : 0
+  count       = module.host.image.resource_platform != "linux" ? module.host.shape.count : 0
   instance_id = oci_core_instance.host[count.index].id
 }
 
@@ -45,7 +45,7 @@ data "cloudinit_config" "host" {
     content = templatefile(
       local.cloudinit, {
         shell_script = local.shell_script,
-        timezone     = var.os[var.host.os].timezone,
+        timezone     = module.host.image.timezone,
       }
     )
   }
@@ -105,7 +105,7 @@ locals {
       "ocpus"         = i.ocpus
     }
   }
-  shape_is_flex = length(regexall("^*.Flex", var.server[var.host.server].shape)) > 0 # evaluates to boolean true when var.instance.shape contains .Flex
+  shape_is_flex = length(regexall("^*.Flex", module.host.shape.shape)) > 0 # evaluates to boolean true when var.instance.shape contains .Flex
   instances_details = [
     # display name, Primary VNIC Public/Private IP for each instance
     for i in oci_core_instance.host : <<EOT
@@ -125,100 +125,14 @@ locals {
 }
 
 // --- Standard Server Configurations
-variable "server" {
-    type = map(object({
-        count              = number,
-        timeout            = string,
-        flex_memory_in_gbs = number,
-        flex_ocpus         = number,
-        shape              = string,
-        source_type        = string
-    }))
-    description = "Instance Parameters"
-    default = {
-        small = {
-            count              = 1
-            timeout            = "25m"
-            flex_memory_in_gbs = null
-            flex_ocpus         = null
-            shape              = "VM.Standard2.1"
-            source_type        = "image"
-        },
-        medium = {
-            count              = 1
-            timeout            = "25m"
-            flex_memory_in_gbs = null
-            flex_ocpus         = null
-            shape              = "VM.Standard2.4"
-            source_type        = "image"
-        }
-    }
-}
-
-variable "nic" {
-    type = map(object({
-        assign_public_ip       = bool,
-        ipxe_script            = string,
-        private_ip             = list(string),
-        skip_source_dest_check = bool,
-        vnic_name              = string
-    }))
-    description = "Network Parameters"
-    default = {
-        private = {
-            assign_public_ip       = false
-            ipxe_script            = null
-            private_ip             = []
-            skip_source_dest_check = false
-            vnic_name              = "private"
-        }, 
-        public = {
-            assign_public_ip       = true
-            ipxe_script            = null
-            private_ip             = []
-            skip_source_dest_check = false
-            vnic_name              = "public"
-        }
-    }
-}
-
-variable "os" {
-    type = map(object({
-        # operating system parameters
-        extended_metadata = map(any),
-        resource_platform = string,
-        user_data         = string,
-        timezone          = string
-    }))
-    description = "Operating System Parameters"
-    default = {
-        linux = {
-            extended_metadata = {}
-            resource_platform = "linux"
-            user_data         = null
-            timezone          = "UTC"
-        }
-    }
-}
-
-variable "lun" {
-    type = map(object({
-        attachment_type            = string,
-        block_storage_sizes_in_gbs = list(number),
-        boot_volume_size_in_gbs    = number,
-        preserve_boot_volume       = bool,
-        use_chap                   = bool
-    }))
-    description = "Storage Parameters"
-    default = {
-        san = {
-            attachment_type             = "paravirtualized"
-            block_storage_sizes_in_gbs  = [50]
-            boot_volume_size_in_gbs     = null
-            preserve_boot_volume        = false
-            use_chap                    = false
-        }
-    }
+module "host" {
+  source     = "./input/"
+  host = {
+    shape = var.host.shape
+    image = var.host.image
+    disk  = var.host.disk
+    nic   = var.host.nic
+  }
 }
 
 // Define the wait state for the data requests. This resource will destroy (potentially immediately) after null_resource.next

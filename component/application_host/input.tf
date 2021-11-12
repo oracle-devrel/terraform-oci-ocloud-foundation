@@ -26,10 +26,10 @@ variable "config" {
 
 variable "host" {
     type = object({
-        server = string,
-        nic    = string,
-        os     = string,
-        lun    = string
+        shape = string,
+        image = string,
+        disk  = string,
+        nic   = string
     })
     description = "Host Configuration"
 }

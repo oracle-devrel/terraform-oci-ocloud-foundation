@@ -100,10 +100,10 @@ module "operator" {
     }
   }
   host = {
-    server = "small"
-    nic    = "private"
-    os     = "linux"
-    lun    = "san"
+    shape = "small"
+    image = "linux"
+    disk  = "san"
+    nic   = "private"
   }
   ssh = {
     # Determine whether a ssh session via bastion service will be started
