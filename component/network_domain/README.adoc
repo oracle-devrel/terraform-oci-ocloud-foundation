@@ -18,7 +18,7 @@ Deploy a link:/component/network_segment[network segment].
 == Module
 ```hcl
 module "application_domain" {
-  source         = "./component/network_domain/"
+  source = "./component/network_domain/"
   providers      = { oci = oci.home }
   depends_on     = [ module.application_section, module.service_segment ]
   config  = {

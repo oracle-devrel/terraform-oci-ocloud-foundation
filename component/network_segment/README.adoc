@@ -27,7 +27,7 @@ module "service_segment" {
     service_id     = local.service_id
     display_name   = lower("${local.service_name}_${var.network}")
     compartment_id = module.network_section.compartment_id
-    source         = var.code_source
+    bundle_type = var.bundle_types["${var.bundle}"]
     freeform_tags  = { 
       "framework"  = "ocloud"
     }
@@ -99,7 +99,7 @@ object({
     service_id     = string,
     display_name   = string,
     compartment_id = string,
-    source         = string,
+    bundle_type    = string,
     freeform_tags  = map(any)
   })
 ----

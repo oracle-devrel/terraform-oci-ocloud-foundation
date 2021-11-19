@@ -42,6 +42,13 @@ variable "admin_mail" {
   default     = "ocilabs@mail.com"
 }
 
+variable "bundle" {
+  # allows to define provisioning tiers with "count = module.compose.bundle_id >= 2 ? 1 : 0" 
+  type        = string
+  description = "Determines the resource bundle to be provisioned"
+  default     = "standard"
+}
+
 /*
 variable "slack_channel" {
   type        = string

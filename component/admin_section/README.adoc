@@ -18,12 +18,12 @@ Define an link:/init.tf[encapsulating compartment].
 == Module
 ```hcl
 module "operation_section" {
-  depends_on = [ oci_identity_compartment.init ]
-  source         = "./component/admin_section/"
+  depends_on = [ oci_identity_compartment.service ]
+  source = "./component/admin_section/"
   providers      = { oci = oci.home }
   config = {
     tenancy_id    = var.tenancy_ocid
-    source        = var.code_source
+    source        = var.bundle_types["${var.bundle}"]
     display_name  = lower("${local.service_name}_${var.operation}")
     freeform_tags = { 
       "framework" = "ocloud"

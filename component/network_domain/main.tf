@@ -3,8 +3,8 @@
 
 resource "oci_core_subnet" "domain" {
   depends_on = [oci_core_security_list.domain]
-  compartment_id              = data.oci_identity_compartments.domain.compartments[0].id
-  vcn_id                      = data.oci_core_vcn.domain.id
+  compartment_id              = data.oci_core_vcn.segment.compartment_id
+  vcn_id                      = var.config.vcn_id
   display_name                = local.display_name
   dns_label                   = local.dns_label
   cidr_block                  = var.subnet.cidr_block
@@ -20,7 +20,7 @@ resource "oci_bastion_bastion" "domain" {
   count                        = var.bastion.create ? 1 : 0
   bastion_type                 = "STANDARD"
   name                         = local.bastion_label
-  compartment_id               = data.oci_identity_compartments.domain.compartments[0].id
+  compartment_id               = data.oci_core_vcn.segment.compartment_id
   target_subnet_id             = oci_core_subnet.domain.id
   max_session_ttl_in_seconds   = var.bastion.max_session_ttl
   client_cidr_block_allow_list = var.bastion.client_allow_cidr
@@ -35,14 +35,14 @@ resource "oci_core_route_table_attachment" "domain" {
 }
 
 resource "oci_core_security_list" "domain" {
-  compartment_id = data.oci_identity_compartments.domain.compartments[0].id
-  vcn_id         = data.oci_core_vcn.domain.id
+  compartment_id = data.oci_core_vcn.segment.compartment_id
+  vcn_id         = var.config.vcn_id
   display_name   = "${local.display_name}_security_list"
 
   // allow outbound tcp traffic
   egress_security_rules {
     protocol    = "6" // tcp
-    destination = data.oci_core_vcn.domain.cidr_blocks[0]
+    destination = data.oci_core_vcn.segment.cidr_blocks[0]
     stateless   = false
     description = "allow outgoing tcp traffic"
   }

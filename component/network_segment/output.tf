@@ -29,9 +29,9 @@ output "drg_id" {
 }
 
 // Security Groups
-output "security_group" {
+output "security_groups" {
   description = "Security Group"
-  value       = length(data.oci_core_network_security_groups.segment.network_security_groups) > 0 ? data.oci_core_network_security_groups.segment.network_security_groups[*] : null
+  value       = length(data.oci_core_network_security_groups.segment.network_security_groups) > 0 ? data.oci_core_network_security_groups.segment.network_security_groups[*].id : null
 }
 // Internet Gateway
 output "internet_id" {
