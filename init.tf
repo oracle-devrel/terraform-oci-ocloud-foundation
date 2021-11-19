@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 // --- service compartment --- //
-resource "oci_identity_compartment" "init" {
+resource "oci_identity_compartment" "service" {
     compartment_id = var.tenancy_ocid
     name           = local.service_name
     description    = "${local.service_name} service compartment"
@@ -16,61 +16,45 @@ resource "oci_identity_compartment" "init" {
 // --- service compartment --- //
 
 // --- define default tags --- //
-resource "oci_identity_tag_namespace" "budget" {
-    depends_on     = [ oci_identity_compartment.init ]
+resource "oci_identity_tag_namespace" "service" {
+    depends_on     = [ oci_identity_compartment.service ]
     compartment_id = var.tenancy_ocid
-    description    = "cost tracking tags for service ${local.service_name}"
-    name           = "${local.service_name}_budget_tags"
+    for_each       = toset(module.compose.tag_namespaces)
+    description    = "${each.key} tags for service ${local.service_name}"
+    name           = each.key
 }
 
-resource "oci_identity_tag_namespace" "operation" {
-    depends_on     = [ oci_identity_compartment.init ]
-    compartment_id = var.tenancy_ocid
-    description    = "tags that help to automate service ${local.service_name}"
-    name           = "${local.service_name}_operation_tags"
-}
-
-resource "oci_identity_tag_namespace" "governance" {
-    depends_on     = [ oci_identity_compartment.init ]
-    compartment_id = var.tenancy_ocid
-    description    = "governance tags for service ${local.service_name}"
-    name           = "${local.service_name}_governance_tags"
-}
-
-resource "oci_identity_tag" "created_by" {
-    depends_on       = [ oci_identity_compartment.init ]
-    tag_namespace_id = oci_identity_tag_namespace.budget.id
-    description      = "${local.service_name} identity tag"
-    name             = "created_by"
-}
 
 /*
-resource "oci_identity_tag_default" "created_by" {
-    compartment_id    = local.service_id
-    tag_definition_id = oci_identity_tag.created_by.id
-    value             = "${iam.principal.name}"
-    is_required       = false
+resource "oci_identity_tag" "service" {
+    depends_on       = [ oci_identity_tag_namespace.service ]
+    for_each         = oci_identity_tag_namespace.service
+    tag_namespace_id = each.value.id
+    description      = "test"
+    dynamic "name" {
+        for_each = module.compose.tag_collection["${each.value.name}"]
+        content {
+            name = name.value
+        }
+    }
 }
-*/
-resource "oci_identity_tag" "created_on" {
-    depends_on       = [ oci_identity_compartment.init ]
-    tag_namespace_id = oci_identity_tag_namespace.budget.id
-    description      = "${local.service_name} identity tag"
-    name             = "created_on"
-}
-/*
-resource "oci_identity_tag_default" "created_on" {
+
+resource "oci_identity_tag_default" "service" {
+    depends_on        = [ oci_identity_tag.service ]
     compartment_id    = local.service_id
-    tag_definition_id = oci_identity_tag.created_on.id
-    value             = "${oci.datetime}"
     is_required       = false
+    dynamic "default_value" {
+        for_each          = module.compose.default_values
+        tag_definition_id = oci_identity_tag.default_value.id
+        value             = default_value.value
+    }
 }
 */
 // --- define default tags --- //
 
 // --- enable notifications --- //
 resource "oci_ons_notification_topic" "service" {
-    depends_on     = [ oci_identity_compartment.init, oci_ons_notification_topic.service ]
+    depends_on     = [ oci_identity_compartment.service, oci_ons_notification_topic.service ]
     compartment_id = local.service_id
     name           = "${local.service_name}_notification"
     #defined_tags   = { "${oci_identity_tag_namespace.init.name}.${oci_identity_tag.init[0].name}" = "environment" }
@@ -81,7 +65,7 @@ resource "oci_ons_notification_topic" "service" {
 }
 
 resource "oci_ons_subscription" "service" {
-    depends_on     = [ oci_identity_compartment.init, oci_ons_notification_topic.service ]
+    depends_on     = [ oci_identity_compartment.service, oci_ons_notification_topic.service ]
     compartment_id = local.service_id
     protocol       = "EMAIL"
     endpoint       = var.admin_mail
@@ -93,7 +77,7 @@ resource "oci_ons_subscription" "service" {
 }
 
 resource "oci_ons_subscription" "activation" {
-    depends_on     = [ oci_identity_compartment.init, oci_ons_notification_topic.service ]
+    depends_on     = [ oci_identity_compartment.service, oci_ons_notification_topic.service ]
     compartment_id = local.service_id
     protocol       = "EMAIL"
     endpoint       = "ace_de@oracle.com"
@@ -106,7 +90,7 @@ resource "oci_ons_subscription" "activation" {
 
 /*
 resource "oci_ons_subscription" "slack" {
-    depends_on     = [ oci_identity_compartment.init, oci_identity_tag.service ]
+    depends_on     = [ oci_identity_compartment.service, oci_identity_tag.service ]
     compartment_id = local.service_id
     protocol       = "SLACK"
     endpoint       = var.slack_channel

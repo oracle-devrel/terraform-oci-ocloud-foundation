@@ -43,7 +43,7 @@ variable "admin_mail" {
 }
 
 variable "bundle" {
-  # allows to define provisioning tiers with "count = module.input.bundle_id >= 2 ? 1 : 0" 
+  # allows to define provisioning tiers with "count = module.compose.bundle_id >= 2 ? 1 : 0" 
   type        = string
   description = "Determines the resource bundle to be provisioned"
   default     = "standard"

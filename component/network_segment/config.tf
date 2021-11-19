@@ -90,22 +90,19 @@ locals {
     # naming conventions
     display_name  = "${data.oci_identity_compartment.service.name}_network_${var.segment}"
     dns_label     = format("%s%s%s", lower(substr(split("_", data.oci_identity_compartment.service.name)[0], 0, 3)), lower(substr(split("_", data.oci_identity_compartment.service.name)[1], 0, 5)), tostring(var.segment))
-
-
     # Retrieve CIDR for all Oracle Services
     osn_cidrs        = {for svc in data.oci_core_services.all_services.services : svc.cidr_block => svc.id} # Create a map of cidr for osn 
-
     # Create a map from network names to allocated address prefixes in CIDR notation
     subnet_ranges    = cidrsubnets(var.network.address_spaces.cidr_block, values(var.network.subnet_list)...)
     subnet_names     = keys(var.network.subnet_list)
     subnet_map       = zipmap(local.subnet_names, local.subnet_ranges)
 
     # Define route sets as input for the network segment
-    public_rule_set  = [local.anywhere_route]
-    private_rule_set = [local.nat_route, local.osn_route]
-    osn_rule_set     = [local.osn_route]
+    public_rule_set  = [ local.anywhere_route ]
+    private_rule_set = [ local.nat_route, local.osn_route ]
+    osn_rule_set     = [ local.osn_route ]
     # Route traffic to the onprem data center 
-    cpe_rule_set     = [local.interconnect]
+    cpe_rule_set     = [ local.interconnect ]
 
     # Create route rules objects as input for the route tables
     nat_route = {
@@ -123,13 +120,13 @@ locals {
     objectstorage_route  = {
         network_entity_id = data.oci_core_service_gateways.segment.service_gateways[0].id
         description       = "Route traffic to the Object Store"
-        destination       = data.oci_core_services.all_services.services[0].cidr_block
+        destination       = "oci-${module.compose.location_key}-objectstorage"
         destination_type  = "SERVICE_CIDR_BLOCK"
     }
     osn_route = {
         network_entity_id = data.oci_core_service_gateways.segment.service_gateways[0].id
         description       = "Route traffic to private Oracle Services"
-        destination       = data.oci_core_services.all_services.services[1].cidr_block
+        destination       = "all-${module.compose.location_key}-services-in-oracle-services-network"
         destination_type  = "SERVICE_CIDR_BLOCK"
     }
     interconnect = {
@@ -138,6 +135,12 @@ locals {
         destination       = var.network.address_spaces.interconnect
         destination_type  = "CIDR_BLOCK"
     }
+}
+
+// --- home region retrieval
+module "compose" {
+  source     = "../../compose/"
+  service_id = var.config.service_id
 }
 
 // Define the wait state for the data requests

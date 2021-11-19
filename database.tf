@@ -6,7 +6,7 @@ module "database_section" {
   source     = "./component/admin_section/"
   providers  = { oci = oci.home }
   depends_on = [
-    oci_identity_compartment.init, 
+    oci_identity_compartment.service, 
     module.operation_section,
     module.network_section,
     module.application_section
@@ -14,7 +14,7 @@ module "database_section" {
   section_name    = "database"
   config ={
     service_id    = local.service_id
-    bundle_type   = module.bundle.bundle_id
+    bundle_type   = module.compose.bundle_id
     tagspace      = [ ]
     freeform_tags = { 
       "source" = var.code_source
@@ -52,7 +52,7 @@ module "database_domain" {
     service_id     = local.service_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
-    bundle_type    = module.bundle.bundle_id
+    bundle_type    = module.compose.bundle_id
     defined_tags   = null
     freeform_tags  = { 
       "source"     = var.code_source

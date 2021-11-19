@@ -6,14 +6,14 @@ module "application_section" {
   source     = "./component/admin_section/"
   providers  = { oci = oci.home }
   depends_on = [
-    oci_identity_compartment.init, 
+    oci_identity_compartment.service, 
     module.operation_section,
     module.network_section
   ]
   section_name    = "application"
   config ={
     service_id    = local.service_id
-    bundle_type   = module.bundle.bundle_id
+    bundle_type   = module.compose.bundle_id
     tagspace      = [ ]
     freeform_tags = { 
       "source"    = var.code_source
@@ -48,7 +48,7 @@ module "application_domain" {
     service_id     = local.service_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
-    bundle_type    = module.bundle.bundle_id
+    bundle_type    = module.compose.bundle_id
     defined_tags   = null
     freeform_tags  = { 
       "source"     = var.code_source
@@ -72,7 +72,8 @@ module "application_domain" {
     ingress  = [
       ["ssh",   module.service_segment.subnets.pres, 22,  22],
       ["http",  module.service_segment.anywhere,     80,  80], 
-      ["https", module.service_segment.anywhere,    443, 443]
+      ["https", module.service_segment.anywhere,    443, 443],
+      ["rdp", module.service_segment.anywhere,    3389, 3389]
     ]
   }
 }
@@ -90,7 +91,7 @@ module "operator" {
   config     = {
     service_id     = local.service_id
     compartment_id = module.application_section.compartment_id
-    bundle_type    = module.bundle.bundle_id
+    bundle_type    = module.compose.bundle_id
     subnet_ids     = [ module.application_domain.subnet_id ]
     bastion_id     = module.application_domain.bastion_id
     ad_number      = 1

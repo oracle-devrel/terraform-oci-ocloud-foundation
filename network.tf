@@ -5,11 +5,11 @@
 module "network_section" {
   source       = "./component/admin_section/"
   providers    = { oci = oci.home }
-  depends_on   = [ oci_identity_compartment.init, module.operation_section ]
+  depends_on   = [ oci_identity_compartment.service, module.operation_section ]
   section_name = "network"
   config = {
     service_id    = local.service_id
-    bundle_type   = module.bundle.bundle_id
+    bundle_type   = module.compose.bundle_id
     tagspace      = [ ]
     freeform_tags = { 
       "source"    = var.code_source
@@ -51,7 +51,7 @@ module "service_segment" {
   config     = {
     service_id     = local.service_id
     compartment_id = module.network_section.compartment_id
-    bundle_type    = module.bundle.bundle_id
+    bundle_type    = module.compose.bundle_id
     freeform_tags  = { 
       code_source  = var.code_source
     }
@@ -72,8 +72,8 @@ module "service_segment" {
     }
     create_drg           = true
     block_nat_traffic    = false
-    # Alternative: "oci-${local.region_key}-objectstorage"
-    service_gateway_cidr = "all-${lower(local.home_region_key)}-services-in-oracle-services-network" 
+    # Alternative: "oci-${module.compose.location_key}-objectstorage"
+    service_gateway_cidr = "all-${module.compose.location_key}-services-in-oracle-services-network" 
   }
 }
 output "service_segment_vcn_id"           { value = module.service_segment.vcn_id }
@@ -101,7 +101,7 @@ module "presentation_domain" {
     service_id     = local.service_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
-    bundle_type    = module.bundle.bundle_id
+    bundle_type    = module.compose.bundle_id
     defined_tags   = null
     freeform_tags  = { 
       "source"     = var.code_source

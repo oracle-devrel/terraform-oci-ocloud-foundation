@@ -3,13 +3,13 @@
 
 // --- service operation --- //
 module "operation_section" {
-  depends_on   = [ oci_identity_compartment.init ]
+  depends_on   = [ oci_identity_compartment.service ]
   source       = "./component/admin_section/"
   providers    = { oci = oci.home }
   section_name = "operation"
   config = {
     service_id    = local.service_id
-    bundle_type   = module.bundle.bundle_id
+    bundle_type   = module.compose.bundle_id
     tagspace      = [ ]
     freeform_tags = { 
       "source"    = var.code_source

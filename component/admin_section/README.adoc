@@ -18,7 +18,7 @@ Define an link:/init.tf[encapsulating compartment].
 == Module
 ```hcl
 module "operation_section" {
-  depends_on = [ oci_identity_compartment.init ]
+  depends_on = [ oci_identity_compartment.service ]
   source = "./component/admin_section/"
   providers      = { oci = oci.home }
   config = {
