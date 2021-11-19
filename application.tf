@@ -3,21 +3,20 @@
 
 // --- application admin --- //
 module "application_section" {
-  source         = "./component/admin_section/"
-  providers      = { oci = oci.home }
+  source     = "./component/admin_section/"
+  providers  = { oci = oci.home }
   depends_on = [
-    oci_identity_compartment.init, 
+    oci_identity_compartment.service, 
     module.operation_section,
     module.network_section
   ]
   section_name    = "application"
   config ={
-    tenancy_id    = var.tenancy_ocid
-    source        = var.code_source
-    service_name  = local.service_name
+    service_id    = local.service_id
+    bundle_type   = module.compose.bundle_id
     tagspace      = [ ]
     freeform_tags = { 
-      "framework" = "ocloud"
+      "source"    = var.code_source
     }
   }
   compartment  = {
@@ -42,16 +41,18 @@ output "app_compartment_roles"    { value = module.application_section.roles }
 
 // --- application tier --- //
 module "application_domain" {
-  source         = "./component/network_domain/"
-  providers      = { oci = oci.home }
-  depends_on     = [ module.application_section, module.service_segment ]
-  config  = {
+  source     = "./component/network_domain/"
+  providers  = { oci = oci.home }
+  depends_on = [ module.application_section, module.service_segment ]
+  config     = {
     service_id     = local.service_id
-    compartment_id = module.network_section.compartment_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
+    bundle_type    = module.compose.bundle_id
     defined_tags   = null
-    freeform_tags  = {"framework" = "ocloud"}
+    freeform_tags  = { 
+      "source"     = var.code_source
+    }
   }
   subnet  = {
     # Select a domain name from subnet map in the service segment
@@ -71,7 +72,8 @@ module "application_domain" {
     ingress  = [
       ["ssh",   module.service_segment.subnets.pres, 22,  22],
       ["http",  module.service_segment.anywhere,     80,  80], 
-      ["https", module.service_segment.anywhere,    443, 443]
+      ["https", module.service_segment.anywhere,    443, 443],
+      ["rdp", module.service_segment.anywhere,    3389, 3389]
     ]
   }
 }
@@ -82,26 +84,27 @@ output "app_domain_bastion_id"       { value = module.application_domain.bastion
 
 // --- application host --- //
 module "operator" {
-  source         = "./component/application_host/"
-  providers      = { oci = oci.home }
-  depends_on     = [ module.application_section, module.service_segment, module.application_domain ]
-  host_name      = "operator"
-  config  = {
+  source     = "./component/application_host/"
+  providers  = { oci = oci.home }
+  depends_on = [ module.application_section, module.service_segment, module.application_domain ]
+  host_name  = "operator"
+  config     = {
     service_id     = local.service_id
     compartment_id = module.application_section.compartment_id
-    source         = var.code_source
-    vcn_id         = module.service_segment.vcn_id
+    bundle_type    = module.compose.bundle_id
+    subnet_ids     = [ module.application_domain.subnet_id ]
     bastion_id     = module.application_domain.bastion_id
     ad_number      = 1
-    subnet_ids     = [ module.application_domain.subnet_id ]
     defined_tags   = null
-    freeform_tags  = {"framework"  = "ocloud"}
+    freeform_tags  = { 
+      code_source  = var.code_source
+    }
   }
   host = {
-    server = "small"
-    nic    = "private"
-    os     = "linux"
-    lun    = "san"
+    shape = "small"
+    image = "linux"
+    disk  = "san"
+    nic   = "private"
   }
   ssh = {
     # Determine whether a ssh session via bastion service will be started

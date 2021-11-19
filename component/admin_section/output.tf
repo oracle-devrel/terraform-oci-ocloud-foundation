@@ -16,5 +16,5 @@ output "compartment_name" {
 output "roles" {
   description = "administrator roles"
   // This allows the policy details to be retrieved from the resource
-  value       = length(data.oci_identity_policies.section.policies) > 0 ? data.oci_identity_policies.section.policies[0] : null
+  value       = length(data.oci_identity_policies.section.policies) > 0 ? data.oci_identity_policies.section.policies[*].name : null
 }

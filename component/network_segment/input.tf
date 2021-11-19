@@ -9,9 +9,8 @@ variable "segment" {
 variable "config" {
   type = object({
     service_id     = string,
-    service_name   = string,
     compartment_id = string,
-    source         = string,
+    bundle_type    = string,
     freeform_tags  = map(any)
   })
   description = "Service Configuration"

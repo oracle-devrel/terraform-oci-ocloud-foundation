@@ -174,7 +174,7 @@ resource "oci_core_route_table" "cpe" {
   vcn_id         = oci_core_vcn.segment.id
   defined_tags   = null
   freeform_tags  = var.config.freeform_tags
-  service_name   = "${local.display_name}_route_table"
+  name           = "${data.oci_identity_compartment.service.name}_route_table"
 
   dynamic "route_rules" {
     for_each = [for rule in local.cpe_rule_set: {

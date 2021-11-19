@@ -14,11 +14,10 @@ variable "config" {
     type = object({
         service_id     = string,
         compartment_id = string,
-        vcn_id         = string,
+        bundle_type    = number,
+        subnet_ids     = list(string),
         bastion_id     = string,
         ad_number      = number,
-        subnet_ids     = list(string),
-        source         = string,
         defined_tags   = map(any),
         freeform_tags  = map(any)
     })
@@ -27,10 +26,10 @@ variable "config" {
 
 variable "host" {
     type = object({
-        server = string,
-        nic    = string,
-        os     = string,
-        lun    = string
+        shape = string,
+        image = string,
+        disk  = string,
+        nic   = string
     })
     description = "Host Configuration"
 }

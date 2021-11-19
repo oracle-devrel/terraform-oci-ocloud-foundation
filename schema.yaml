@@ -6,7 +6,10 @@ title: "OCloud Framework"
 description: "Oracle Resource Manager Stack"
 stackDescription: "ITIL inspired service delivery framework for application deployments in Oracle Cloud Infrastructure (OCI)"
 schemaVersion: 1.1.0
-version: "20212409"
+
+logoUrl: https://cloudmarketplace.oracle.com/marketplace/content?contentId=99662604
+
+version: "20210611"
 locale: "en"
 
 variableGroups:
@@ -16,19 +19,21 @@ variableGroups:
   - tenancy_ocid
   - compartment_ocid
   - region
+  - current_user_ocid
   
-- title: "General Configuration"
+- title: "Project Details"
   visible: true
   variables:
   - organization
   - project
   - environment
-  - code_source
 
-- title: "Notifications"
+- title: "Configuration"
   visible: true
   variables:
   - admin_mail
+  - bundle
+  - code_source
   #- slack_channel
 
 - title: "Sections"
@@ -61,6 +66,13 @@ variables:
     type: string
     required: true
     visibile: false
+  
+  current_user_ocid:
+    title: "User ID"
+    description: "The Oracle Cloud Identifier (OCID) for the current user"
+    type: string
+    required: true
+    visibile: false
 
   # General Configuration
   organization:
@@ -83,6 +95,20 @@ variables:
     type: string
     required: true
     visibile: true
+  
+  bundle:
+    title: "Bundle"
+    description: "Define the resource bundle to be provisioned"
+    type: enum
+    default: "free_tier"
+    required: true
+    visibile: true
+    # enumerated values
+    enum:
+      - free_tier
+      - payg
+      - standard
+      - premium
 
   code_source:
     title: "Source"

@@ -12,8 +12,13 @@ output "summary" {
   value       = local.instances_details
 }
 
-output "oracle-linux-8-latest-version" { value = data.oci_core_images.oraclelinux-8.images.0.display_name }
-output "oracle-linux-8-latest-id"      { value = data.oci_core_images.oraclelinux-8.images.0.id }
+output "oracle-linux-8-latest-version" {
+  value = data.oci_core_images.oraclelinux-8.images.0.display_name
+}
+
+output "oracle-linux-8-latest-id" {
+  value = data.oci_core_images.oraclelinux-8.images.0.id
+}
 
 // --- user details ---
 output "username" {
@@ -28,5 +33,12 @@ output "password" {
 }
 
 // --- admin access ---
-output "ssh"                           { value = length(data.oci_bastion_sessions.ssh.sessions) > 0 ? data.oci_bastion_sessions.ssh.sessions[0].id : null }
-#output "ssh_command"                   { value = "ssh -i  -o ProxyCommand="ssh -i  -W %h:%p -p 22 "${data.oci_bastion_bastion.host.bastion_id}@host.bastion.us-ashburn-1.oci.oraclecloud.com" -p 22 "opc@10.0.0.119"}
+output "ssh" { 
+  value = length(data.oci_bastion_sessions.ssh.sessions) > 0 ? data.oci_bastion_sessions.ssh.sessions[0].id : null
+}
+
+/*/ --- ssh command --- //
+output "ssh_command" { 
+  value = "ssh -i  -o ProxyCommand="ssh -i  -W %h:%p -p 22 "${data.oci_bastion_bastion.host.bastion_id}@host.bastion.us-ashburn-1.oci.oraclecloud.com" -p 22 "opc@10.0.0.119"
+}
+// --- ssh command --- /*/

@@ -3,17 +3,16 @@
 
 // --- service operation --- //
 module "operation_section" {
-  depends_on = [ oci_identity_compartment.init ]
-  source         = "./component/admin_section/"
-  providers      = { oci = oci.home }
-  section_name    = "operation"
-  config ={
-    tenancy_id    = var.tenancy_ocid
-    source        = var.code_source
-    service_name  = local.service_name
+  depends_on   = [ oci_identity_compartment.service ]
+  source       = "./component/admin_section/"
+  providers    = { oci = oci.home }
+  section_name = "operation"
+  config = {
+    service_id    = local.service_id
+    bundle_type   = module.compose.bundle_id
     tagspace      = [ ]
     freeform_tags = { 
-      "framework" = "ocloud"
+      "source"    = var.code_source
     }
   }
   compartment  = {
