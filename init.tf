@@ -26,27 +26,11 @@ resource "oci_identity_tag_namespace" "service" {
 
 resource "oci_identity_tag" "service" {
     depends_on       = [ oci_identity_tag_namespace.service ]
-    for_each         = local.tag_with_ids
+    for_each         = local.tagsbyids
     name             = each.key
     tag_namespace_id = each.value
     description      = "default tag for service ${local.service_name}"
 }
-
-/*
-resource "oci_identity_tag" "test_tag" {
-    depends_on       = [ oci_identity_tag_namespace.service ]
-    for_each         = local.tag_with_ids
-    name             = each.key
-    tag_namespace_id = each.value
-    description      = "default tag for service ${local.service_name}"
-    is_cost_tracking = true or fals
-    validator {
-        validator_type = ENUM or DEFAULT
-        values         = var.tag_validator_values
-    }
-    is_retired = false
-}
-*/
 
 resource "oci_identity_tag_default" "service" {
     depends_on        = [ oci_identity_tag.service ]
@@ -55,6 +39,7 @@ resource "oci_identity_tag_default" "service" {
     tag_definition_id = each.key
     value             = each.value
 }
+
 // --- define default tags --- //
 
 // --- enable notifications --- //
