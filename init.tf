@@ -39,7 +39,6 @@ resource "oci_identity_tag_default" "service" {
     tag_definition_id = each.key
     value             = each.value
 }
-
 // --- define default tags --- //
 
 // --- enable notifications --- //
