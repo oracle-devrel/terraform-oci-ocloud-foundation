@@ -34,9 +34,6 @@ module "application_section" {
     ]
   }
 }
-output "app_compartment_id"       { value = module.application_section.compartment_id }
-output "app_compartment_name"     { value = module.application_section.compartment_name }
-output "app_compartment_roles"    { value = module.application_section.roles }
 // --- application admin --- //
 
 // --- application tier --- //
@@ -77,9 +74,6 @@ module "application_domain" {
     ]
   }
 }
-output "app_domain_subnet_id"        { value = module.application_domain.subnet_id }
-output "app_domain_security_list_id" { value = module.application_domain.seclist_id }
-output "app_domain_bastion_id"       { value = module.application_domain.bastion_id }
 // --- application tier --- //
 
 // --- application host --- //
@@ -114,10 +108,4 @@ module "operator" {
     target_port     = 22
   }
 }
-output "app_instance_summary"      { value = module.operator.summary }
-output "app_instance_details"      { value = module.operator.details }
-output "app_instance_windows_user" { value = module.operator.username }
-output "app_instance_ol8_version"  { value = module.operator.oracle-linux-8-latest-version }
-output "app_instance_ol8_id"       { value = module.operator.oracle-linux-8-latest-id }
-output "app_instance_ssh"          { value = module.operator.ssh }
 // --- application host --- //

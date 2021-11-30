@@ -12,9 +12,3 @@ output "compartment_name" {
   // This allows the compartment details to be retrieved from the resource.
   value       = length(data.oci_identity_compartments.section.compartments) > 0 ? data.oci_identity_compartments.section.compartments[0].name : null
 }
-
-output "roles" {
-  description = "administrator roles"
-  // This allows the policy details to be retrieved from the resource
-  value       = length(data.oci_identity_policies.section.policies) > 0 ? data.oci_identity_policies.section.policies[*].name : null
-}
