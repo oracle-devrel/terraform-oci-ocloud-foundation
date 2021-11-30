@@ -37,49 +37,31 @@ variable "collections" {
     })
     default = {
         budget = {
-            cost_center = [ "to be set", "HR", "IT", "Sales" ]
+            cost_center = [ "not defined", "HR", "IT", "Sales" ]
             account     = [ 0, 1, 2, 3 ],
-            created_by  = "to be set"
-            created_on  = "to be set"
+            created_by  = "name"
+            created_on  = "date"
         }
         operation = {
-            solution     = [ "to be set", "ERP", "SCM", "PLM", "CX" ]
-            application  = [ "to be set", "PeopleSoft", "Siebel" ]
+            solution     = [ "not defined", "ERP", "SCM", "PLM", "CX" ]
+            application  = [ "not defined", "PeopleSoft", "Siebel" ]
             version      = 0
-            last_updated = "to be set"
+            last_updated = "date"
         }
         governance = {
-            bundle          = [ "to be set", "free_tier", "payg", "standard", "premium" ]
-            confidentiality = [ "to be set", "public", "confidential", "secret" ]
+            bundle          = [ "free_tier", "payg", "standard", "premium" ]
+            confidentiality = [ "public", "confidential", "secret" ]
         }
     }
 }
 
 // --- output ---
 locals {
-    tagsbycollection = { 
-        for collection, tags in var.collections : collection => [for tag in keys(tags): tag] 
-    }
-
-    tagpairs = flatten([ 
-        for collection, tags in local.tagsbycollection :  
-            [ for tag in tags : {
-                "namespace" = collection
-                "tag"       = tag
-            }]
-    ])
-
-    valuesbytag = flatten([
-        for collection, tags in var.collections: flatten([
-            for tag, values in tags: { 
-                tag   = tag
-                value = flatten([values])[0]
-            } 
-        ])
-    ])
+    tagsbycollection = { for collection, tags in var.collections : collection => [for tag in keys(tags): tag] }
+    valuesbytag = merge([for collection, tags in var.collections: { for tag, values in tags: tag => flatten([values]) }]...)
+    defaultvalue = merge([for collection, tags in var.collections: { for tag, values in tags: tag => flatten([values])[0] }]...)
 }
 
-output "tag_namespaces"  { value = keys(local.tagsbycollection) }
-output "tag_collection" { value = local.tagsbycollection }
-output "identity_tags"   { value = local.tagsbycollection["${var.tag_collection}"] }
-output "default_values"  { value = local.valuesbytag }
+output "tag_collections" { value = local.tagsbycollection }
+output "tag_values"      { value = local.valuesbytag }
+output "default_value"   { value = local.defaultvalue }

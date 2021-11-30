@@ -18,38 +18,43 @@ resource "oci_identity_compartment" "service" {
 // --- define default tags --- //
 resource "oci_identity_tag_namespace" "service" {
     depends_on     = [ oci_identity_compartment.service ]
-    compartment_id = var.tenancy_ocid
-    for_each       = toset(module.compose.tag_namespaces)
-    description    = "${each.key} tags for service ${local.service_name}"
+    compartment_id = local.service_id
+    for_each       = toset(keys(module.compose.tag_collections))
+    description    = "${each.key} tag collection for service ${local.service_name}"
     name           = each.key
 }
 
-
-/*
 resource "oci_identity_tag" "service" {
     depends_on       = [ oci_identity_tag_namespace.service ]
-    for_each         = oci_identity_tag_namespace.service
-    tag_namespace_id = each.value.id
-    description      = "test"
-    dynamic "name" {
-        for_each = module.compose.tag_collection["${each.value.name}"]
-        content {
-            name = name.value
-        }
-    }
+    for_each         = local.tag_with_ids
+    name             = each.key
+    tag_namespace_id = each.value
+    description      = "default tag for service ${local.service_name}"
 }
+
+/*
+resource "oci_identity_tag" "test_tag" {
+    depends_on       = [ oci_identity_tag_namespace.service ]
+    for_each         = local.tag_with_ids
+    name             = each.key
+    tag_namespace_id = each.value
+    description      = "default tag for service ${local.service_name}"
+    is_cost_tracking = true or fals
+    validator {
+        validator_type = ENUM or DEFAULT
+        values         = var.tag_validator_values
+    }
+    is_retired = false
+}
+*/
 
 resource "oci_identity_tag_default" "service" {
     depends_on        = [ oci_identity_tag.service ]
+    for_each          = local.service_tags
     compartment_id    = local.service_id
-    is_required       = false
-    dynamic "default_value" {
-        for_each          = module.compose.default_values
-        tag_definition_id = oci_identity_tag.default_value.id
-        value             = default_value.value
-    }
+    tag_definition_id = each.key
+    value             = each.value
 }
-*/
 // --- define default tags --- //
 
 // --- enable notifications --- //

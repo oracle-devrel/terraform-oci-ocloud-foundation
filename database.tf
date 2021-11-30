@@ -38,9 +38,6 @@ module "database_section" {
     ]
   }
 }
-output "db_compartment_id"       { value = module.database_section.compartment_id }
-output "db_compartment_name"     { value = module.database_section.compartment_name }
-output "db_compartment_roles"    { value = module.database_section.roles }
 // --- database admin --- //
 
 /*/ --- database tier --- //
@@ -81,7 +78,4 @@ module "database_domain" {
     ]
   }
 }
-output "db_domain_subnet_id"        { value = module.database_domain.subnet_id }
-output "db_domain_security_list_id" { value = module.database_domain.seclist_id }
-output "db_domain_bastion_id"       { value = module.database_domain.bastion_id }
 // --- database tier --- /*/
