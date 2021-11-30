@@ -2,18 +2,15 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 
-title: "OCloud Framework"
-description: "Oracle Resource Manager Stack"
-stackDescription: "ITIL inspired service delivery framework for application deployments in Oracle Cloud Infrastructure (OCI)"
+title: "OCloud Landing Zone"
+description: "The landing zone template creates a foundation for application deployments in Oracle Cloud Infrastructure"
+informationalText: "Provisioning Framework for the Oracle Resource Manager"
 schemaVersion: 1.1.0
-
-logoUrl: https://cloudmarketplace.oracle.com/marketplace/content?contentId=99662604
-
 version: "20210611"
 locale: "en"
 
 variableGroups:
-- title: "Hidden Configuration"
+- title: "Stack Identifier"
   visible: false
   variables:
   - tenancy_ocid
@@ -21,19 +18,19 @@ variableGroups:
   - region
   - current_user_ocid
   
-- title: "Project Details"
+- title: "Service Configuration"
   visible: true
   variables:
   - organization
   - project
   - environment
+  - bundle
 
-- title: "Configuration"
+- title: "Operator Details"
   visible: true
   variables:
-  - admin_mail
-  - bundle
-  - code_source
+  - ${admin_mail}
+  - ${code_source}
   #- slack_channel
 
 - title: "Sections"
@@ -45,7 +42,7 @@ variableGroups:
   - application
 
 variables:
-  # Hidden Configuration
+  # Stack Identifier
   tenancy_ocid:
     title: "Tenancy ID"
     description: "The Oracle Cloud Identifier (OCID) for your tenancy"
@@ -74,7 +71,7 @@ variables:
     required: true
     visibile: false
 
-  # General Configuration
+  # Landing Zone Configuration
   organization:
     title: "Organization"
     description: "Identifier for the organization or platform owner"
