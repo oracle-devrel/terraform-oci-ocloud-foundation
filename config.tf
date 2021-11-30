@@ -30,40 +30,50 @@ data "template_file" "ad_names" {
   template = lookup(data.oci_identity_availability_domains.tenancy.availability_domains[count.index], "name")
 }
 
-data "oci_identity_compartments" "init" {
+data "oci_identity_compartments" "service" {
   depends_on     = [ oci_identity_compartment.service ]
   compartment_id = var.tenancy_ocid
   name           = local.service_name
   state          = "ACTIVE"
 }
 
-data "oci_identity_tag_namespaces" "init" {
+data "oci_identity_tag_namespaces" "service" {
   depends_on = [ oci_identity_compartment.service ]
   # This allows the namespace details to be retrieved
   compartment_id          = var.tenancy_ocid
-  include_subcompartments = false
+  include_subcompartments = true
   state                   = "ACTIVE"
   filter {
-    name  = "name"
-    values = [ "${local.service_name}_tag_namespace" ]
+    name = "compartment_id"
+    values = [ local.service_id ]
   }
 }
 
-data "oci_identity_policies" "init" {
+data "oci_identity_tags" "service" {
+  for_each         = oci_identity_tag_namespace.service
+  tag_namespace_id = oci_identity_tag_namespace.service[each.key].id
+  state            = "ACTIVE"
+}
+
+data "oci_identity_policies" "service" {
     compartment_id = oci_identity_compartment.service.id
     state          = "ACTIVE"
 }
 
 // --- input functions ---
 locals {
-  # Discovering the home region name and region key.
-  regions_map         = {for rgn in data.oci_identity_regions.tenancy.regions : rgn.key => rgn.name} # All regions indexed by region key
-  regions_map_reverse = {for rgn in data.oci_identity_regions.tenancy.regions : rgn.name => rgn.key} # All regions indexed by region name
-  #home_region_key     = data.oci_identity_tenancy.init.home_region_key                              # Home region key obtained from the tenancy data source
-  #home_region         = local.regions_map[local.home_region_key]                                    # Region key obtained from the region name
+  # Service name
+  service_name    = lower("${var.organization}_${var.project}_${var.environment}")
   # Service identifier
-  service_name        = lower("${var.organization}_${var.project}_${var.environment}")
-  service_id          = length(data.oci_identity_compartments.init.compartments) > 0 ? data.oci_identity_compartments.init.compartments[0].id : oci_identity_compartment.service.id
+  service_id      = length(data.oci_identity_compartments.service.compartments) > 0 ? data.oci_identity_compartments.service.compartments[0].id : oci_identity_compartment.service.id
+  # Default tags for service
+  service_tags    = { for tag in flatten(values(data.oci_identity_tags.service)[*].tags) : tag.id => module.compose.default_value[tag.name] }
+  tag_collection  = { for namespace in data.oci_identity_tag_namespaces.service.tag_namespaces : namespace.id => module.compose.tag_collections[namespace.name] }
+  tag_with_ids    =   merge([ for namespace, tags in local.tag_collection : { for tag in tags : tag => namespace } ]...)
+  # Discover the region name by region key
+  regions_map     = { for region in data.oci_identity_regions.tenancy.regions : region.key => region.name }
+  # Discover the region key by region name
+  regions_reverse = { for region in data.oci_identity_regions.tenancy.regions : region.name => region.key }
 }
 
 // --- configuration data ---
@@ -73,14 +83,6 @@ module "compose" {
   providers  = { oci = oci.home }
   bundle     = var.bundle
 }
-
-// --- global outputs ----
-output "config_account"             { value = data.oci_identity_tenancy.init }
-output "config_storage_namespace"   { value = data.oci_objectstorage_namespace.tenancy.namespace }
-# List of ADs in the selected region
-output "config_location_ad_names"   { value = sort(data.template_file.ad_names.*.rendered) }
-# Resource scope for the landing zone
-output "config_bundle_id"           { value = module.compose.bundle_id }
 
 // Define the wait state for the data requests. This resource will destroy (potentially immediately) after null_resource.next
 resource "null_resource" "previous" {}

@@ -8,11 +8,12 @@ resource "oci_core_subnet" "domain" {
   display_name                = local.display_name
   dns_label                   = local.dns_label
   cidr_block                  = var.subnet.cidr_block
+  route_table_id              = var.subnet.route_table_id
   prohibit_public_ip_on_vnic  = var.subnet.prohibit_public_ip_on_vnic
   dhcp_options_id             = var.subnet.dhcp_options_id
   defined_tags                = null
   freeform_tags               = var.config.freeform_tags
-  security_list_ids           = [oci_core_security_list.domain.id]
+  security_list_ids           = [ oci_core_security_list.domain.id ]
 }
 
 resource "oci_bastion_bastion" "domain" {
@@ -26,12 +27,6 @@ resource "oci_bastion_bastion" "domain" {
   client_cidr_block_allow_list = var.bastion.client_allow_cidr
   defined_tags                 = null
   freeform_tags                = var.config.freeform_tags
-}
-
-resource "oci_core_route_table_attachment" "domain" {
-  depends_on     = [oci_core_subnet.domain]
-  subnet_id      = oci_core_subnet.domain.id
-  route_table_id = var.subnet.route_table_id
 }
 
 resource "oci_core_security_list" "domain" {
