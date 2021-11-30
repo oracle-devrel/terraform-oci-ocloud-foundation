@@ -32,6 +32,7 @@ resource "oci_identity_tag" "service" {
     description      = "default tag for service ${local.service_name}"
 }
 
+/*
 resource "oci_identity_tag_default" "service" {
     depends_on        = [ oci_identity_tag.service ]
     for_each          = local.service_tags
@@ -39,6 +40,7 @@ resource "oci_identity_tag_default" "service" {
     tag_definition_id = each.key
     value             = each.value
 }
+*/
 // --- define default tags --- //
 
 // --- enable notifications --- //
