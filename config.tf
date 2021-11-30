@@ -67,7 +67,7 @@ locals {
   # Service identifier
   service_id      = length(data.oci_identity_compartments.service.compartments) > 0 ? data.oci_identity_compartments.service.compartments[0].id : oci_identity_compartment.service.id
   # Default tags for service
-  service_tags    = { for tag in flatten(values(data.oci_identity_tags.service)[*].tags) : tag.id => module.compose.default_value[tag.name] }
+  service_tags    = { for tag in oci_identity_tag.service : oci_identity_tag.service[tag.name].id => module.compose.default_value[tag.name] }
   #tag_collection  = { for namespace in keys(module.compose.tag_collections) : namespace => oci_identity_tag_namespace.service[namespace].id }
   tagsbyids       = merge([ for collection, tags in module.compose.tag_collections : { for tag in tags : tag => oci_identity_tag_namespace.service[collection].id } ]...)
   # Discover the region name by region key
