@@ -68,8 +68,8 @@ locals {
   service_id      = length(data.oci_identity_compartments.service.compartments) > 0 ? data.oci_identity_compartments.service.compartments[0].id : oci_identity_compartment.service.id
   # Default tags for service
   service_tags    = { for tag in flatten(values(data.oci_identity_tags.service)[*].tags) : tag.id => module.compose.default_value[tag.name] }
-  tag_collection  = { for namespace in oci_identity_tag_namespace.service : namespace.id => module.compose.tag_collections[namespace.name] }
-  tag_with_ids    =   merge([ for namespace, tags in local.tag_collection : { for tag in tags : tag => namespace } ]...)
+  #tag_collection  = { for namespace in keys(module.compose.tag_collections) : namespace => oci_identity_tag_namespace.service[namespace].id }
+  tagsbyids       = merge([ for collection, tags in module.compose.tag_collections : { for tag in tags : tag => oci_identity_tag_namespace.service[collection].id } ]...)
   # Discover the region name by region key
   regions_map     = { for region in data.oci_identity_regions.tenancy.regions : region.key => region.name }
   # Discover the region key by region name
@@ -81,7 +81,6 @@ module "compose" {
   source     = "./compose/"
   service_id = local.service_id
   providers  = { oci = oci.home }
-  bundle     = var.bundle
 }
 
 // Define the wait state for the data requests. This resource will destroy (potentially immediately) after null_resource.next
