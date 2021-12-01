@@ -49,4 +49,7 @@ module "operation_section" {
     ]
   }
 }
+output "ops_compartment_id"    { value = module.operation_section.compartment_id }
+output "ops_compartment_name"  { value = module.operation_section.compartment_name }
+output "ops_compartment_roles" { value = module.operation_section.roles }
 // --- service operation --- //

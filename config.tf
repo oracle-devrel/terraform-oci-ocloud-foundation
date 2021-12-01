@@ -38,7 +38,7 @@ data "oci_identity_compartments" "service" {
 }
 
 data "oci_identity_tag_namespaces" "service" {
-  depends_on = [ oci_identity_compartment.service ]
+  depends_on = [ oci_identity_tag_namespace.service ]
   # This allows the namespace details to be retrieved
   compartment_id          = var.tenancy_ocid
   include_subcompartments = true
@@ -50,14 +50,15 @@ data "oci_identity_tag_namespaces" "service" {
 }
 
 data "oci_identity_tags" "service" {
+  depends_on = [ oci_identity_tag.service ]
   for_each         = oci_identity_tag_namespace.service
   tag_namespace_id = oci_identity_tag_namespace.service[each.key].id
   state            = "ACTIVE"
 }
 
 data "oci_identity_policies" "service" {
-    compartment_id = oci_identity_compartment.service.id
-    state          = "ACTIVE"
+  compartment_id = oci_identity_compartment.service.id
+  state          = "ACTIVE"
 }
 
 // --- input functions ---
@@ -67,7 +68,7 @@ locals {
   # Service identifier
   service_id      = length(data.oci_identity_compartments.service.compartments) > 0 ? data.oci_identity_compartments.service.compartments[0].id : oci_identity_compartment.service.id
   # Default tags for service
-  # service_tags    = { for tag in oci_identity_tag.service : oci_identity_tag.service[tag.name].id => module.compose.default_value[tag.name] }
+  service_tags    = { for tag in oci_identity_tag.service : oci_identity_tag.service[tag.name].id => module.compose.default_value[tag.name] }
   tagsbyids       = merge([ for collection, tags in module.compose.tag_collections : { for tag in tags : tag => oci_identity_tag_namespace.service[collection].id } ]...)
   # Discover the region name by region key
   regions_map     = { for region in data.oci_identity_regions.tenancy.regions : region.key => region.name }
@@ -82,10 +83,22 @@ module "compose" {
   providers  = { oci = oci.home }
 }
 
+// --- global outputs ----
+output "config_account"             { value = data.oci_identity_tenancy.init }
+output "config_storage_namespace"   { value = data.oci_objectstorage_namespace.tenancy.namespace }
+# List of ADs in the selected region
+output "config_location_ad_names"   { value = sort(data.template_file.ad_names.*.rendered) }
+# Resource scope for the landing zone
+output "config_bundle_id"           { value = module.compose.bundle_id }
+
 // Define the wait state for the data requests. This resource will destroy (potentially immediately) after null_resource.next
 resource "null_resource" "previous" {}
 
 resource "time_sleep" "wait" {
   depends_on      = [null_resource.previous]
   create_duration = "4m"
+}
+
+output "service_tags" {
+  value = local.service_tags
 }
