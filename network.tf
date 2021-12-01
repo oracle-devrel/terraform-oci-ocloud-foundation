@@ -36,6 +36,9 @@ module "network_section" {
     ]
   }
 }
+output "network_id"                        { value = module.network_section.compartment_id }
+output "network_name"                      { value = module.network_section.compartment_name }
+output "network_roles"                     { value = module.network_section.roles }
 // --- network admin --- //
 
 // --- service segment --- //
@@ -62,6 +65,20 @@ module "service_segment" {
     service_gateway_cidr = "all-${module.compose.location_key}-services-in-oracle-services-network" 
   }
 }
+output "service_segment_vcn_id"           { value = module.service_segment.vcn_id }
+output "service_segment_cidr_block"       { value = module.service_segment.cidr_block }
+output "service_segment_subnets"          { value = module.service_segment.subnets }
+output "service_segment_security_groups"  { value = module.service_segment.security_groups }
+output "service_segment_anywhere"         { value = module.service_segment.anywhere }
+output "service_segment_drg_id"           { value = module.service_segment.drg_id }
+output "service_segment_internet_id"      { value = module.service_segment.internet_id }
+output "service_segment_nat_id"           { value = module.service_segment.nat_id }
+output "service_segment_osn_id"           { value = module.service_segment.osn_id }
+output "service_segment_osn"              { value = module.service_segment.osn }
+output "service_segment_osn_route_id"     { value = module.service_segment.osn_route_table_id }
+output "service_segment_private_route_id" { value = module.service_segment.private_route_table_id }
+output "service_segment_public_route_id"  { value = module.service_segment.public_route_table_id }
+output "service_segment_route_tables"     { value = tomap({ "service_segment_public_route_id" = module.service_segment.public_route_table_id, "service_segment_private_route_id" = module.service_segment.private_route_table_id, "service_segment_osn_route_id" = module.service_segment.osn_route_table_id })}
 // --- service segment --- //
 
 // --- presentation tier --- //
@@ -101,4 +118,7 @@ module "presentation_domain" {
     ]
   }
 }
+output "presentation_domain_subnet_id"        { value = module.presentation_domain.subnet_id }
+output "presentation_domain_security_list_id" { value = module.presentation_domain.seclist_id }
+output "presentation_domain_bastion_id"       { value = module.presentation_domain.bastion_id }
 // --- presentation tier --- //
