@@ -30,7 +30,7 @@ data "oci_bastion_bastions" "host" {
 // --- Instance Credentials Datasource ---
 data "oci_core_instance_credentials" "host" {
   #count       = var.host.resource_platform != "linux" ? var.host.count : 0
-  count       = module.compose_host.image.resource_platform != "linux" ? module.compose_host.shape.count : 0
+  count       = module.host_settings.image.resource_platform != "linux" ? module.host_settings.shape.count : 0
   instance_id = oci_core_instance.host[count.index].id
 }
 
@@ -45,7 +45,7 @@ data "cloudinit_config" "host" {
     content = templatefile(
       local.cloudinit, {
         shell_script = local.shell_script,
-        timezone     = module.compose_host.image.timezone,
+        timezone     = module.host_settings.image.timezone,
       }
     )
   }
@@ -105,7 +105,7 @@ locals {
       "ocpus"         = i.ocpus
     }
   }
-  shape_is_flex = length(regexall("^*.Flex", module.compose_host.shape.shape)) > 0 # evaluates to boolean true when var.instance.shape contains .Flex
+  shape_is_flex = length(regexall("^*.Flex", module.host_settings.shape.shape)) > 0 # evaluates to boolean true when var.instance.shape contains .Flex
   instances_details = [
     # display name, Primary VNIC Public/Private IP for each instance
     for i in oci_core_instance.host : <<EOT
@@ -125,8 +125,8 @@ locals {
 }
 
 // --- Standard Server Configurations
-module "compose_host" {
-  source     = "../../compose/"
+module "host_settings" {
+  source     = "../../settings/"
   service_id = var.config.service_id
   host = {
     shape = var.host.shape

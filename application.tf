@@ -13,7 +13,7 @@ module "application_section" {
   section_name    = "application"
   config ={
     service_id    = local.service_id
-    bundle_type   = module.compose.bundle_id
+    bundle_type   = module.settings.bundles[var.bundle]
     tagspace      = [ ]
     freeform_tags = { 
       "source"    = var.code_source
@@ -48,7 +48,7 @@ module "application_domain" {
     service_id     = local.service_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
-    bundle_type    = module.compose.bundle_id
+    bundle_type    = module.settings.bundles[var.bundle]
     defined_tags   = null
     freeform_tags  = { 
       "source"     = var.code_source
@@ -91,7 +91,7 @@ module "operator" {
   config     = {
     service_id     = local.service_id
     compartment_id = module.application_section.compartment_id
-    bundle_type    = module.compose.bundle_id
+    bundle_type    = module.settings.bundles[var.bundle]
     subnet_ids     = [ module.application_domain.subnet_id ]
     bastion_id     = module.application_domain.bastion_id
     ad_number      = 1

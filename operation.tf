@@ -9,7 +9,7 @@ module "operation_section" {
   section_name = "operation"
   config = {
     service_id    = local.service_id
-    bundle_type   = module.compose.bundle_id
+    bundle_type   = module.settings.bundles[var.bundle]
     tagspace      = [ ]
     freeform_tags = { 
       "source"    = var.code_source

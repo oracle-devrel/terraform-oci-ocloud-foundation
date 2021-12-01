@@ -13,10 +13,10 @@ variableGroups:
 - title: "Stack Identifier"
   visible: false
   variables:
-  - tenancy_ocid
-  - compartment_ocid
+  - tenancy_id
+  - compartment_id
   - region
-  - current_user_ocid
+  - user_id
   
 - title: "Service Configuration"
   visible: true
@@ -29,78 +29,60 @@ variableGroups:
 - title: "Operator Details"
   visible: true
   variables:
-  - ${admin_mail}
-  - ${code_source}
+  - admin_mail
+  - code_source
   #- slack_channel
-
-- title: "Sections"
-  visible: false
-  variables:
-  - operation
-  - network
-  - database
-  - application
 
 variables:
   # Stack Identifier
-  tenancy_ocid:
+  tenancy_id:
     title: "Tenancy ID"
-    description: "The Oracle Cloud Identifier (OCID) for your tenancy"
+    description: "The Oracle Cloud Identifier for your tenancy"
     type: string
     required: true
-    visibile: false
 
-  compartment_ocid:
+  compartment_id:
     title: "Compartment ID"
-    description: "The Oracle Cloud Identifier (OCID) for your compartment"
+    description: "The Oracle Cloud Identifier for your compartment"
     type: string
     required: true
-    visibile: false
 
   region:
     title: "Home Region"
-    description: "The Oracle Cloud Identifier (OCID) for your home region"
+    description: "The Oracle Cloud Identifier for your home region"
     type: string
     required: true
-    visibile: false
   
-  current_user_ocid:
+  user_id:
     title: "User ID"
-    description: "The Oracle Cloud Identifier (OCID) for the current user"
+    description: "The Oracle Cloud Identifier for the current user"
     type: string
     required: true
-    visibile: false
 
-  # Landing Zone Configuration
   organization:
     title: "Organization"
     description: "Identifier for the organization or platform owner"
     type: string
     required: true
-    visibile: true
 
   project:
     title: "Project or Program"
     description: "Identifier for the service delivery platform"
     type: string
     required: true
-    visibile: true
 
   environment:
     title: "Environment"
     description: "Define the CI/CD process stage, e.g. dev, uat, prod"
     type: string
     required: true
-    visibile: true
   
   bundle:
     title: "Bundle"
     description: "Define the resource bundle to be provisioned"
     type: enum
-    default: "free_tier"
+    default: "standard"
     required: true
-    visibile: true
-    # enumerated values
     enum:
       - free_tier
       - payg
@@ -111,49 +93,18 @@ variables:
     title: "Source"
     description: "Provide an URL to your source repository"
     type: string
-    required: true
-    visibile: true
+    default: "https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/"
+    required: false
 
-  # Notifications
   admin_mail:
     title: "eMail"
     description: "Provide an eMail address for the technical administrator of your project"
     type: string
+    default: "ocilabs@mail.com"
     required: true
-    visibile: true
 
   #slack_channel:
     #title: "Slack"
     #description: "Provide a web hook for the slack channel, used for the project"
     #type: string
     #required: false
-    #visibile: true
-
-  # Sections
-  operation:
-    title: "Operation Section"
-    description: "The identifier for your Operation Compartment"
-    type: string
-    required: false
-    visibile: false
-
-  network:
-    title: "Network Section"
-    description: "The identifier for your Network Compartment"
-    type: string
-    required: false
-    visibile: false
-
-  database:
-    title: "Database Section"
-    description: "The identifier for your Database Compartment"
-    type: string
-    required: false
-    visibile: false
-
-  application:
-    title: "Application Section"
-    description: "The identifier for your Application Compartment"
-    type: string
-    required: false
-    visibile: false

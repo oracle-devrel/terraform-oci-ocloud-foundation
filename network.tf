@@ -9,7 +9,7 @@ module "network_section" {
   section_name = "network"
   config = {
     service_id    = local.service_id
-    bundle_type   = module.compose.bundle_id
+    bundle_type   = module.settings.bundles[var.bundle]
     tagspace      = [ ]
     freeform_tags = { 
       "source"    = var.code_source
@@ -51,18 +51,18 @@ module "service_segment" {
   config     = {
     service_id     = local.service_id
     compartment_id = module.network_section.compartment_id
-    bundle_type    = module.compose.bundle_id
+    bundle_type    = module.settings.bundles[var.bundle]
     freeform_tags  = { 
       code_source  = var.code_source
     }
   }
   network = {
-    address_spaces       = module.compose.address_spaces
-    subnet_list          = module.compose.subnets
+    address_spaces       = module.settings.address_spaces
+    subnet_list          = module.settings.subnets
     create_drg           = true
     block_nat_traffic    = false
-    # Alternative: "oci-${module.compose.location_key}-objectstorage"
-    service_gateway_cidr = "all-${module.compose.location_key}-services-in-oracle-services-network" 
+    # Alternative: "oci-${module.settings.location_key}-objectstorage"
+    service_gateway_cidr = "all-${module.settings.location_key}-services-in-oracle-services-network" 
   }
 }
 output "service_segment_vcn_id"           { value = module.service_segment.vcn_id }
@@ -90,7 +90,7 @@ module "presentation_domain" {
     service_id     = local.service_id
     vcn_id         = module.service_segment.vcn_id
     anywhere       = module.service_segment.anywhere
-    bundle_type    = module.compose.bundle_id
+    bundle_type    = module.settings.bundles[var.bundle]
     defined_tags   = null
     freeform_tags  = { 
       "source"     = var.code_source

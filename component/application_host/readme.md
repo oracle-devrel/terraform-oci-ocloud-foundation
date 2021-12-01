@@ -16,7 +16,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_compose_host"></a> [compose\_host](#module\_compose\_host) | ../../compose/ | n/a |
+| <a name="module_settings_host"></a> [settings\_host](#module\_settings\_host) | ../../settings/ | n/a |
 
 ## Resources
 

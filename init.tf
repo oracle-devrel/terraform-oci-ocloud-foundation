@@ -19,14 +19,14 @@ resource "oci_identity_compartment" "service" {
 resource "oci_identity_tag_namespace" "service" {
     depends_on     = [ oci_identity_compartment.service ]
     compartment_id = local.service_id
-    for_each       = toset(keys(module.compose.tag_collections))
+    for_each       = toset(keys(module.settings.tag_collections))
     description    = "${each.key} tag collection for service ${local.service_name}"
     name           = each.key
 }
 
 resource "oci_identity_tag" "service" {
     depends_on       = [ oci_identity_tag_namespace.service ]
-    for_each         = local.tagsbyids
+    for_each         = local.service_tags
     name             = each.key
     tag_namespace_id = each.value
     description      = "defined tag for service ${local.service_name}"
@@ -35,10 +35,20 @@ resource "oci_identity_tag" "service" {
 resource "oci_identity_tag_default" "service" {
   depends_on        = [ oci_identity_tag.service ]
   compartment_id    = local.service_id
-  for_each          = local.service_tags
+  for_each          = module.settings.default_values
+  tag_definition_id = oci_identity_tag.service[each.key].id
+  value             = module.settings.default_values[each.key]
+}
+
+/*
+resource "oci_identity_tag_default" "service" {
+  depends_on        = [ oci_identity_tag.service ]
+  compartment_id    = local.service_id
+  for_each          = local.tag_values
   tag_definition_id = each.key
   value             = each.value
 }
+*/
 // --- define default tags --- //
 
 // --- enable notifications --- //

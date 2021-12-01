@@ -120,13 +120,13 @@ locals {
     objectstorage_route  = {
         network_entity_id = data.oci_core_service_gateways.segment.service_gateways[0].id
         description       = "Route traffic to the Object Store"
-        destination       = "oci-${module.compose.location_key}-objectstorage"
+        destination       = "oci-${module.settings.location_key}-objectstorage"
         destination_type  = "SERVICE_CIDR_BLOCK"
     }
     osn_route = {
         network_entity_id = data.oci_core_service_gateways.segment.service_gateways[0].id
         description       = "Route traffic to private Oracle Services"
-        destination       = "all-${module.compose.location_key}-services-in-oracle-services-network"
+        destination       = "all-${module.settings.location_key}-services-in-oracle-services-network"
         destination_type  = "SERVICE_CIDR_BLOCK"
     }
     interconnect = {
@@ -138,8 +138,8 @@ locals {
 }
 
 // --- home region retrieval
-module "compose" {
-  source     = "../../compose/"
+module "settings" {
+  source     = "../../settings/"
   service_id = var.config.service_id
 }
 

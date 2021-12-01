@@ -68,8 +68,8 @@ locals {
   # Service identifier
   service_id      = length(data.oci_identity_compartments.service.compartments) > 0 ? data.oci_identity_compartments.service.compartments[0].id : oci_identity_compartment.service.id
   # Default tags for service
-  service_tags    = { for tag in oci_identity_tag.service : oci_identity_tag.service[tag.name].id => module.compose.default_value[tag.name] }
-  tagsbyids       = merge([ for collection, tags in module.compose.tag_collections : { for tag in tags : tag => oci_identity_tag_namespace.service[collection].id } ]...)
+  #tag_values      = { for tag, value in module.settings.default_values : oci_identity_tag.service[tag].id => module.settings.default_values[value] }
+  service_tags    = merge([ for collection, tags in module.settings.tag_collections : { for tag in tags : tag => oci_identity_tag_namespace.service[collection].id } ]...)
   # Discover the region name by region key
   regions_map     = { for region in data.oci_identity_regions.tenancy.regions : region.key => region.name }
   # Discover the region key by region name
@@ -77,8 +77,8 @@ locals {
 }
 
 // --- configuration data ---
-module "compose" {
-  source     = "./compose/"
+module "settings" {
+  source     = "./settings/"
   service_id = local.service_id
   providers  = { oci = oci.home }
 }
@@ -89,7 +89,7 @@ output "config_storage_namespace"   { value = data.oci_objectstorage_namespace.t
 # List of ADs in the selected region
 output "config_location_ad_names"   { value = sort(data.template_file.ad_names.*.rendered) }
 # Resource scope for the landing zone
-output "config_bundle_id"           { value = module.compose.bundle_id }
+output "config_bundle_id"           { value = module.settings.bundles[var.bundle] }
 
 // Define the wait state for the data requests. This resource will destroy (potentially immediately) after null_resource.next
 resource "null_resource" "previous" {}
@@ -97,8 +97,4 @@ resource "null_resource" "previous" {}
 resource "time_sleep" "wait" {
   depends_on      = [null_resource.previous]
   create_duration = "4m"
-}
-
-output "service_tags" {
-  value = local.service_tags
 }
