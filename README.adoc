@@ -9,45 +9,49 @@ image:https://img.shields.io/badge/license-UPL-green[link="LICENSE"]
 image:https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_terraform-oci-ocloud-landing-zone[Quality gate, link="https://sonarcloud.io/dashboard?id=oracle-devrel_terraform-oci-ocloud-landing-zone"]
 
 === Introduction
-The "ocloud" framework helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). While launching a new resource in OCI is a matter of pressing a button, replacing on-prem infrastructure and provisioning a virtual data center or a private cloud is more challenging. Numberous services need to be configured, which requires a deep understanding of various options build into Oracle's automated infrastructure platform. 
+The "ocloud" framework helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). While provisioning a cloud resource is a matter of pressing a button, setting up a virtual data center and deploying a private cloud service is more challenging. Various services need to be configured, a solid understanding of numerous build-in services is required. This framework aims to ease application migrations by providing a baseline configuration for service deployments. It can be provisioned using the link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[Oracle Resource Manager (ORM)]. For one-time deployments, the link:https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/archive/refs/heads/main.zip[Deploy to the Oracle Cloud] button creates a zip archive that is pushed to the resource manager directly, for continuous deployment the code should be cloned into a private repository which can be connected to ORM via the console.
 
 === Getting Started
-An OCI tenancy represents a scalable infrastructure pool that can be partioned into multiple cloud environments. The landing zone represents a baseline configuration for a single hosting environment. It helps operators to quickly set up a topology for three tier applications. 
+An OCI tenancy is a scalable infrastructure pool that can be partitioned into multiple service environments. Using link:https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm[compartments] operators can either launch completely isolated service, e.g. for different tenants, or separate the application space from shared administrator domains like network and database management. Per default the landing zone represents an isolated service, it sets up a network topology for three tier applications and administrator domains are separated into four distingue sections, application, network, database and operation.  
 
 [#img-architecture] 
 .Base Architecture 
 image::doc/image/base_architecture.png[Base Architecture]
 
-link:https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm[Compartments] represent administrator domains and reflect the separation of duties, typically found in an IT organization. The default set of infrastructure resources, policies, guidelines and management services is separated into four compartments. For the initial deployment, we use the link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[OCI Resource Manager]. The code can either be link:https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/archive/refs/heads/main.zip[executed directly] or be cloned into a repository for a continous deployments. 
-
+Compartments reflect administrator domains in OCI and enable the separation of duties. The section component adds a typical set of infrastructure resources, policies, guidelines and management services to each compartment. Sections can be customized in the link:https://www.terraform.io/docs/language/modules/syntax.html[module block] of the respective administrator template. 
 
 === Customizing the Framework
-The code structure distinguishes between administrators and operation engineers. Administrator templates allows operators to customize the provisioning processes for infrastructure resources through parameters. Templates are written in HCL and require a terraform instance for execution. 
+The code structure distinguishes between administrators and operation engineers. Administrator templates allow operators to customize the provisioning processes for infrastructure resources through parameters. Operations engineers provide platform components, these will be invoked through templates. All templates are written in HCL and require a terraform instance to execute the provision process. For OCI user, ORM provides terraform as a service, manages access to the state backend across teams and provides an UI/API wrapper for self-service deployments. 
 
 [#img-structure] 
 .Code Structure 
 image::doc/image/code_structure.png[Code Structure]
+  
+A service deployment starts the provisioning process with the link:init.tf[init.tf] file. A "cloud service" compartment is created, service wide configuration settings are applied. This includes naming conventions, tags and notification settings. The process is customizable through parameters. The stack invokes three different types of parameters: default deployment parameters, defined in the link:schema.tf[schema.tf] file, service parameters, defined in the link:settings/[settings module] and dependencies between resources, defined in the link:config.tf[config.tf] file. Deployment parameters are exposed and can be adjusted when the stack is invoked, settings are client specific and should be reviewed by an operation engineer, settings and dependencies enable the automatic configuration of resources in different components using a common set of parameters. 
 
-The repository contains four main templates:
+==== Administrator Templates
+The following four administrator templates will be executed:
 
-* link:operation.tf[Operations] prepares a working environment priviledged operators with an "ops" compartment that contains base roles like the cloud "super admin".
-* link:network.tf[Network] provisions an initial network segment and creates a "presentation" domain for internet facing portals beside the "netops" compartment and role.
-* link:database.tf[Database] defines the infrastructure for database hosting with access via port 1521-1522 in addition to the "db" compartment and admin role.
-* link:application.tf[Application] creates an application management domain, the an app compartment, the sysops role and deploys an operator for remote scripts.
+* link:operation.tf[operations.tf] prepares a working environment privileged users in the "operation" compartment and contains base role definitions like an auditor or a cloud "super admin".
+* link:network.tf[network.tf] provisions a network segment for the service, creates a "presentation" tier for user facing components like load balancer, firewalls and portals and creates a "netops"  role.
+* link:database.tf[database.tf] prepares the stack for the provisioning of database hosts in an own network domain, default access ports are 1521-1522 and database administrator role is created.
+* link:application.tf[application.tf] creates one application management domain, the respective application compartment, the sysops role and deploys an operator for remote script execution, like HELM Charts, python, bash or ansible scripts.
 
-The ops and the net deployment templates are obligatory, the db and the app templates are optional. The bastion service connects to an operator in the application domain and allows to enter all domains via SSH.
+The operation and network deployment templates are obligatory, the database and application templates are optional. A bastion service connects via SSH to the operator that is placed int application domain.
 
 ==== Components
-Templates refer to terraform modules, rather than addressing resource blocks directly. Platform components combine multiple resources logically into Terraform modules. These modules contain best practices collected throughout numberous projects and remain subject to change. Initially we provide the following modules:
+Platform components abstract provider specific APIs and contain code that can refer to multiple resource provider in order to merge resources from multiple provider into logical, customer specific resource interfaces. The resources manager comes with a number of link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/providers.htm[service provider] preinstalled, additional can be pulled form the link:https://registry.terraform.io/browse/providers[Terraform registry], using the link:https://www.terraform.io/docs/language/providers/configuration.html[provider block]. Components reflect best practices, collected throughout numerous projects and remain subject to change. Initially we provide the following modules:
 
-* link:component/admin_section[Administrator Section] is the compartment block combined with groups an policies that define a working environment for cloud and security operators
-* link:component/network_segment[Network Segment] defines the compart and role for network administrators together with a Virtual Cloud Network (VCN) incl. Dynamic Routing Gateway and gateways for NAT, Intenrnet and Oracle Services
-* link:component/network_domain[Network Domain] the necessary subnets with portfilters and routing rules to host the application tiers
-* link:component/application_host[Application Host] launches a compute node and executes the respective configuration scripts are executed
+* link:component/admin_section[Administrator Section] is the compartment block combined with groups and policies that define a working environment for cloud and security operators
+* link:component/network_segment[Network Segment] defines the compartment and role for network administrators together with a Virtual Cloud Network (VCN) incl. Dynamic Routing Gateway and gateways for NAT, Internet and Oracle Services
+* link:component/network_domain[Network Domain] the necessary subnets with port filters and routing rules to host the application tiers
+* link:component/application_host[Application Host] launches a compute node to execute the configuration scripts like Helm Charts, Python, SQL, Bash or Ansible scripts
+
+Additional modules can be invoked referring to OCI modules in the link:https://registry.terraform.io/browse/modules?provider=oci[terraform registry], a great starting point with limited coding requirements are the link:https://registry.terraform.io/search/modules?q=oci%20cloud%20bricks[cloudbricks] components.  
 
 ==== Resource Interfaces
 
-Modules deploy a variety of different resources, like infrastructure components, predefined cloud services, applications or third party software products. Usually we employ the terraform service provider to provision resources, however, comand line scripts, API or SDK are additional options.
+Modules deploy a variety of different resources, like infrastructure components, predefined cloud services, applications or third party software products. Usually we employ the terraform service provider to provision resources, however, command line scripts, API or SDK are additional options.
 
 [cols="1,1,1,1,1",frame=ends,grid=rows,stripes=hover,options="header"]
 |===
@@ -70,18 +74,17 @@ Code is written in HashiCorp Configuration Language (HCL), includes data stored 
 * link:https://registry.terraform.io/providers/hashicorp/time/latest[Terraform Time Service Provider]
 * link:https://cloudinit.readthedocs.io/en/latest/[Cloud Init]
 
-The script is meant for a initial tenancy setup and provisions global resources like compartments and groups. The naming should be unique though. While compartment names are constructed to avoid conflicts, groups are resources and name conflicts can be avoided to check existing groups against the link:doc/naming.adoc[naming conventions].
+The landing zone is meant to provision resources in an isolated compartment. The naming should be unique though, because some resources, like tag namepaces and policy groups are defined on root level. While compartment names are constructed to avoid overlaps, name conflicts are avoided referring to a tenancy specific link:doc/naming.adoc[naming convention].
 
 === Notes/Issues
-* Using Terraform 1.0 produces a warning about missing provider definitions in the module directories, which can be ignored
 * It is recommended to run the first "terraform apply" without bastion session enabled. Enabling the bastion session in the first run will produce an error message. Run the "apply" a second time resolves the issue. 
-* Destroying compartments should be an exception and can take a long time. Best practice is destroying all other resources first, before destroying the compartments in a separate run. In the default setup, the "enable_delete" flag prevent unintensional destroy of compartments 
+* Destroying compartments and tag namespaces should be an exception and can take a long time. Best practice is destroying all other resources using a reduce apply scope, before destroying the compartments with a destroy command. In the default setup, the "enable_delete" flag prevents un-intensional destroy of compartments. 
 
 === URLs
 This repository is intended to be used with the Oracle Resource Manager. Using the "Deploy to Oracle Cloud" button requires users to link:https://www.oracle.com/cloud/sign-in.html[sign in].
 
 === Contributing
-This project is open source.  Please submit your contributions by forking this repository and submitting a pull request!  Oracle appreciates any contributions that are made by the open source community.
+This project is a community project the code is open source.  Please submit your contributions by forking this repository and submitting a pull request!  Oracle appreciates any contributions that are made by the open source community.
 
 === License
 Copyright (c) 2021 Oracle and/or its affiliates.

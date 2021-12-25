@@ -4,7 +4,7 @@
 
 title: "OCloud Landing Zone"
 description: "The landing zone template creates a foundation for application deployments in Oracle Cloud Infrastructure"
-informationalText: "Provisioning Framework for the Oracle Resource Manager"
+informationalText: "The 'ocloud' framework helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). A base set of resources is provisioned and configured. This framework aims to ease migrations for enterprise applications."
 schemaVersion: 1.1.0
 version: "20210611"
 locale: "en"
