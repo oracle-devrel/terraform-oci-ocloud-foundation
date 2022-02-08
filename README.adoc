@@ -16,7 +16,7 @@ With an OCI tenancy operators gain access to a scalable infrastructure pool. A s
 
 [#img-architecture] 
 .Base Architecture 
-image::doc/image/base_architecture.png[Base Architecture]
+image::doc/image/base_architecture.drawio.png[Base Architecture]
 
 Compartments reflect administrator domains in OCI and enable the separation of duties. The domain component adds a typical set of infrastructure resources, policies, guidelines and management services to each compartment. Domains can be customized in the link:https://www.terraform.io/docs/language/modules/syntax.html[module block] of the respective administrator template. 
 
@@ -27,7 +27,9 @@ Compartments reflect administrator domains in OCI and enable the separation of d
 ...
 
 ==== Service Configuration
-...
+[#img-configuration] 
+.Service Configuration 
+image::doc/image/service_configuration.drawio.png[Service Configuration]
 
 ==== Service Assets
 Platform components abstract provider specific APIs and contain code that can refer to multiple resource provider in order to merge resources from multiple provider into logical, customer specific resource interfaces. The resources manager comes with a number of link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/providers.htm[service provider] preinstalled, additional can be pulled form the link:https://registry.terraform.io/browse/providers[Terraform registry], using the link:https://www.terraform.io/docs/language/providers/configuration.html[provider block]. Components reflect best practices, collected throughout numerous projects and remain subject to change. Initially we provide the following modules:
