@@ -1,0 +1,8 @@
+[
+    {
+        "_comment" : "The default router can not be deleted. With the exception of the core VCN, router names must match a VCN name. VCN without corresponding routers will be attached to the 'default' router.",
+        "name"      : "default",
+        "cpe"       : "192.168.0.0/16",
+        "anywhere"  : "0.0.0.0/0"
+    }
+]

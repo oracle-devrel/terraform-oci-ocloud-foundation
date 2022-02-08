@@ -1,0 +1,75 @@
+[
+    {
+        "name"        : "manage_users",
+        "role"        : "HelpDesk",
+        "description" : "Ability to create, update, and delete users and their credentials. It does not include the ability to put users in groups.",
+        "rules"       : [
+            "Allow group HelpDesk to manage users in tenancy"
+        ]
+    },
+    {
+        "name"        : "inspect_resources",
+        "role"        : "Auditors",
+        "description" : "Ability to list the resources in all compartments.",
+        "rules"       : [
+            "Allow group Auditors to inspect all-resources in tenancy",
+            "Allow group Auditors to read instances in tenancy",
+            "Allow group Auditors to read audit-events in tenancy"
+        ]
+    },
+    {
+        "name"        : "manage_network_resources",
+        "role"        : "NetworkAdmins",
+        "description" : "Ability to manage all components in Networking. This includes cloud networks, subnets, gateways, virtual circuits, security lists, route tables, etc.",
+        "rules"       : [
+            "Allow group NetworkAdmins to use virtual-network-family in tenancy"
+        ]
+    },
+    {
+        "name"        : "manage_load_balancers",
+        "role"        : "NetworkAdmins",
+        "description" : "Ability to manage load balancers and network load balancers, additional policies to use the associated networking resources are required.",
+        "rules"       : [
+            "Allow group NetworkAdmins to manage load-balancers in tenancy",
+            "Allow group NetworkAdmins to use virtual-network-family in tenancy",
+            "Allow group NetworkAdmins to manage instances in tenancy"
+        ]
+    },
+    {
+        "name"        : "launch_compute_instances",
+        "role"        : "InstanceLaunchers",
+        "description" : "Ability to do everything with instances launched into the cloud network and subnets in compartment XYZ, and attach/detach any existing volumes that already exist in compartment ABC.",
+        "rules"       : [
+            "Allow group InstanceLaunchers to manage instance-family in compartment _application",
+            "Allow group InstanceLaunchers to read app-catalog-listing in tenancy",
+            "Allow group InstanceLaunchers to use volume-family in compartment _application",
+            "Allow group InstanceLaunchers to use virtual-network-family in compartment _network"
+        ]
+    },
+    {
+        "name"        : "deply_images",
+        "role"        : "ImageUsers",
+        "description" : "bility to launch instances into the cloud network and subnets in compartment XYZ using only the specified custom image. The policy also includes the ability to attach/detach any existing volumes that already exist in a compartment.",
+        "rules"       : [
+            "Allow group ImageUsers to inspect instance-images in compartment _application",
+            "Allow group ImageUsers to {INSTANCE_IMAGE_READ} in compartment _application where target.image.id:'<image_OCID>'",
+            "Allow group ImageUsers to manage instances in compartment _application",
+            "Allow group ImageUsers to read app-catalog-listing in tenancy",
+            "Allow group ImageUsers to use volume-family in compartment _application",
+            "Allow group ImageUsers to use virtual-network-family in compartment _network"
+        ]
+    },
+    {
+        "name"        : "manage_images",
+        "role"        : "ImageAdmins",
+        "description" : "Ability to do everything with custom images and compute instances. Also includes the ability to do everything with Object Storage buckets, objects, and namespaces in compartment Y (for creating images from objects and creating pre-authenticated requests to images); to attach/detach any existing volumes in an application compartment; and to launch instances into the cloud network and subnets in network compartment (for creating new instances to base an image on).",
+        "rules"       : [
+            "Allow group ImageAdmins to manage instances in compartment _application",
+            "Allow group ImageAdmins to manage instance-images in compartment _application",
+            "Allow group ImageAdmins to read app-catalog-listing in tenancy",
+            "Allow group ImageAdmins to manage object-family in compartment _resident",
+            "Allow group ImageAdmins to use volume-family in compartment _application",
+            "Allow group ImageAdmins to use virtual-network-family in compartment _network"
+        ]
+    }
+]

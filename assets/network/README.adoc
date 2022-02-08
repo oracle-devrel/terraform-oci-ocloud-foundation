@@ -1,0 +1,156 @@
+// Copyright (c) 2020 Oracle and/or its affiliates.
+// Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+== Requirements
+
+Define an link:/init.tf[encapsulating compartment].
+
+== Providers
+
+[cols="a,a",options="header,autowidth"]
+|===
+|Name |Version
+|[[provider_oci]] <<provider_oci,oci>> |n/a
+|[[provider_null]] <<provider_null,null>> |n/a
+|[[provider_time]] <<provider_time,time>> |n/a
+|===
+
+== Module
+```hcl
+module "service_segment" {
+  source     = "./component/network_segment/"
+  providers  = { oci = oci.home }
+  depends_on = [ module.network_domain ]
+  # Define unique number per segment
+  segment    = 1 
+  config     = {
+    service_id     = local.service_id
+    display_name   = lower("${var.service.name}_${var.network}")
+    compartment_id = module.network_domain.compartment_id
+    deployment_type = var.deployment_types["${var.bundle}"]
+    freeform_tags  = { 
+      "framework"  = "ocloud"
+    }
+  }
+  network = {
+    description          = "virtual cloud network"
+    address_spaces = {
+      "cidr_block"       = "10.0.0.0/24" 
+      "anywhere"         = "0.0.0.0/0"
+      "interconnect"     = "192.168.0.0/16"
+    }
+    subnet_list = { 
+      # A list with newbits for the cidrsubnet function, for subnet calculations visit http://jodies.de/ipcalc
+      app                = 1
+      db                 = 2
+      pres               = 2
+    }
+    create_drg           = true
+    block_nat_traffic    = false
+    # Alternative: "oci-${local.region_key}-objectstorage"
+    service_gateway_cidr = "all-${lower(local.home_region_key)}-services-in-oracle-services-network" 
+  }
+}
+```
+
+== Resources
+
+[cols="a,a",options="header,autowidth"]
+|===
+|Name |Type
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_default_security_list[oci_core_default_security_list.default_security_list] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg[oci_core_drg.segment] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg_attachment[oci_core_drg_attachment.segment] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_internet_gateway[oci_core_internet_gateway.segment] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_nat_gateway[oci_core_nat_gateway.segment] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_network_security_group[oci_core_network_security_group.segment] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_route_table[oci_core_route_table.osn] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_route_table[oci_core_route_table.private] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_route_table[oci_core_route_table.public] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_service_gateway[oci_core_service_gateway.segment] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_vcn[oci_core_vcn.segment] |resource
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_drgs[oci_core_drgs.segment] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_internet_gateways[oci_core_internet_gateways.segment] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_nat_gateways[oci_core_nat_gateways.segment] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_network_security_groups[oci_core_network_security_groups.segment] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_route_tables[oci_core_route_tables.osn] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_route_tables[oci_core_route_tables.private] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_route_tables[oci_core_route_tables.public] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_service_gateways[oci_core_service_gateways.segment] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services[oci_core_services.all_services] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_vcns[oci_core_vcns.segment] |data source
+|https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_compartments[oci_identity_compartments.segment] |data source
+|https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep[time_sleep.wait] |resource
+|https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource[null_resource.previous] |resource
+|===
+
+== Inputs
+
+[cols="a,a,a,a,a",options="header,autowidth"]
+|===
+|Name |Description |Type |Default |Required
+|[[input_config]] <<input_config,config>>
+|Service Configuration
+|
+
+[source]
+----
+object({
+    service_id     = string,
+    display_name   = string,
+    compartment_id = string,
+    deployment_type    = string,
+    freeform_tags  = map(any)
+  })
+----
+
+|n/a
+|yes
+
+|[[input_network]] <<input_network,network>>
+|Settings for the virtual cloud network
+|
+
+[source]
+----
+object({
+    address_spaces                  = map(string),  # Network address prefix in CIDR notation that all of the requested subnetwork prefixes will be allocated within.
+    subnet_list                     = map(number), # A list of objects describing requested subnetwork prefixes. new_bits is the number of additional network prefix bits to add, in addition to the existing prefix on base_cidr_block.
+    create_drg                      = bool,
+    block_nat_traffic               = bool,   # Whether or not to block traffic through NAT gateway
+    service_gateway_cidr            = string # The OSN service cidr accessible through Service Gateway"
+  })
+----
+
+|n/a
+|yes
+
+|[[input_segment]] <<input_segment,segment>>
+|Identify the domain, use a unique number
+|`number`
+|n/a
+|yes
+
+|===
+
+Parameter definitions can be found in the link:/doc/glossary.adoc[glossary]
+
+== Outputs
+
+[cols="a,a",options="header,autowidth"]
+|===
+|Name |Description
+|[[output_anywhere]] <<output_anywhere,anywhere>> |Echoes back the anywhere setting for the vcn module
+|[[output_cidr_block]] <<output_cidr_block,cidr_block>> |Echoes back the base_cidr_block input variable value, for convenience if passing the result of this module elsewhere as an object.
+|[[output_drg_id]] <<output_drg_id,drg_id>> |Dynamic Routing Gateway
+|[[output_internet_id]] <<output_internet_id,internet_id>> |Internet Gateway
+|[[output_nat_id]] <<output_nat_id,nat_id>> |NAT Gateway
+|[[output_osn]] <<output_osn,osn>> |Oracle Service Network
+|[[output_osn_id]] <<output_osn_id,osn_id>> |Service Gateway
+|[[output_osn_route_table_id]] <<output_osn_route_table_id,osn_route_table_id>> |Route traffic to the Oracle Service Network
+|[[output_nat_route_table_id]] <<output_nat_route_table_id,nat_route_table_id>> |Route traffic inside the VCN
+|[[output_internet_route_table_id]] <<output_internet_route_table_id,internet_route_table_id>> |Route traffic to the anywhere address space
+|[[output_security_group]] <<output_security_group,security_group>> |Security Group
+|[[output_subnets]] <<output_subnets,subnets>> |A list of objects corresponding to each of the objects in the input variable 'networks', each extended with a new attribute 'cidr_block' giving the network's allocated address prefix.
+|[[output_vcn_id]] <<output_vcn_id,vcn_id>> |Virtual Cloud Network
+|===

@@ -1,0 +1,79 @@
+[
+    {
+        "name"     : "cloudops",
+        "channels" : ["events"],
+        "rules" : [
+            "Allow group ${service}_cloudops to read users in compartment ${service}",
+            "Allow group ${service}_cloudops to read groups in compartment ${service}",
+            "Allow group ${service}_cloudops to manage users in compartment ${service}",
+            "Allow group ${service}_cloudops to manage groups in compartment ${service} where target.group.name = '${service}_cloudops'",
+            "Allow group ${service}_cloudops to manage groups in compartment ${service} where target.group.name = '${service}_secops'"
+        ]
+    },
+    {
+        "name"     : "auditor",
+        "channels" : ["activation"],
+        "rules" : [
+            "Allow group ${service}_auditor to inspect all-resources in compartment ${service}", 
+            "Allow group ${service}_auditor to read instances in compartment ${service}",
+            "Allow group ${service}_auditor to read audit-events in compartment ${service}"
+        ]
+    },
+    {
+        "name"     : "secops",
+        "channels" : ["events"],
+        "rules" : [
+            "Allow group ${service}_secops to manage security-lists in compartment ${service}",
+            "Allow group ${service}_secops to manage internet-gateways in compartment ${service}",
+            "Allow group ${service}_secops to manage cpes in compartment ${service}",
+            "Allow group ${service}_secops to manage ipsec-connections in compartment ${service}",
+            "Allow group ${service}_secops to use virtual-network-family in compartment ${service}",
+            "Allow group ${service}_secops to manage load-balancers in compartment ${service}",
+            "Allow group ${service}_secops to read all-resources in compartment ${service}"
+        ]
+    },
+    {
+        "name"     : "sysops",
+        "channels" : ["events"],
+        "rules" : [
+            "Allow group ${service}_sysops to read all-resources in compartment ${service}_application_compartment",
+            "Allow group ${service}_sysops to use volume-family in compartment ${service}_application_compartment",
+            "Allow group ${service}_sysops to use virtual-network-family in compartment ${service}_application_compartment",
+            "Allow group ${service}_sysops to manage instances in compartment ${service}_application_compartment",
+            "Allow group ${service}_sysops to manage instance-images in compartment ${service}_application_compartment",
+            "Allow group ${service}_sysops to manage object-family in compartment ${service}_application_compartment"
+        ]
+    },
+    {
+        "name"     : "dba",
+        "channels" : ["events"],
+        "rules" : [
+            "Allow group ${service}_dba to manage database-family in compartment ${service}_database_compartment",
+            "Allow group ${service}_dba to read all-resources in compartment ${service}_database_compartment",
+            "Allow group ${service}_dba to manage subnets in compartment ${service}_database_compartment",
+            "Allow group ${service}_dba to use bastion in compartment ${service}_application_compartment",
+            "Allow group ${service}_dba to manage bastion-session in compartment ${service}_application_compartment",
+            "Allow group ${service}_dba to manage virtual-network-family in compartment ${service}_application_compartment",
+            "Allow group ${service}_dba to read instance-family in compartment ${service}_application_compartment",
+            "Allow group ${service}_dba to read instance-agent-plugins in compartment ${service}_application_compartment",
+            "Allow group ${service}_dba to inspect work-requests in compartment ${service}_application_compartment"
+        ]
+    },
+    {
+        "name"     : "netops",
+        "channels" : ["events"],
+        "rules" : [
+            "Allow group ${service}_netops to read all-resources in compartment ${service}_network_compartment",
+            "Allow group ${service}_netops to manage virtual-network-family in compartment ${service}_network_compartment",
+            "Allow group ${service}_netops to manage dns in compartment ${service}_network_compartment",
+            "Allow group ${service}_netops to manage load-balancers in compartment ${service}_network_compartment",
+            "Allow group ${service}_netops to manage alarms in compartment ${service}_network_compartment",
+            "Allow group ${service}_netops to manage metrics in compartment ${service}_network_compartment",
+            "Allow group ${service}_netops to manage orm-stacks in compartment ${service}_network_compartment",
+            "Allow group ${service}_netops to manage orm-jobs in compartment ${service}_network_compartment",
+            "Allow group ${service}_netops to manage orm-config-source-providers in compartment ${service}_network_compartment",
+            "Allow group ${service}_netops to read audit-events in compartment ${service}_network_compartment",
+            "Allow group ${service}_netops to read vss-family in compartment ${service}_network_compartment"
+        ]
+    }
+]

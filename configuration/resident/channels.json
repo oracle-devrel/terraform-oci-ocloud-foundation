@@ -1,0 +1,17 @@
+[
+    {
+        "name"    : "activation",
+        "type"    : "EMAIL",
+        "address" : "ace_de@oracle.com"
+    },
+    {
+        "name"    : "events",
+        "type"    : "EMAIL",
+        "address" : "${owner}"
+    },
+    {
+        "name"    : "incident",
+        "type"    : "SLACK",
+        "address" : "https://bit.ly/3iqR5H8"
+    }
+]

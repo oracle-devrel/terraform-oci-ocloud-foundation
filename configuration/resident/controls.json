@@ -1,0 +1,17 @@
+[
+    {
+        "name"    : "budget",
+        "stage"   : 1,
+        "tags"    : ["cost_center", "cost_type", "created_by", "created_on"]
+    },
+    {
+        "name"    : "operation",
+        "stage"   : 0,
+        "tags"    : ["application", "version", "last_updated"]
+    },
+    {
+        "name"    : "governance",
+        "stage"   : 2,
+        "tags"    : ["confidentiality"]
+    }
+]

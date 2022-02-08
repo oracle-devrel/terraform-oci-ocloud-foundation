@@ -1,0 +1,58 @@
+[
+    {
+        "topology" : "host",
+        "name"     : "presentation",
+        "newbits"  : 3,
+        "disable_nat" : false,
+        "firewall" : "web"
+    },
+    {
+        "topology" : "host",
+        "name"     : "application",
+        "newbits"  : 3,
+        "disable_nat" : false,
+        "firewall" : "business"
+    },
+    {
+        "topology" : "host",
+        "name"     : "database",
+        "newbits"  : 3,
+        "disable_nat" : false,
+        "firewall" : "data"
+    },
+    {
+        "topology" : "nodes",
+        "name"     : "frontend",
+        "newbits"  : 3,
+        "disable_nat" : false,
+        "firewall" : "web"
+    },
+    {
+        "topology" : "nodes",
+        "name"     : "backend",
+        "newbits"  : 3,
+        "disable_nat" : false,
+        "firewall" : "data"
+    },
+    {
+        "topology" : "container",
+        "name"     : "loadbalancer",
+        "newbits"  : 3,
+        "disable_nat" : false,
+        "firewall" : "web"
+    },
+    {
+        "topology" : "container",
+        "name"     : "worker",
+        "newbits"  : 3,
+        "disable_nat" : false,
+        "firewall" : "business"
+    },
+    {
+        "topology" : "container",
+        "name"     : "master",
+        "newbits"  : 3,
+        "disable_nat" : false,
+        "firewall" : "data"
+    }
+]
