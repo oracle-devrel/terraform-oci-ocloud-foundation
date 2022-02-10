@@ -35,17 +35,13 @@ data "oci_identity_compartments" "network" {
 }
 
 data "oci_core_drgs" "segment" {
-    depends_on = [
-        oci_core_drg.segment
-    ]
+    depends_on = [oci_core_drg.segment]
     count          = var.network.gateways.drg.create == true ? 1 : 0
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
 }
 
 data "oci_core_internet_gateways" "segment" {
-    depends_on = [
-        oci_core_internet_gateway.segment
-    ]
+    depends_on = [oci_core_internet_gateway.segment]
     count          = var.network.gateways.internet.create == true ? 1 : 0
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     display_name   = var.network.gateways.internet.name
@@ -54,9 +50,7 @@ data "oci_core_internet_gateways" "segment" {
 }
 
 data "oci_core_nat_gateways" "segment" {
-    depends_on = [
-        oci_core_nat_gateway.segment
-    ]
+    depends_on = [oci_core_nat_gateway.segment]
     count          = var.network.gateways.nat.create == true ? 1 : 0
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     display_name   = var.network.gateways.nat.name
@@ -65,9 +59,7 @@ data "oci_core_nat_gateways" "segment" {
 }
 
 data "oci_core_service_gateways" "segment" {
-    depends_on = [
-        oci_core_service_gateway.segment
-    ]
+    depends_on = [oci_core_service_gateway.segment]
     count          = var.network.gateways.osn.create == true ? 1 : 0
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     state          = "AVAILABLE"
@@ -75,11 +67,21 @@ data "oci_core_service_gateways" "segment" {
 }
 
 data "oci_core_route_tables" "default_route_table" {
+    depends_on     = [oci_core_vcn.segment]
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     display_name   = "Default Route Table for organization_service_dev_1" 
     state          = "AVAILABLE"
     vcn_id         = oci_core_vcn.segment.id
 }
+
+data "oci_core_security_lists" "default_security_list" {
+    depends_on     = [oci_core_vcn.segment]
+    compartment_id = data.oci_identity_compartments.network.compartments[0].id
+    display_name   = "Default Security List for organization_service_dev_1"
+    state          = "AVAILABLE"
+    vcn_id         = oci_core_vcn.segment.id
+}
+
 
 locals {
     gateways = zipmap(

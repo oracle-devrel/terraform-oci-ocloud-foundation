@@ -27,7 +27,17 @@ output "default_route_table" {
 }
 // --- Routing ---//
 
-/*/ --- Security ---//
+// --- Security ---//
+output "security_lists" {
+    description = "All security lists defined for the Virtual Cloud Network (VCN)"
+    value       = { for list in oci_core_security_list.segment : list.display_name => list.id }
+}
+
+output "default_security_list" {
+    value = data.oci_core_security_lists.default_security_list.security_lists[0].id
+}
+
+/*
 output "security_groups" {
     description = "Security Group"
     value       = length(oci_core_network_security_group.segment) > 0 ? oci_core_network_security_group.segment[*].id : null

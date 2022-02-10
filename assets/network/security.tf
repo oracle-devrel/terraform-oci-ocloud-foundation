@@ -113,9 +113,9 @@ resource "oci_core_security_list" "segment" {
 ## Create default security groups
 resource "oci_core_network_security_group" "segment" {
     depends_on     = [ oci_core_vcn.segment ]
-    count          = length(var.vcn.security_groups)
+    count          = length(var.network.security_groups)
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
-    display_name   = var.vcn.security_groups[count.index]
+    display_name   = var.network.security_groups[count.index]
     vcn_id         = oci_core_vcn.segment.id
     defined_tags   = local.defined_tags
     freeform_tags  = local.freeform_tags
