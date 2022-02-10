@@ -16,7 +16,7 @@ output "gateways" {
     value = local.gateways
 }
 
-/*/ --- Routing ---//
+// --- Routing ---//
 output "route_tables" {
     description = "A list of route_tables for the Virtual Cloud Network (VCN)"
     value       = { for table in oci_core_route_table.segment : table.display_name => table.id }
@@ -25,7 +25,7 @@ output "route_tables" {
 output "default_route_table" {
     value = data.oci_core_route_tables.default_route_table.route_tables[0].id
 }
-// --- Routing ---/*/
+// --- Routing ---//
 
 /*/ --- Security ---//
 output "security_groups" {

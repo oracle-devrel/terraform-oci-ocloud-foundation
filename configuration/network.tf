@@ -44,23 +44,25 @@ output "network" {
             #route_table    = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_${subnet.route}_route"
             #disable_nat    = subnet.disable_nat
         } if contains(segment.topology, subnet.topology)}
-        security_lists = {for subnet in local.subnets : subnet.name => {
-            display_name = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_${subnet.name}_firewall"
-            tcp_ingress = [for firewall in local.firewalls : {for traffic in firewall.incoming : traffic.zone => {for port in traffic.ports: port => { 
-                description = "Allow incoming ${port} traffic from the ${traffic.zone} to the ${firewall.name} tier"
-                source      = matchkeys(values(local.zones[segment.name]), keys(local.zones[segment.name]), [traffic.zone])[0]
-                stateless   = traffic.stateless
-                min_port    = matchkeys(local.ports[*].min, local.ports[*].name, [port])[0]
-                max_port    = matchkeys(local.ports[*].max, local.ports[*].name, [port])[0]
-            }}} if firewall.name == subnet.firewall][0]
-        } if contains(segment.topology, subnet.topology)}
         route_tables = {for route in local.routes: route.name => {
             display_name = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_${route.name}_route"
             route_rules  = {for destination in route.destinations: destination => {
                 network_entity   = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_${route.gateway}"
                 destination      = matchkeys(values(local.zones[segment.name]), keys(local.zones[segment.name]), [destination])[0]
+                destination_type = route.gateway == "osn" ? "SERVICE_CIDR_BLOCK" : "CIDR_BLOCK"
                 description      = "Routes ${route.name} traffic to ${destination} via the ${route.gateway} gateway as next hop"
             }} 
+        }}
+        security_lists = {for subnet in local.subnets : subnet.name => { 
+            display_name = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_${subnet.name}_firewall"
+            ingress      = {for traffic in local.firewall_map[subnet.firewall].incoming: "${traffic.firewall}_${traffic.zone}_${traffic.port}" => {
+                protocol    = matchkeys(local.ports[*].protocol, local.ports[*].name, [traffic.port])[0]
+                description = "Allow incoming ${traffic.port} traffic from the ${traffic.zone} to the ${traffic.firewall} tier"
+                source      = matchkeys(values(local.zones[segment.name]), keys(local.zones[segment.name]), [traffic.zone])[0]
+                stateless   = matchkeys(local.ports[*].stateless, local.ports[*].name, [traffic.port])[0]
+                min_port    = matchkeys(local.ports[*].min, local.ports[*].name, [traffic.port])[0]
+                max_port    = matchkeys(local.ports[*].max, local.ports[*].name, [traffic.port])[0]
+            }}
         }}
         security_zones = local.zones
     }if segment.stage <= local.lifecycle[var.input.stage]}

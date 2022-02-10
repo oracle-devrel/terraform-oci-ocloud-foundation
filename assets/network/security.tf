@@ -31,12 +31,11 @@ resource "oci_core_default_security_list" "default_security_list" {
     }
 }
 
-/*
 resource "oci_core_security_list" "segment" {
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     vcn_id         = oci_core_vcn.segment.id
-    for_each       = var.vcn.security_lists
-    display_name   = "${var.network.display_name}_${each.key}"
+    for_each       = var.network.security_lists
+    display_name   = each.value.display_name
 
     // allow outbound tcp traffic to other internal segments
     egress_security_rules {
@@ -48,7 +47,7 @@ resource "oci_core_security_list" "segment" {
     // allow outbound tcp traffic to oracle service network
     egress_security_rules {
         protocol         = "6" // tcp
-        destination      = "all-${lower(var.network.region)}-services-in-oracle-services-network"
+        destination      = "all-${lower(var.service.region.key)}-services-in-oracle-services-network"
         destination_type = "SERVICE_CIDR_BLOCK"
         stateless        = false
         description      = "allow outgoing tcp traffic to osn"
@@ -89,20 +88,26 @@ resource "oci_core_security_list" "segment" {
 
     // allow defined inbound tcp traffic
     dynamic "ingress_security_rules" {
-        for_each = var.vcn.security_lists[each.key].ingress
+        for_each = [for profile in each.value.ingress: {
+            protocol    = profile.protocol
+            source      = profile.source
+            stateless   = profile.stateless
+            description = profile.description
+            min_port    = profile.min_port
+            max_port    = profile.max_port
+        }]
         content {
             protocol    = ingress_security_rules.value.protocol
-            source      = var.network.gateways.drg.anywhere
+            source      = ingress_security_rules.value.source
             stateless   = ingress_security_rules.value.stateless
-            description = "allow incoming ${var.network.gateways.drg.anywhere} traffic"
+            description = ingress_security_rules.value.description
             tcp_options {
-                min  = ingress_security_rules.value.min
-                max  = ingress_security_rules.value.max
+                min  = ingress_security_rules.value.min_port
+                max  = ingress_security_rules.value.max_port
             }
         }
     }
 }
-*/
 
 /*
 ## Create default security groups

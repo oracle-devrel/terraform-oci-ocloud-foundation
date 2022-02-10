@@ -7,12 +7,12 @@
     {
         "name"         : "nat",
         "gateway"      : "nat",
-        "destinations" : ["internet", "osn"]
+        "destinations" : ["internet"]
     },
     {
         "name"         : "osn",
         "gateway"      : "osn",
-        "destinations" : ["osn", "buckets"]
+        "destinations" : ["osn"]
     },
     {
         "name"         : "cpe",

@@ -75,7 +75,6 @@ resource "oci_core_service_gateway" "segment" {
     }
 }
 
-/*
 resource "oci_core_route_table" "segment" {
     depends_on     = [
         oci_core_vcn.segment,
@@ -83,18 +82,18 @@ resource "oci_core_route_table" "segment" {
         oci_core_drg_attachment.segment
     ]
     for_each       = var.network.route_tables
-    display_name   = each.value.name
+    display_name   = each.value.display_name
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     vcn_id         = oci_core_vcn.segment.id
     defined_tags   = var.input.resident.defined_tags
     freeform_tags  = var.input.resident.freeform_tags
 
     dynamic "route_rules" {
-        for_each = [for route in each.value.route_rules: {
-        network_entity   = route.network_entity
-        destination      = route.destination
-        destination_type = route.destination_type
-        description      = route.description
+        for_each = [for rule in each.value.route_rules: {
+        network_entity   = rule.network_entity
+        destination      = rule.destination
+        destination_type = rule.destination_type
+        description      = rule.description
         }]
         content {
         network_entity_id = local.gateways[route_rules.value.network_entity]
@@ -105,6 +104,7 @@ resource "oci_core_route_table" "segment" {
     }
 }
 
+/*
 resource "oci_core_subnet" "segment" {
     depends_on                 = [
         oci_core_default_security_list.default_security_list

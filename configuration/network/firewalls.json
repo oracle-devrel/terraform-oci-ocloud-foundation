@@ -2,48 +2,34 @@
     {
         "name"    : "web",
         "description" : "Allowed ports for the internet facing web tier",
-        "incoming"  : [
-            {
-                "zone"      : "internet",
+        "incoming"  : {
+            "internet" : {
                 "ports"     : ["http", "https"],
                 "stateless" : true
             },
-            {
-                "zone"      : "vcn",
+            "vcn" : {
                 "ports"     : ["http", "https", "ssh"],
                 "stateless" : true
             }
-        ]
+        }
     },
     {
         "name"    : "business",
         "description" : "Allowed ports for the application tier",
-        "incoming"  : [
-            {
-                "zone"      : "internet",
-                "ports"     : ["http", "https"],
-                "stateless" : true
-            },
-            {
-                "zone"      : "vcn",
+        "incoming"  : {
+            "vcn" : {
                 "ports"     : ["http", "https", "ssh"],
                 "stateless" : true
             }
-        ]
+        }
     },{
         "name"    : "data",
         "description" : "Allowed ports for the data tier",
-        "incoming"  : [
-            {
-                "zone"      : "internet",
-                "ports"     : ["http", "https"],
-                "stateless" : true
-            },
-            {
-                "zone"      : "vcn",
+        "incoming"  : {
+            "vcn" : {
                 "ports"     : ["http", "https", "ssh"],
                 "stateless" : true
             }
-        ]
+        }
     }
 ]
