@@ -104,7 +104,6 @@ resource "oci_core_route_table" "segment" {
     }
 }
 
-/*
 resource "oci_core_subnet" "segment" {
     depends_on                 = [
         oci_core_default_security_list.default_security_list
@@ -112,19 +111,11 @@ resource "oci_core_subnet" "segment" {
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     vcn_id         = oci_core_vcn.segment.id
     for_each       = var.network.subnets
-    cidr_block     = each.value.cidr
+    cidr_block     = each.value.cidr_block
     display_name   = each.value.display_name
     dns_label      = each.value.dns_label
     defined_tags   = var.input.resident.defined_tags
     freeform_tags  = var.input.resident.freeform_tags
     #route_table_id = lookup({ for table in oci_core_route_table.segment : table.display_name => table.id }, each.value.route_table, data.oci_core_route_tables.default_route_table.route_tables[0].id)
-
-    #Optional
-    #availability_domain = var.subnet_availability_domain
-    #dhcp_options_id = oci_core_dhcp_options.test_dhcp_options.id
-    #ipv6cidr_block = var.subnet_ipv6cidr_block
-    #prohibit_internet_ingress = var.subnet_prohibit_internet_ingress
-    #prohibit_public_ip_on_vnic = var.subnet_prohibit_public_ip_on_vnic
-    #security_list_ids = var.subnet_security_list_ids
+    security_list_ids = [lookup({for list in oci_core_security_list.segment : list.display_name => list.id }, each.value.security_list, data.oci_core_security_lists.default_security_list.security_lists[0].id)]
 }
-*/
