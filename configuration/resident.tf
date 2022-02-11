@@ -17,7 +17,7 @@ output "resident" {
             protocol  = channel.type
             endpoint  = channel.address
         } if contains(distinct(flatten("${var.input.domains[*].channels}")), channel.name)}
-        tag_namespaces = local.tag_namespaces 
+        tag_namespaces = {for namespace in local.controls : "${local.service_name}_${namespace.name}" => namespace.stage}
         tags = {for tag in local.tags : tag.name => {
             name          = tag.name
             namespace     = local.tag_map[tag.name]

@@ -38,10 +38,10 @@ locals {
         lower(substr(var.input.stage, 0, 3)),
     )
     classification = {
-        free_tier   = 0
-        commercial  = 1
-        enterprise  = 2
-        high_secure = 3
+        free_tier  = 0
+        paid       = 1
+        enterprise = 2
+        premium    = 3
     }
     lifecycle = {
         DEV  = 0
