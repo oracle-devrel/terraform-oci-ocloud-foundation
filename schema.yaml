@@ -98,13 +98,11 @@ variables:
       - enterprise
       - premium
 
-
-
   repository:
     title: "Source Code URL"
     description: "Provide an URL to your IaC repository"
     type: string
-    default: "https://gitlab.com/infracoding/brose_blockchain"
+    default: "https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone"
     required: false
 
   owner:
