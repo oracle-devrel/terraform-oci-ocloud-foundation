@@ -75,7 +75,7 @@ resource "oci_ons_notification_topic" "resident" {
     ]
     compartment_id = oci_identity_compartment.resident.id
     for_each       = var.resident.notifications
-    name           = each.key
+    name           = each.value.topic
     description    = "informs the admin about the deployment of ${var.service.name}"
     defined_tags   = local.defined_tags
     freeform_tags  = local.freeform_tags

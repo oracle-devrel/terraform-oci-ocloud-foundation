@@ -74,15 +74,6 @@ data "oci_core_route_tables" "default_route_table" {
     vcn_id         = oci_core_vcn.segment.id
 }
 
-data "oci_core_security_lists" "default_security_list" {
-    depends_on     = [oci_core_vcn.segment]
-    compartment_id = data.oci_identity_compartments.network.compartments[0].id
-    display_name   = "Default Security List for organization_service_dev_1"
-    state          = "AVAILABLE"
-    vcn_id         = oci_core_vcn.segment.id
-}
-
-
 locals {
     gateways = zipmap(
         compact([
@@ -106,37 +97,10 @@ locals {
         "all"     = lookup(data.oci_core_services.all.services[0], "cidr_block")
         "storage" = lookup(data.oci_core_services.storage.services[0], "cidr_block")
     }
+    subnets        = {for network in oci_core_subnet.segment : network.display_name => network.id}
+    route_tables   = {for table in oci_core_route_table.segment : table.display_name => table.id}
+    security_lists = {for list in oci_core_security_list.segment : list.display_name => list.id}
 }
-
-/*
-locals {
-
-    subnet_cidrs = zipmap(
-        keys(module.settings.vcns[var.network.name].security_lists),
-        [ for list in module.settings.vcns[var.network.name].security_lists : {
-            for subnet in list.subnets : 
-            subnet => lookup(module.settings.vcns[var.network.name].cidrs, subnet, "") 
-        }]
-    )
-    # Create a map of cidr for all services in the Oracle Services Netwqork (OSN)
-    #osn_cidrs        = { for service in data.oci_core_services.all[0].services : service.cidr_block => service.id }
-
-
-    ingress_filter {
-        application = [ local.allowing["ingress"] ]
-    }
-    connections = {
-        cloud    = var.vcn.drg.vcn
-        anywhere = var.vcn.drg.anywhere
-        onprem   = var.vcn.drg.cpe
-    }
-    allow = {
-        ingress = { for zone in local.security_zones : "${zone}_ingress" => var.vcn.security_lists[zone].ingress... }
-        egress =  { for zone in local.security_zones : "${zone}_egress"  => var.vcn.security_lists[zone].egress...  }
-    }
-    security_zones = keys(var.vcn.security_lists)
-}
-*/
 
 // Define the wait state for the data requests
 resource "null_resource" "previous" {}

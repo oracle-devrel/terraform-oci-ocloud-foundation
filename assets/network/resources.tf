@@ -116,6 +116,6 @@ resource "oci_core_subnet" "segment" {
     dns_label      = each.value.dns_label
     defined_tags   = var.input.resident.defined_tags
     freeform_tags  = var.input.resident.freeform_tags
-    #route_table_id = lookup({ for table in oci_core_route_table.segment : table.display_name => table.id }, each.value.route_table, data.oci_core_route_tables.default_route_table.route_tables[0].id)
-    security_list_ids = [lookup({for list in oci_core_security_list.segment : list.display_name => list.id }, each.value.security_list, data.oci_core_security_lists.default_security_list.security_lists[0].id)]
+    #route_table_id = local.route_tables[each.value.route_table]
+    security_list_ids = ["${local.security_lists[each.value.security_list]}"]
 }

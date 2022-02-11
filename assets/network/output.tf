@@ -16,25 +16,22 @@ output "gateways" {
     value = local.gateways
 }
 
+output "subnets" {
+    description = "A list of subnets for the Virtual Cloud Network (VCN)"
+    value       = local.subnets
+}
+
 // --- Routing ---//
 output "route_tables" {
     description = "A list of route_tables for the Virtual Cloud Network (VCN)"
-    value       = { for table in oci_core_route_table.segment : table.display_name => table.id }
-}
-
-output "default_route_table" {
-    value = data.oci_core_route_tables.default_route_table.route_tables[0].id
+    value       = local.route_tables
 }
 // --- Routing ---//
 
 // --- Security ---//
 output "security_lists" {
     description = "All security lists defined for the Virtual Cloud Network (VCN)"
-    value       = { for list in oci_core_security_list.segment : list.display_name => list.id }
-}
-
-output "default_security_list" {
-    value = data.oci_core_security_lists.default_security_list.security_lists[0].id
+    value       = local.route_tables
 }
 
 /*

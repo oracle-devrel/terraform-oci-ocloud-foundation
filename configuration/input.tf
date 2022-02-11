@@ -48,11 +48,11 @@ locals {
         TEST = 1 
         PROD = 2
     }
-    tag_namespaces = {for namespace in local.controls : namespace.name => namespace.stage} 
+    tag_namespaces = {for namespace in local.controls : "${local.service_name}_${namespace.name}" => namespace.stage}  
     # Merge tags with with the respective namespace information
     tag_map = zipmap(
         flatten([for tag in local.controls[*].tags : tag]),
-        flatten([for control in local.controls : [for tag in control.tags : control.name]])
+        flatten([for control in local.controls : [for tag in control.tags : "${local.service_name}_${control.name}"]])
     ) 
     freeform_tags = {
         "framework" = "ocloud"

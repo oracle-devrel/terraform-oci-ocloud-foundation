@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 
-title: "OCloud Landing Zone"
+title: "oCloud Framwork: Service Residency"
 description: "The landing zone template creates a foundation for application deployments in Oracle Cloud Infrastructure"
 informationalText: "The 'ocloud' framework helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). A base set of resources is provisioned and configured. This framework aims to ease migrations for enterprise applications."
 schemaVersion: 1.1.0
@@ -70,7 +70,7 @@ variables:
     required: true
 
   solution:
-    title: "Project or Program"
+    title: "Service Name"
     description: "Identifier for the service delivery platform"
     type: string
     required: true

@@ -12,8 +12,8 @@ output "resident" {
             compartment = local.group_map[role.name]
             rules       = role.rules
         }if contains(keys(local.group_map), role.name) }
-        notifications = {for channel in local.channels : channel.name => {
-            topic     = channel.name
+        notifications = {for channel in local.channels : "${local.service_name}_${channel.name}" => {
+            topic     = "${local.service_name}_${channel.name}"
             protocol  = channel.type
             endpoint  = channel.address
         } if contains(distinct(flatten("${var.input.domains[*].channels}")), channel.name)}
