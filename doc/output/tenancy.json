@@ -1,0 +1,9 @@
+{
+    "buckets": "namespace",
+    "class":   2,
+    "id":      "ocid1.tenancy.oc1..xxx",
+    "region":{
+        "key":"IAD",
+        "name":"us-ashburn-1"
+    }
+}

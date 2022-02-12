@@ -1,0 +1,30 @@
+{
+    "core": {
+        "compartment_id":"ocid1.compartment.oc1..xxx",
+        "vcn_id":"ocid1.vcn.oc1.iad.xxx",
+        "default_route_table":"ocid1.routetable.oc1.iad.xxx",
+        "default_security_list":"ocid1.securitylist.oc1.iad.xxx",
+        "gateways": {
+            "organization_service_dev_1_drg":"ocid1.drg.oc1.iad.xxx",
+            "organization_service_dev_1_internet":"ocid1.internetgateway.oc1.iad.xxx",
+            "organization_service_dev_1_nat":"ocid1.natgateway.oc1.iad.xxx",
+            "organization_service_dev_1_osn":"ocid1.servicegateway.oc1.iad.xxx"
+        },
+        "route_tables": {
+            "organization_service_dev_1_cpe_route":"ocid1.routetable.oc1.iad.xxx",
+            "organization_service_dev_1_internet_route":"ocid1.routetable.oc1.iad.xxx",
+            "organization_service_dev_1_nat_route":"ocid1.routetable.oc1.iad.xxx",
+            "organization_service_dev_1_osn_route":"ocid1.routetable.oc1.iad.xxx"
+        },
+        "security_lists": {
+            "organization_service_dev_1_application_firewall":"ocid1.securitylist.oc1.iad.xxx",
+            "organization_service_dev_1_backend_firewall":"ocid1.securitylist.oc1.iad.xxx",
+            "organization_service_dev_1_database_firewall":"ocid1.securitylist.oc1.iad.xxx",
+            "organization_service_dev_1_frontend_firewall":"ocid1.securitylist.oc1.iad.xxx",
+            "organization_service_dev_1_loadbalancer_firewall":"ocid1.securitylist.oc1.iad.xxx",
+            "organization_service_dev_1_master_firewall":"ocid1.securitylist.oc1.iad.xxx",
+            "organization_service_dev_1_presentation_firewall":"ocid1.securitylist.oc1.iad.xxx",
+            "organization_service_dev_1_worker_firewall":"ocid1.securitylist.oc1.iad.xxx"
+        }
+    }
+}
