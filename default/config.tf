@@ -1,8 +1,9 @@
 // Copyright (c) 2020 Oracle and/or its affiliates.
 // Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-# readme.md created with https://terraform-docs.io/: terraform-docs markdown --sort=false ./ > ./readme.md
 
-// --- Terraform Provider --- //
+// readme.md created with https://terraform-docs.io/: terraform-docs markdown --sort=false ./ > ./readme.md
+
+// --- provider seetings --- //
 terraform {
     required_providers {
         oci = {
@@ -10,9 +11,9 @@ terraform {
         }
     }
 }
-// --- Terraform Provider --- //
+// --- provider seetings --- //
 
-// --- Tenancy Configuration ---//
+// --- service configuration ---//
 data "oci_identity_tenancy"      "resident" {tenancy_id = var.input.tenancy}
 data "oci_identity_regions"      "tenancy" { }
 data "oci_identity_availability_domains" "tenancy" {compartment_id = var.input.tenancy}
@@ -62,4 +63,4 @@ locals {
         "storage" = lookup(data.oci_core_services.storage.services[0], "cidr_block")
     }
 }
-// --- Tenancy Configuration ---//
+// --- service configuration ---//

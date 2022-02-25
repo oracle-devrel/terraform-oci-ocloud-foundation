@@ -1,6 +1,6 @@
 ## Requirements
 
-No requirements.
+This is the resident module for the [ocloud framework](https://github.com/oracle-devrel/terraform-oci-ocloud-configuration). It prepares a tenancy to host an isolated service in an own [network segment](https://github.com/oracle-devrel/terraform-oci-ocloud-asset-network). 
 
 ## Providers
 
@@ -12,7 +12,8 @@ No requirements.
 
 ## Modules
 
-No modules.
+* [Default Configuration](https://github.com/oracle-devrel/terraform-oci-ocloud-configuration)
+* [Service Resident](https://github.com/oracle-devrel/terraform-oci-ocloud-configuration)
 
 ## Resources
 

@@ -5,8 +5,15 @@ output "resident" {
     value = {
         owner        = var.input.owner
         repository   = var.input.repository
-        compartments = {for domain in var.input.domains : "${local.service_name}_${domain.name}_compartment" => domain.stage}
-        groups       = {for role in flatten(var.input.domains[*].roles) : role => "${local.service_name}_${role}"}
+        name         = local.service_name
+        label        = local.service_label
+        stage        = local.lifecycle[var.input.stage]
+        region       = {
+            key  = local.region_key
+            name = local.region_name
+        }
+        compartments = {for domain in var.resolve.domains : "${local.service_name}_${domain.name}_compartment" => domain.stage}
+        groups       = {for role in flatten(var.resolve.domains[*].roles) : role => "${local.service_name}_${role}"}
         policies     = {for role in local.roles : role.name => {
             name        = "${local.service_name}_${role.name}"
             compartment = local.group_map[role.name]
@@ -16,7 +23,7 @@ output "resident" {
             topic     = "${local.service_name}_${channel.name}"
             protocol  = channel.type
             endpoint  = channel.address
-        } if contains(distinct(flatten("${var.input.domains[*].channels}")), channel.name)}
+        } if contains(distinct(flatten("${var.resolve.domains[*].channels}")), channel.name)}
         tag_namespaces = {for namespace in local.controls : "${local.service_name}_${namespace.name}" => namespace.stage}
         tags = {for tag in local.tags : tag.name => {
             name          = tag.name

@@ -2,15 +2,14 @@
 // Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 output "network" { 
-    value = { for segment in var.input.segments : segment.name => {
+    value = { for segment in var.resolve.segments : segment.name => {
         name         = segment.name
         region       = var.input.region
         display_name = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}"
         dns_label    = "${local.service_label}${index(local.vcn_list, segment.name) + 1}"
-        compartment  = contains(flatten(var.input.domains[*].name), "network") ? "${local.service_name}_network_compartment" : local.service_name
+        compartment  = contains(flatten(var.resolve.domains[*].name), "network") ? "${local.service_name}_network_compartment" : local.service_name
         stage        = segment.stage
         cidr         = segment.cidr
-        ipv6         = segment.ipv6
         gateways = {
             drg = {
                 name     = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_drg"
@@ -21,17 +20,13 @@ output "network" {
             }
             internet = {
                 name   = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_internet"
-                create = segment.internet == "ENABLE" ? true : false
             }
             nat = {
                 name          = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_nat"
-                create        = segment.nat == "ENABLE" ? true : false
-                block_traffic = segment.nat == "DISABLE" ? true : false
             }
             osn = {
                 name     = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_osn"
-                create   = segment.osn != "DISABLE" ? true : false
-                services = segment.osn == "ALL" ? "all" : "storage"
+                services = var.input.osn == "ALL" ? "all" : "storage"
                 all      = local.osn_cidrs.all
                 storage  = local.osn_cidrs.storage
             }
@@ -44,7 +39,7 @@ output "network" {
             #route_table   = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_${route.name}_route"
             security_list = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_${subnet.name}_firewall"
 
-        } if contains(segment.topology, subnet.topology)}
+        } if contains(var.resolve.topologies, subnet.topology)}
         route_tables = {for route in local.routes: route.name => {
             display_name = "${local.service_name}_${index(local.vcn_list, segment.name) + 1}_${route.name}_route"
             route_rules  = {for destination in route.destinations: destination => {

@@ -2,123 +2,200 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 
-title: "oCloud Framwork: Service Residency"
-description: "The landing zone template creates a foundation for application deployments in Oracle Cloud Infrastructure"
-informationalText: "The 'ocloud' framework helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). A base set of resources is provisioned and configured. This framework aims to ease migrations for enterprise applications."
+title: "ocloud Framwork: Service Configuration"
+description: "The ocloud framwork creates a foundation for application deployments in Oracle Cloud Infrastructure"
+informationalText: "This framework helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). A base set of resources is provisioned and configured."
 schemaVersion: 1.1.0
 version: "20210611"
 locale: "en"
 
 variableGroups:
-- title: "Stack Identifier"
-  visible: false
+- title: "Tenancy"
+  visible: true
   variables:
   - tenancy_ocid
+  - class
+
+- title: "Service Resident"
+  visible: true
+  variables:
+  - parent
   - compartment_ocid
   - region
   - current_user_ocid
-  
-- title: "Service Configuration"
-  visible: true
-  variables:
   - organization
   - solution
-  - class
-  - stage
-
-- title: "Operator Details"
-  visible: true
-  variables:
   - owner
+  - stage
   - repository
 
-- title: "Teancy Configuration"
-  visible: false
+- title: "Service Topology"
+  visible: true
   variables:
-  - domains
-  - segments
+  - host
+  - nodes
+  - container
+
+- title: "Network Options"
+  visible: true
+  variables:
+  - ipv6
+  - internet
+  - nat
+  - osn
+
+- title: "Domain Settings"
+  visible: true
+  variables:
+  - amend
 
 variables:
+# Tenancy
   tenancy_ocid:
     title: "Tenancy ID"
     description: "The Oracle Cloud Identifier for your tenancy"
+    visible: false
     type: string
     required: true
 
+  class:
+    title: "Classification"
+    description: "Selecting the Universal Credit Consumption (UCC) Model preselects appropriate resource types"
+    type: enum
+    default: "FREE_TIER"
+    required: true
+    enum:
+      - FREE_TIER
+      - TRIAL
+      - PAYG
+      - UCC
+
+# Service Configuration
   compartment_ocid:
     title: "Compartment ID"
     description: "The Oracle Cloud Identifier for your compartment"
+    visible: false
     type: string
     required: true
 
   region:
     title: "Home Region"
     description: "The Oracle Cloud Identifier for your home region"
+    visible: false
     type: string
     required: true
   
   current_user_ocid:
     title: "User ID"
     description: "The Oracle Cloud Identifier for the current user"
+    visible: false
     type: string
+    required: true
+  
+  parent:
+    title: "Parent Compartment"
+    description: "The Oracle Cloud Identifier for the root compartment. The default should only be changed by experienced users."
+    type: oci:identity:compartment:id
+    dependsOn:
+      compartmentId: tenancy_ocid
+      accessLevel: ANY
+      lifecycleState: ACTIVE
+    default: tenancy_ocid
     required: true
 
   organization:
     title: "Organization"
-    description: "Identifier for the organization or platform owner"
+    description: "Identifier for the organization, owning the service"
     type: string
+    default: "Organization"
+    minLength: 1
+    maxLength: 25
+    pattern: "^[a-zA-Z]+$"
     required: true
 
   solution:
-    title: "Service Name"
-    description: "Identifier for the service delivery platform"
+    title: "Name"
+    description: "Identifier for the service, the name should be unique within the tenancy"
     type: string
+    default: "Service"
+    minLength: 1
+    maxLength: 25
+    pattern: "^[a-zA-Z]+$"
     required: true
 
   stage:
     title: "Lifecycle Stage"
-    description: "Define the CI/CD process stage, e.g. dev, uat, prod"
+    description: "Selecting the lifecycle stage preselects an appropriate collection of operational controls"
     type: enum
     default: "DEV"
     required: true
     enum:
       - DEV
-      - TEST
+      - UAT
       - PROD
-  
-  class:
-    title: "Classification"
-    description: "Define the resource bundle to be provisioned"
-    type: enum
-    default: "enterprise"
-    required: true
-    enum:
-      - free_tier
-      - paid
-      - enterprise
-      - premium
 
   repository:
     title: "Source Code URL"
     description: "Provide an URL to your IaC repository"
     type: string
-    default: "https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone"
     required: false
 
   owner:
-    title: "Service Owner"
-    description: "Provide an eMail address for the technical administrator of your project"
-    type: string
-    required: true
-  
-  domains:
-    title: "Administrator Domains"
-    description: "Enabling a seperation of concerns"
+    title: "Owner"
+    description: "Provide an eMail address for the technical administrator"
     type: string
     required: true
 
-  segments:
-    title: "Network Segments"
-    description: "Defining a network topology"
-    type: string
+# Service Topology
+  host:
+    type: boolean
+    title: "Enterprise Service"
+    required: false
+
+  nodes:
+    type: boolean
+    title: "Cloud Service"
+    required: false
+
+  container:
+    type: boolean
+    title: "Container Service"
+    required: false
+
+# Network Options
+  ipv6:
+    type: boolean
+    title: "IPv6"
+    required: true
+    default: false
+
+  internet:
+    type: enum
+    title: "Internet access"
+    required: true
+    enum:
+      - ENABLE
+      - DISABLE
+
+  nat:
+    type: enum
+    title: "NAT for private subnets"
+    required: true
+    enum:
+      - ENABLE
+      - DISABLE
+
+  osn:
+    type: enum
+    title: "Scope of Oracle Cloud Services, attached to the service resident."
+    required: true
+    enum:
+      - ALL
+      - STORAGE
+      - DISABLE
+
+# Administration Domains
+  amend:
+    type: boolean
+    title: "Allow administrator domains to be destroyed?"
     required: true

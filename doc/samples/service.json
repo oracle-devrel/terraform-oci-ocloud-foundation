@@ -1,9 +1,0 @@
-{
-    "label":  "orgsedev",
-    "name":   "organization_service_dev",
-    "stage":  0,
-    "region": {
-        "key": "IAD",
-        "name": "us-ashburn-1"
-    }
-}

@@ -7,9 +7,9 @@ resource "oci_core_vcn" "segment" {
     display_name   = var.network.display_name
     dns_label      = var.network.dns_label
     cidr_block     = var.network.cidr
-    is_ipv6enabled = var.network.ipv6
-    defined_tags   = var.input.resident.defined_tags
-    freeform_tags  = var.input.resident.freeform_tags
+    is_ipv6enabled = var.input.ipv6
+    defined_tags   = var.assets.resident.defined_tags
+    freeform_tags  = var.assets.resident.freeform_tags
 }
 
 resource "oci_core_drg" "segment" {
@@ -17,8 +17,8 @@ resource "oci_core_drg" "segment" {
     count          = var.network.gateways.drg.create == true ? 1 : 0
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     display_name   = var.network.gateways.drg.name
-    defined_tags   = var.input.resident.defined_tags
-    freeform_tags  = var.input.resident.freeform_tags
+    defined_tags   = var.assets.resident.defined_tags
+    freeform_tags  = var.assets.resident.freeform_tags
 }
 
 resource "oci_core_drg_attachment" "segment" {
@@ -42,33 +42,33 @@ resource "oci_core_drg_attachment" "segment" {
 
 resource "oci_core_internet_gateway" "segment" {
     depends_on     = [oci_core_vcn.segment]
-    count          = var.network.gateways.internet.create == true ? 1 : 0
+    count          = var.input.internet == "ENABLE" ? 1 : 0
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     vcn_id         = oci_core_vcn.segment.id
     display_name   = var.network.gateways.internet.name
-    defined_tags   = var.input.resident.defined_tags
-    freeform_tags  = var.input.resident.freeform_tags
+    defined_tags   = var.assets.resident.defined_tags
+    freeform_tags  = var.assets.resident.freeform_tags
 }
 
 resource "oci_core_nat_gateway" "segment" {
     depends_on     = [oci_core_vcn.segment]
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     vcn_id         = oci_core_vcn.segment.id
-    count          = var.network.gateways.nat.create == true ? 1 : 0
+    count          = var.input.nat == "ENABLE" ? 1 : 0
     display_name   = var.network.gateways.nat.name
-    block_traffic  = var.network.gateways.nat.block_traffic
-    defined_tags   = var.input.resident.defined_tags
-    freeform_tags  = var.input.resident.freeform_tags
+    block_traffic  = var.input.nat == "DISABLE" ? true : false
+    defined_tags   = var.assets.resident.defined_tags
+    freeform_tags  = var.assets.resident.freeform_tags
 }
 
 resource "oci_core_service_gateway" "segment" {
     depends_on     = [oci_core_vcn.segment]
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     vcn_id         = oci_core_vcn.segment.id
-    count          = var.network.gateways.osn.create == true ? 1 : 0
+    count          = var.input.osn != "DISABLE" ? 1 : 0
     display_name   = var.network.gateways.osn.name
-    defined_tags   = var.input.resident.defined_tags
-    freeform_tags  = var.input.resident.freeform_tags
+    defined_tags   = var.assets.resident.defined_tags
+    freeform_tags  = var.assets.resident.freeform_tags
     services {
         #Required
         service_id = local.osn_ids[var.network.gateways.osn.services]
@@ -85,8 +85,8 @@ resource "oci_core_route_table" "segment" {
     display_name   = each.value.display_name
     compartment_id = data.oci_identity_compartments.network.compartments[0].id
     vcn_id         = oci_core_vcn.segment.id
-    defined_tags   = var.input.resident.defined_tags
-    freeform_tags  = var.input.resident.freeform_tags
+    defined_tags   = var.assets.resident.defined_tags
+    freeform_tags  = var.assets.resident.freeform_tags
 
     dynamic "route_rules" {
         for_each = [for rule in each.value.route_rules: {
@@ -114,8 +114,8 @@ resource "oci_core_subnet" "segment" {
     cidr_block     = each.value.cidr_block
     display_name   = each.value.display_name
     dns_label      = each.value.dns_label
-    defined_tags   = var.input.resident.defined_tags
-    freeform_tags  = var.input.resident.freeform_tags
+    defined_tags   = var.assets.resident.defined_tags
+    freeform_tags  = var.assets.resident.freeform_tags
     #route_table_id = local.route_tables[each.value.route_table]
     security_list_ids = ["${local.security_lists[each.value.security_list]}"]
 }
