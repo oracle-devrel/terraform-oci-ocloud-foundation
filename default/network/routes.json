@@ -1,0 +1,22 @@
+[
+    {
+        "name"         : "internet",
+        "gateway"      : "internet",
+        "destinations" : ["internet"]
+    },
+    {
+        "name"         : "nat",
+        "gateway"      : "nat",
+        "destinations" : ["internet"]
+    },
+    {
+        "name"         : "osn",
+        "gateway"      : "osn",
+        "destinations" : ["osn"]
+    },
+    {
+        "name"         : "cpe",
+        "gateway"      : "drg",
+        "destinations" : ["cpe"]
+    }
+]

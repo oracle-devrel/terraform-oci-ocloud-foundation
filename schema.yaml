@@ -2,158 +2,200 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 
-title: "OCloud Landing Zone"
-description: "The landing zone template creates a foundation for application deployments in Oracle Cloud Infrastructure"
-informationalText: "Provisioning Framework for the Oracle Resource Manager"
+title: "ocloud Framwork: Service Configuration"
+description: "The ocloud framwork creates a foundation for application deployments in Oracle Cloud Infrastructure"
+informationalText: "This framework helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). A base set of resources is provisioned and configured."
 schemaVersion: 1.1.0
 version: "20210611"
 locale: "en"
 
 variableGroups:
-- title: "Stack Identifier"
-  visible: false
+- title: "Tenancy"
+  visible: true
   variables:
   - tenancy_ocid
+  - class
+
+- title: "Service Resident"
+  visible: true
+  variables:
+  - parent
   - compartment_ocid
   - region
   - current_user_ocid
-  
-- title: "Service Configuration"
-  visible: true
-  variables:
   - organization
-  - project
-  - environment
-  - bundle
+  - solution
+  - owner
+  - stage
+  - repository
 
-- title: "Operator Details"
+- title: "Service Topology"
   visible: true
   variables:
-  - ${admin_mail}
-  - ${code_source}
-  #- slack_channel
+  - host
+  - nodes
+  - container
 
-- title: "Sections"
-  visible: false
+- title: "Network Options"
+  visible: true
   variables:
-  - operation
-  - network
-  - database
-  - application
+  - ipv6
+  - internet
+  - nat
+  - osn
+
+- title: "Domain Settings"
+  visible: true
+  variables:
+  - amend
 
 variables:
-  # Stack Identifier
+# Tenancy
   tenancy_ocid:
     title: "Tenancy ID"
-    description: "The Oracle Cloud Identifier (OCID) for your tenancy"
+    description: "The Oracle Cloud Identifier for your tenancy"
+    visible: false
     type: string
     required: true
-    visibile: false
 
+  class:
+    title: "Classification"
+    description: "Selecting the Universal Credit Consumption (UCC) Model preselects appropriate resource types"
+    type: enum
+    default: "FREE_TIER"
+    required: true
+    enum:
+      - FREE_TIER
+      - TRIAL
+      - PAYG
+      - UCC
+
+# Service Configuration
   compartment_ocid:
     title: "Compartment ID"
-    description: "The Oracle Cloud Identifier (OCID) for your compartment"
+    description: "The Oracle Cloud Identifier for your compartment"
+    visible: false
     type: string
     required: true
-    visibile: false
 
   region:
     title: "Home Region"
-    description: "The Oracle Cloud Identifier (OCID) for your home region"
+    description: "The Oracle Cloud Identifier for your home region"
+    visible: false
     type: string
     required: true
-    visibile: false
   
   current_user_ocid:
     title: "User ID"
-    description: "The Oracle Cloud Identifier (OCID) for the current user"
+    description: "The Oracle Cloud Identifier for the current user"
+    visible: false
     type: string
     required: true
-    visibile: false
+  
+  parent:
+    title: "Parent Compartment"
+    description: "The Oracle Cloud Identifier for the root compartment. The default should only be changed by experienced users."
+    type: oci:identity:compartment:id
+    dependsOn:
+      compartmentId: tenancy_ocid
+      accessLevel: ANY
+      lifecycleState: ACTIVE
+    default: tenancy_ocid
+    required: true
 
-  # Landing Zone Configuration
   organization:
     title: "Organization"
-    description: "Identifier for the organization or platform owner"
+    description: "Identifier for the organization, owning the service"
     type: string
+    default: "Organization"
+    minLength: 1
+    maxLength: 25
+    pattern: "^[a-zA-Z]+$"
     required: true
-    visibile: true
 
-  project:
-    title: "Project or Program"
-    description: "Identifier for the service delivery platform"
+  solution:
+    title: "Name"
+    description: "Identifier for the service, the name should be unique within the tenancy"
     type: string
+    default: "Service"
+    minLength: 1
+    maxLength: 25
+    pattern: "^[a-zA-Z]+$"
     required: true
-    visibile: true
 
-  environment:
-    title: "Environment"
-    description: "Define the CI/CD process stage, e.g. dev, uat, prod"
-    type: string
-    required: true
-    visibile: true
-  
-  bundle:
-    title: "Bundle"
-    description: "Define the resource bundle to be provisioned"
+  stage:
+    title: "Lifecycle Stage"
+    description: "Selecting the lifecycle stage preselects an appropriate collection of operational controls"
     type: enum
-    default: "free_tier"
+    default: "DEV"
     required: true
-    visibile: true
-    # enumerated values
     enum:
-      - free_tier
-      - payg
-      - standard
-      - premium
+      - DEV
+      - UAT
+      - PROD
 
-  code_source:
-    title: "Source"
-    description: "Provide an URL to your source repository"
+  repository:
+    title: "Source Code URL"
+    description: "Provide an URL to your IaC repository"
+    type: string
+    required: false
+
+  owner:
+    title: "Owner"
+    description: "Provide an eMail address for the technical administrator"
     type: string
     required: true
-    visibile: true
 
-  # Notifications
-  admin_mail:
-    title: "eMail"
-    description: "Provide an eMail address for the technical administrator of your project"
-    type: string
+# Service Topology
+  host:
+    type: boolean
+    title: "Enterprise Service"
+    required: false
+
+  nodes:
+    type: boolean
+    title: "Cloud Service"
+    required: false
+
+  container:
+    type: boolean
+    title: "Container Service"
+    required: false
+
+# Network Options
+  ipv6:
+    type: boolean
+    title: "IPv6"
     required: true
-    visibile: true
+    default: false
 
-  #slack_channel:
-    #title: "Slack"
-    #description: "Provide a web hook for the slack channel, used for the project"
-    #type: string
-    #required: false
-    #visibile: true
+  internet:
+    type: enum
+    title: "Internet access"
+    required: true
+    enum:
+      - ENABLE
+      - DISABLE
 
-  # Sections
-  operation:
-    title: "Operation Section"
-    description: "The identifier for your Operation Compartment"
-    type: string
-    required: false
-    visibile: false
+  nat:
+    type: enum
+    title: "NAT for private subnets"
+    required: true
+    enum:
+      - ENABLE
+      - DISABLE
 
-  network:
-    title: "Network Section"
-    description: "The identifier for your Network Compartment"
-    type: string
-    required: false
-    visibile: false
+  osn:
+    type: enum
+    title: "Scope of Oracle Cloud Services, attached to the service resident."
+    required: true
+    enum:
+      - ALL
+      - STORAGE
+      - DISABLE
 
-  database:
-    title: "Database Section"
-    description: "The identifier for your Database Compartment"
-    type: string
-    required: false
-    visibile: false
-
-  application:
-    title: "Application Section"
-    description: "The identifier for your Application Compartment"
-    type: string
-    required: false
-    visibile: false
+# Administration Domains
+  amend:
+    type: boolean
+    title: "Allow administrator domains to be destroyed?"
+    required: true
