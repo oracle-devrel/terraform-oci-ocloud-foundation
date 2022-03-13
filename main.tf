@@ -57,7 +57,7 @@ provider "oci" {
   region = module.configuration.tenancy.region.key
 }
 module "resident" {
-  source = "github.com/ocilabs/resident"
+  source = "./assets/resident"
   depends_on = [module.configuration]
   providers  = {oci = oci.home}
   tenancy    = module.configuration.tenancy
@@ -78,7 +78,7 @@ output "resident" {
 
 // --- wallet configuration --- //
 module "encryption" {
-  source     = "github.com/ocilabs/encryption"
+  source     = "./assets/encryption"
   depends_on = [module.configuration, module.resident]
   providers  = {oci = oci.service}
   for_each   = {for wallet in local.wallets : wallet.name => wallet}
@@ -102,7 +102,7 @@ output "encryption" {
 
 // --- network configuration --- //
 module "network" {
-  source = "github.com/ocilabs/network"
+  source = "./assets/network"
   depends_on = [module.configuration, module.resident]
   providers = {oci = oci.service}
   for_each  = {for segment in local.segments : segment.name => segment}
@@ -128,7 +128,7 @@ output "network" {
 
 // --- database creation --- //
 module "database" {
-  source     = "github.com/ocilabs/database"
+  source     = "./assets/database"
   depends_on = [module.configuration, module.resident, module.network, module.encryption]
   providers  = {oci = oci.service}
   tenancy    = module.configuration.tenancy
