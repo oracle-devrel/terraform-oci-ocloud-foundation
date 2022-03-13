@@ -1,53 +1,68 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-
-title: "ocloud Framwork: Service Configuration"
-description: "The ocloud framwork creates a foundation for application deployments in Oracle Cloud Infrastructure"
-informationalText: "This framework helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). A base set of resources is provisioned and configured."
+title: "Kickstart Application Deployments"
+description: "The kickstart framwork creates a foundation for application deployments in Oracle Cloud Infrastructure"
+informationalText: "This stack helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). A base set of resources is provisioned and configured."
 schemaVersion: 1.1.0
 version: "20210611"
 locale: "en"
 
 variableGroups:
-- title: "Tenancy"
+- title: "Region"
+  visible: true
+  variables:
+  - region
+
+- title: "Service"
+  visible: true
+  variables:
+  - parent
+  - compartment_ocid
+  - current_user_ocid
+  - organization
+  - solution
+  - owner
+  - repository
+
+- title: "Limits"
   visible: true
   variables:
   - tenancy_ocid
   - class
 
-- title: "Service Resident"
+- title: "Lifecycle"
   visible: true
   variables:
-  - parent
-  - compartment_ocid
-  - region
-  - current_user_ocid
-  - organization
-  - solution
-  - owner
   - stage
-  - repository
 
-- title: "Service Topology"
+- title: "Application Type"
   visible: true
   variables:
   - host
   - nodes
   - container
 
-- title: "Network Options"
+- title: "Database"
   visible: true
   variables:
-  - ipv6
-  - internet
-  - nat
-  - osn
+  - create_adb
+  - adb_type
 
-- title: "Domain Settings"
+- title: "Network"
   visible: true
   variables:
-  - amend
+  - netsettings
+  - internet
+  - osn
+  - nat
+  - ipv6
+
+- title: "Wallet"
+  visible: true
+  variables:
+  - create_wallet
+  - wallet_type
 
 variables:
 # Tenancy
@@ -59,7 +74,7 @@ variables:
     required: true
 
   class:
-    title: "Classification"
+    title: "Contract Type"
     description: "Selecting the Universal Credit Consumption (UCC) Model preselects appropriate resource types"
     type: enum
     default: "FREE_TIER"
@@ -77,13 +92,6 @@ variables:
     visible: false
     type: string
     required: true
-
-  region:
-    title: "Home Region"
-    description: "The Oracle Cloud Identifier for your home region"
-    visible: false
-    type: string
-    required: true
   
   current_user_ocid:
     title: "User ID"
@@ -91,16 +99,23 @@ variables:
     visible: false
     type: string
     required: true
-  
+    
   parent:
     title: "Parent Compartment"
     description: "The Oracle Cloud Identifier for the root compartment. The default should only be changed by experienced users."
     type: oci:identity:compartment:id
+    visible: false
     dependsOn:
       compartmentId: tenancy_ocid
       accessLevel: ANY
       lifecycleState: ACTIVE
-    default: tenancy_ocid
+    required: true
+
+  region:
+    title: "Region"
+    description: "The Oracle Cloud Identifier the target region"
+    visible: true
+    type: oci:identity:region:name
     required: true
 
   organization:
@@ -114,10 +129,10 @@ variables:
     required: true
 
   solution:
-    title: "Name"
+    title: "Solution"
     description: "Identifier for the service, the name should be unique within the tenancy"
     type: string
-    default: "Service"
+    default: "Name"
     minLength: 1
     maxLength: 25
     pattern: "^[a-zA-Z]+$"
@@ -135,67 +150,101 @@ variables:
       - PROD
 
   repository:
-    title: "Source Code URL"
-    description: "Provide an URL to your IaC repository"
+    title: "Repository"
+    description: "Provide an URL for the code source"
     type: string
     required: false
 
   owner:
-    title: "Owner"
+    title: "Administrator"
     description: "Provide an eMail address for the technical administrator"
     type: string
     required: true
 
-# Service Topology
+# Application Type
   host:
     type: boolean
-    title: "Enterprise Service"
+    title: "Enterprise Application"
     required: false
 
   nodes:
     type: boolean
-    title: "Cloud Service"
+    title: "Web Application"
     required: false
 
   container:
     type: boolean
-    title: "Container Service"
+    title: "Cloud Native Service"
     required: false
 
 # Network Options
-  ipv6:
+  netsettings:
     type: boolean
-    title: "IPv6"
+    title: "Advanced Network Settings"
     required: true
     default: false
 
   internet:
     type: enum
-    title: "Internet access"
+    title: "Network Access:"
     required: true
+    visible: netsettings
     enum:
-      - ENABLE
-      - DISABLE
+      - PUBLIC
+      - PRIVATE
+
+  ipv6:
+    type: boolean
+    title: "IPv6"
+    required: true
+    visible: netsettings
+    default: false
 
   nat:
-    type: enum
-    title: "NAT for private subnets"
+    type: boolean
+    title: "NAT for Private Subnets"
     required: true
-    enum:
-      - ENABLE
-      - DISABLE
+    visible: netsettings
+    default: true
 
   osn:
     type: enum
-    title: "Scope of Oracle Cloud Services, attached to the service resident."
+    title: "Oracle Cloud Services:"
     required: true
+    visible: netsettings
     enum:
-      - ALL
-      - STORAGE
+      - ALL_SERVICES
+      - OBJECT_STORAGE
       - DISABLE
 
-# Administration Domains
-  amend:
+# Database Service
+  create_adb:
     type: boolean
-    title: "Allow administrator domains to be destroyed?"
-    required: true
+    title: "Create an Autonomous Database"
+    required: false
+
+  adb_type:
+    title: "Database Type"
+    visible: create_adb
+    required: false
+    type: enum
+    enum:
+      - TRANSACTION_PROCESSING
+      - APEX
+      - DATA_WAREHOUSE
+      - JSON
+
+# Encryption Service
+  create_wallet:
+    type: boolean
+    title: "Create a Wallet"
+    required: false
+
+  wallet_type:
+    title: "Vault Type"
+    visible: create_wallet
+    required: false
+    type: enum
+    enum:
+      - Software
+      - HSM

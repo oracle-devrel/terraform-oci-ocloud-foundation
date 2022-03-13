@@ -3,56 +3,64 @@
         "topology" : "host",
         "name"     : "presentation",
         "newbits"  : 3,
+        "firewall" : "web",
         "disable_nat" : false,
-        "firewall" : "web"
+        "route_table" : "default"
     },
     {
         "topology" : "host",
         "name"     : "application",
         "newbits"  : 3,
+        "firewall" : "business",
         "disable_nat" : false,
-        "firewall" : "business"
+        "route_table" : "default"
     },
     {
         "topology" : "host",
         "name"     : "database",
         "newbits"  : 3,
+        "firewall" : "data",
         "disable_nat" : false,
-        "firewall" : "data"
+        "route_table" : "default"
     },
     {
         "topology" : "nodes",
         "name"     : "frontend",
         "newbits"  : 3,
+        "firewall" : "web",
         "disable_nat" : false,
-        "firewall" : "web"
+        "route_table" : "default"
     },
     {
         "topology" : "nodes",
         "name"     : "backend",
         "newbits"  : 3,
+        "firewall" : "data",
         "disable_nat" : false,
-        "firewall" : "data"
+        "route_table" : "default"
     },
     {
         "topology" : "container",
         "name"     : "loadbalancer",
         "newbits"  : 3,
+        "firewall" : "web",
         "disable_nat" : false,
-        "firewall" : "web"
+        "route_table" : "default"
     },
     {
         "topology" : "container",
         "name"     : "worker",
         "newbits"  : 3,
+        "firewall" : "business",
         "disable_nat" : false,
-        "firewall" : "business"
+        "route_table" : "default"
     },
     {
         "topology" : "container",
         "name"     : "master",
         "newbits"  : 3,
+        "firewall" : "data",
         "disable_nat" : false,
-        "firewall" : "data"
+        "route_table" : "default"
     }
 ]

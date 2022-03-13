@@ -3,19 +3,10 @@
 
 variable "input" {
     type = object({
-      internet = string,
-      nat      = string,
-      ipv6     = bool,
-      osn      = string
+      type   = string,
+      create = bool
     })
-    description = "Resources identifier from resident module"
-}
-
-variable "assets" {
-  type = object({
-    resident = any
-  })
-  description = "Retrieve asset identifier"
+    description = "Schema input for the wallet creation"
 }
 
 variable "tenancy" {
@@ -26,6 +17,13 @@ variable "tenancy" {
     region  = map(string)
   })
   description = "Tenancy Configuration"
+}
+
+variable "assets" {
+  type = object({
+    resident = any
+  })
+  description = "Retrieve asset identifier"
 }
 
 variable "resident" {
@@ -43,23 +41,17 @@ variable "resident" {
     tag_namespaces = map(number),
     tags           = any
   })
-  description = "Service Configuration"
+  description = "Service configuration"
 }
 
-variable "network" {
+variable "encryption" {
   type = object({
-    name         = string,
-    region       = string,
-    display_name = string,
-    dns_label    = string,
-    compartment  = string,
-    stage        = number,
-    cidr         = string,
-    gateways     = any,
-    subnets      = map(any),
-    route_table_input = list(any),
-    security_groups   = map(any)
-    security_lists    = any
+    compartment = string,
+    vault       = string,
+    stage       = number,
+    key         = map(any),
+    signatures  = map(any),
+    secrets     = map(any)
   })
-  description = "Network Configuration"
+  description = "Enabling enryption for a service resident"
 }

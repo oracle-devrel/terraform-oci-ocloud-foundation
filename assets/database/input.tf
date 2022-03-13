@@ -2,20 +2,11 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 variable "input" {
-    type = object({
-      internet = string,
-      nat      = string,
-      ipv6     = bool,
-      osn      = string
-    })
-    description = "Resources identifier from resident module"
-}
-
-variable "assets" {
   type = object({
-    resident = any
+    create   = bool,
+    password = string
   })
-  description = "Retrieve asset identifier"
+  description = "Input for database module"
 }
 
 variable "tenancy" {
@@ -26,6 +17,14 @@ variable "tenancy" {
     region  = map(string)
   })
   description = "Tenancy Configuration"
+}
+
+variable "assets" {
+  type = object({
+    resident   = any
+    encryption = any
+  })
+  description = "Retrieve asset identifier"
 }
 
 variable "resident" {
@@ -46,20 +45,17 @@ variable "resident" {
   description = "Service Configuration"
 }
 
-variable "network" {
+variable "database" {
   type = object({
     name         = string,
-    region       = string,
-    display_name = string,
-    dns_label    = string,
+    cores        = number,
+    storage      = number,
+    type         = string,
     compartment  = string,
     stage        = number,
-    cidr         = string,
-    gateways     = any,
-    subnets      = map(any),
-    route_table_input = list(any),
-    security_groups   = map(any)
-    security_lists    = any
+    display_name = string,
+    version      = string,
+    license      = string
   })
-  description = "Network Configuration"
+  description = "Database Configuration"
 }
