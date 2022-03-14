@@ -10,14 +10,6 @@ terraform {
   }
 }
 
-resource "random_string" "admin_password" {
-  length      = 16
-  min_numeric = 1
-  min_lower   = 1
-  min_upper   = 1
-  min_special = 1
-}
-
 data "oci_identity_compartments" "database" {
   compartment_id = var.tenancy.id
   access_level   = "ANY"

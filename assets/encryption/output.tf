@@ -15,3 +15,8 @@ output "key_id" {
   description = "Identifier for the master key, created for the vault"
   value       = length(oci_kms_key.wallet) > 0 ? oci_kms_key.wallet[0].id : null
 }
+
+output "passwords" {
+  value = {for password in var.encryption.passwords : password => random_password.wallet[index(var.encryption.passwords, password)].result}
+  sensitive = true 
+}

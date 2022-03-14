@@ -51,7 +51,8 @@ variable "encryption" {
     stage       = number,
     key         = map(any),
     signatures  = map(any),
-    secrets     = map(any)
+    secrets     = map(any),
+    passwords   = list(string)
   })
   description = "Enabling enryption for a service resident"
 }

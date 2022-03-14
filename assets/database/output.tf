@@ -18,6 +18,6 @@ output "connection_urls" {
   value = oci_database_autonomous_database.database[0].connection_urls[0]
 }
 
-output "admin_password" {
-  value = var.input.password == false ? random_string.admin_password.result : random_string.admin_password.result
+output "password" {
+  value = var.assets.encryption.passwords[var.database.password]
 }

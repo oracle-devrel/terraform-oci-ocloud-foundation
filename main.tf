@@ -70,9 +70,7 @@ module "resident" {
   }
 }
 output "resident" {
-  value = {
-    for resource, parameter in module.resident : resource => parameter
-  }
+  value = {for resource, parameter in module.resident : resource => parameter}
 }
 // --- operation controls --- //
 
@@ -94,9 +92,8 @@ module "encryption" {
   }
 }
 output "encryption" {
-  value = {
-    for resource, parameter in module.encryption : resource => parameter
-  }
+  value = {for resource, parameter in module.encryption : resource => parameter}
+  sensitive = true
 }
 // --- wallet configuration --- //
 
@@ -120,9 +117,7 @@ module "network" {
   }
 }
 output "network" {
-  value = {
-    for resource, parameter in module.network : resource => parameter
-    }
+  value = {for resource, parameter in module.network : resource => parameter}
 }
 // --- network configuration --- //
 
@@ -136,17 +131,15 @@ module "database" {
   database   = module.configuration.databases.autonomous
   input = {
     create   = var.create_adb
-    password = var.create_wallet ? "wallet" : "random"
   }
   assets = {
     resident   = module.resident
-    encryption = module.encryption
+    encryption = module.encryption["default"]
   }
 }
 output "database" {
-  value = {
-    for resource, parameter in module.database : resource => parameter
-  }
+  value = {for resource, parameter in module.database : resource => parameter}
+  sensitive = true
 }
 // --- database creation --- //
 

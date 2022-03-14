@@ -3,8 +3,7 @@
 
 variable "input" {
   type = object({
-    create   = bool,
-    password = string
+    create   = bool
   })
   description = "Input for database module"
 }
@@ -55,6 +54,7 @@ variable "database" {
     stage        = number,
     display_name = string,
     version      = string,
+    password     = string,
     license      = string
   })
   description = "Database Configuration"

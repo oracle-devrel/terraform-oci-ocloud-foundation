@@ -1,6 +1,16 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
+
+resource "random_password" "wallet" {
+  count       = length(var.encryption.passwords)
+  length      = 16
+  min_numeric = 1
+  min_lower   = 1
+  min_upper   = 1
+  min_special = 1
+}
+
 resource "oci_vault_secret" "wallet" {
   depends_on     = [oci_kms_vault.wallet, oci_kms_key.wallet]
   for_each       = var.input.create == true ? var.encryption.secrets  : {}
