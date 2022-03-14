@@ -37,7 +37,7 @@ variable "solution" {
 variable "repository" {
   type        = string
   description = "The service configuration is stored using infrastructure code in a repository"
-  default     = "https://github.com/oracle-devrel/terraform-oci-ocloud-configuration"
+  default     = "https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone"
 }
 
 variable "owner" {
