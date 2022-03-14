@@ -1,0 +1,24 @@
+// Copyright (c) 2020 Oracle and/or its affiliates.
+// Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# Asset Template
+
+Creating a module documentation
+
+### link:https://terraform-docs.io[Terradoc]
+
+Create a asciidoc file for a module
+`terraform-docs asciidoc document --sort=false ./ > ./readme.adoc`
+
+Create a md file for a module 
+`terraform-docs markdown --sort=false ./ > ./readme.md`
+
+### link:https://asciidoctor.org[Asciidoctor]
+
+transfer an adoc file into docbook xml format
+`asciidoc -b docbook index.adoc`
+
+### link:https://pandoc.org[Pandoc]
+
+transfer docbook xml format into md format
+`iconv -t utf-8 index.xml | pandoc -f docbook -t markdown_strict --wrap=none | iconv -f utf-8 > index.md`
