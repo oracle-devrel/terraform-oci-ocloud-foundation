@@ -1,0 +1,10 @@
+[
+  {
+    "name"       : "default",
+    "stage"      : 0,
+    "algorithm"  : "RSA",
+    "length"     : 256,
+    "signatures" : ["rsa"],
+    "secrets"    : ["default"]
+  }
+]

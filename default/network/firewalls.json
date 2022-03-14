@@ -1,0 +1,35 @@
+[
+    {
+        "name"    : "web",
+        "description" : "Allowed ports for the internet facing web tier",
+        "incoming"  : {
+            "internet" : {
+                "ports"     : ["http", "https"],
+                "stateless" : true
+            },
+            "vcn" : {
+                "ports"     : ["http", "https", "ssh"],
+                "stateless" : true
+            }
+        }
+    },
+    {
+        "name"    : "business",
+        "description" : "Allowed ports for the application tier",
+        "incoming"  : {
+            "vcn" : {
+                "ports"     : ["http", "https", "ssh"],
+                "stateless" : true
+            }
+        }
+    },{
+        "name"    : "data",
+        "description" : "Allowed ports for the data tier",
+        "incoming"  : {
+            "vcn" : {
+                "ports"     : ["http", "https", "ssh"],
+                "stateless" : true
+            }
+        }
+    }
+]

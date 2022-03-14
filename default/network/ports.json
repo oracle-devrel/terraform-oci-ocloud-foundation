@@ -1,0 +1,99 @@
+[
+    {   
+        "name"      : "ftp",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 20,
+        "max"       : 21
+    },{
+        "name"      : "ssh",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 22,
+        "max"       : 22
+    },{
+        "name"      : "telnet",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 23,
+        "max"       : 23
+    },{
+        "name"      : "smtp",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 25,
+        "max"       : 25
+    },{
+        "name"      : "dns",
+        "protocol"  : 17,
+        "stateless" : false,
+        "min"       : 53,
+        "max"       : 53
+    },{
+        "name"      : "http",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 80,
+        "max"       : 80
+    },{
+        "name"      : "pop3",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 110,
+        "max"       : 110
+    },{
+        "name"      : "nntp",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 119,
+        "max"       : 119
+    },{
+        "name"      : "ntp",
+        "protocol"  : 17,
+        "stateless" : false,
+        "min"       : 123,
+        "max"       : 123
+    },{
+        "name"      : "imap",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 143,
+        "max"       : 143
+    },{
+        "name"      : "SNMP",
+        "protocol"  : 17,
+        "stateless" : false,
+        "min"       : 161,
+        "max"       : 161
+    },{
+        "name"      : "IRC",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 194,
+        "max"       : 194
+    },{
+        "name"      : "IMAP",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 220,
+        "max"       : 220
+    },{
+        "name"      : "https",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 443,
+        "max"       : 443
+    },{
+        "name"      : "sql",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 1521,
+        "max"       : 1521
+    },{
+        "name"      : "rdp",
+        "protocol"  : 6,
+        "stateless" : false,
+        "min"       : 3389,
+        "max"       : 3389
+    }
+]

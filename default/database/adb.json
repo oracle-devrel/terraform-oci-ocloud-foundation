@@ -1,0 +1,42 @@
+[
+  {
+    "name"     : "atp",
+    "type"     : "OLTP",
+    "stage"    : 0,
+    "cores"    : 1,
+    "storage"  : 1,
+    "license"  : "LICENSE_INCLUDED",
+    "password" : "default",
+    "version"  : "19c"
+  },
+  {
+    "name"    : "adw",
+    "type"    : "DW",
+    "stage"   : 0,
+    "cores"   : 1,
+    "storage" : 1,
+    "license" : "LICENSE_INCLUDED",
+    "password" : "default",
+    "version" : "19c"
+  },
+  {
+    "name"    : "apex",
+    "type"    : "APEX",
+    "stage"   : 0,
+    "cores"   : 1,
+    "storage" : 1,
+    "license" : "LICENSE_INCLUDED",
+    "password" : "default",
+    "version" : "19c"
+  },
+  {
+    "name"    : "json",
+    "type"    : "AJD",
+    "stage"   : 0,
+    "cores"   : 1,
+    "storage" : 1,
+    "license" : "LICENSE_INCLUDED",
+    "password" : "default",
+    "version" : "19c"
+  }
+]

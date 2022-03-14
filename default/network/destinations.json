@@ -1,0 +1,19 @@
+[
+  {
+    "name"     : "internet",
+    "gateway"  : "internet",
+    "sections" : ["internet"]
+  },{
+    "name"     : "nat",
+    "gateway"  : "nat",
+    "sections" : ["internet"]
+  },{
+    "name"     : "osn",
+    "gateway"  : "osn",
+    "sections" : ["osn"]
+  },{
+    "name"     : "cpe",
+    "gateway"  : "drg",
+    "sections" : ["cpe", "devices"]
+  }
+]
