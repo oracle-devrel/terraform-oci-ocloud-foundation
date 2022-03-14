@@ -1,12 +1,13 @@
 [
   {
-    "name"    : "atp",
-    "type"    : "OLTP",
-    "stage"   : 0,
-    "cores"   : 1,
-    "storage" : 1,
-    "license" : "LICENSE_INCLUDED",
-    "version" : "19c"
+    "name"     : "atp",
+    "type"     : "OLTP",
+    "stage"    : 0,
+    "cores"    : 1,
+    "storage"  : 1,
+    "license"  : "LICENSE_INCLUDED",
+    "password" : "default",
+    "version"  : "19c"
   },
   {
     "name"    : "adw",
@@ -15,6 +16,7 @@
     "cores"   : 1,
     "storage" : 1,
     "license" : "LICENSE_INCLUDED",
+    "password" : "default",
     "version" : "19c"
   },
   {
@@ -24,6 +26,7 @@
     "cores"   : 1,
     "storage" : 1,
     "license" : "LICENSE_INCLUDED",
+    "password" : "default",
     "version" : "19c"
   },
   {
@@ -33,6 +36,7 @@
     "cores"   : 1,
     "storage" : 1,
     "license" : "LICENSE_INCLUDED",
+    "password" : "default",
     "version" : "19c"
   }
 ]

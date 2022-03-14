@@ -1,5 +1,12 @@
 [
     {
+        "topology" : "apex",
+        "name"     : "apex",
+        "newbits"  : 3,
+        "firewall" : "web",
+        "disable_nat" : false,
+        "route_table" : "default"
+    },{
         "topology" : "host",
         "name"     : "presentation",
         "newbits"  : 3,

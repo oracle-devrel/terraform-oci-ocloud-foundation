@@ -13,6 +13,7 @@ output "databases" {
       display_name = "${local.service_name}_${lower(database.type)}_${database.name}"
       version      = database.version
       license      = database.license
+      password     = "${database.password}_password"
     }if database.type == local.database[var.input.adb]][0]
   }
 }
