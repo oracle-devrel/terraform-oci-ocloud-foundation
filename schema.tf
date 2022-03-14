@@ -63,22 +63,27 @@ variable "region" {
 }
 
 # Service Topologies
+variable "apex" {
+  type        = bool
+  description = "Provisioning a network topology for an APEX service deployment."
+  default     = false
+}
 variable "host" {
   type        = bool
   description = "Provisioning a host topology prepares a service resident to deploy a traditional enterprise application with presentation, application and database tier."
-  default     = true
+  default     = false
 }
 
 variable "nodes" {
   type        = bool
   description = "Provisioning a nodes topology prepares a service resident to deploy automatically scaling services separated front- and backend tier for services like like big data or mobile backend."
-  default     = true
+  default     = false
 }
 
 variable "container" {
   type        = bool
   description = "Provisioning a container topology prepares a service resident to deploy cloud native services on Oracle's Kubernetes Engine (OKE)."
-  default     = true
+  default     = false
 }
 
 # Network Settings

@@ -9,6 +9,12 @@ version: "20210611"
 locale: "en"
 
 variableGroups:
+- title: "Tenancy"
+  visible: true
+  variables:
+  - tenancy_ocid
+  - class
+
 - title: "Region"
   visible: true
   variables:
@@ -25,16 +31,16 @@ variableGroups:
   - owner
   - repository
 
-- title: "Limits"
-  visible: true
-  variables:
-  - tenancy_ocid
-  - class
-
 - title: "Lifecycle"
   visible: true
   variables:
   - stage
+
+- title: "Database"
+  visible: true
+  variables:
+  - create_adb
+  - adb_type
 
 - title: "Application Type"
   visible: true
@@ -42,12 +48,7 @@ variableGroups:
   - host
   - nodes
   - container
-
-- title: "Database"
-  visible: true
-  variables:
-  - create_adb
-  - adb_type
+  - apex
 
 - title: "Network"
   visible: true
@@ -68,14 +69,14 @@ variables:
 # Tenancy
   tenancy_ocid:
     title: "Tenancy ID"
-    description: "The Oracle Cloud Identifier for your tenancy"
+    description: "A unique identifier for your cloud tenancy"
     visible: false
     type: string
     required: true
 
   class:
-    title: "Contract Type"
-    description: "Selecting the Universal Credit Consumption (UCC) Model preselects appropriate resource types"
+    title: "Define service limits related to the contract type"
+    description: "Choose the Universal Credit Consumption (UCC) model to select corresponding resource types"
     type: enum
     default: "FREE_TIER"
     required: true
@@ -88,21 +89,21 @@ variables:
 # Service Configuration
   compartment_ocid:
     title: "Compartment ID"
-    description: "The Oracle Cloud Identifier for your compartment"
+    description: "A unique identifier that creates a bspoke administrator domains for your service"
     visible: false
     type: string
     required: true
   
   current_user_ocid:
     title: "User ID"
-    description: "The Oracle Cloud Identifier for the current user"
+    description: "Retrieved OCID for the current user"
     visible: false
     type: string
     required: true
     
   parent:
     title: "Parent Compartment"
-    description: "The Oracle Cloud Identifier for the root compartment. The default should only be changed by experienced users."
+    description: "The OCID for the root compartment, the default selection should only be changed by an experienced user"
     type: oci:identity:compartment:id
     visible: false
     dependsOn:
@@ -112,15 +113,15 @@ variables:
     required: true
 
   region:
-    title: "Region"
-    description: "The Oracle Cloud Identifier the target region"
+    title: "Select the data center region for the service deployment"
+    description: "Before selecting an availability domain in a region, the target region should be activated for a tenancy"
     visible: true
     type: oci:identity:region:name
     required: true
 
   organization:
-    title: "Organization"
-    description: "Identifier for the organization, owning the service"
+    title: "Name of the business unit"
+    description: "Identifier for the organization that will use the service"
     type: string
     default: "Organization"
     minLength: 1
@@ -129,7 +130,7 @@ variables:
     required: true
 
   solution:
-    title: "Solution"
+    title: "Name of the solution"
     description: "Identifier for the service, the name should be unique within the tenancy"
     type: string
     default: "Name"
@@ -139,7 +140,7 @@ variables:
     required: true
 
   stage:
-    title: "Lifecycle Stage"
+    title: "Select the lifecycle stage for the deployment"
     description: "Selecting the lifecycle stage preselects an appropriate collection of operational controls"
     type: enum
     default: "DEV"
@@ -150,14 +151,14 @@ variables:
       - PROD
 
   repository:
-    title: "Repository"
+    title: "Source code repository for the provisioning scripts (only used for information pusposes)"
     description: "Provide an URL for the code source"
     type: string
     required: false
 
   owner:
-    title: "Administrator"
-    description: "Provide an eMail address for the technical administrator"
+    title: "Service Administrator"
+    description: "The service administrator will receive notifications when the service topology changes"
     type: string
     required: true
 
@@ -175,6 +176,11 @@ variables:
   container:
     type: boolean
     title: "Cloud Native Service"
+    required: false
+
+  apex:
+    type: boolean
+    title: "APEX Service"
     required: false
 
 # Network Options
