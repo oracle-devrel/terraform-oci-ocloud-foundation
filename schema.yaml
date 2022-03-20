@@ -1,9 +1,9 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "Kickstart Application Deployments"
-description: "The kickstart framwork creates a foundation for application deployments in Oracle Cloud Infrastructure"
-informationalText: "This stack helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). A base set of resources is provisioned and configured."
+title: "Kickstart Application Deployments with the Oracle Resource Manager "
+description: "The ocloud framwork creates a foundation for application deployments in Oracle Cloud Infrastructure"
+informationalText: "This resource manager stack helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). A base set of resources is provisioned and configured."
 schemaVersion: 1.1.0
 version: "20210611"
 locale: "en"
