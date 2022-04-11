@@ -23,5 +23,11 @@
     "channels"  : ["events"],
     "operators" : ["sysops"],
     "stage"     : 0
+  },{
+    "name"      : "security",
+    "budget"    : 0,
+    "channels"  : ["events"],
+    "operators" : ["sysops"],
+    "stage"     : 0
   }
 ]
