@@ -1,75 +1,992 @@
 [
-    {
-        "name"        : "manage_users",
-        "role"        : "HelpDesk",
-        "description" : "Ability to create, update, and delete users and their credentials. It does not include the ability to put users in groups.",
-        "rules"       : [
-            "Allow group HelpDesk to manage users in tenancy"
-        ]
-    },
-    {
-        "name"        : "inspect_resources",
-        "role"        : "Auditors",
-        "description" : "Ability to list the resources in all compartments.",
-        "rules"       : [
-            "Allow group Auditors to inspect all-resources in tenancy",
-            "Allow group Auditors to read instances in tenancy",
-            "Allow group Auditors to read audit-events in tenancy"
-        ]
-    },
-    {
-        "name"        : "manage_network_resources",
-        "role"        : "NetworkAdmins",
-        "description" : "Ability to manage all components in Networking. This includes cloud networks, subnets, gateways, virtual circuits, security lists, route tables, etc.",
-        "rules"       : [
-            "Allow group NetworkAdmins to use virtual-network-family in tenancy"
-        ]
-    },
-    {
-        "name"        : "manage_load_balancers",
-        "role"        : "NetworkAdmins",
-        "description" : "Ability to manage load balancers and network load balancers, additional policies to use the associated networking resources are required.",
-        "rules"       : [
-            "Allow group NetworkAdmins to manage load-balancers in tenancy",
-            "Allow group NetworkAdmins to use virtual-network-family in tenancy",
-            "Allow group NetworkAdmins to manage instances in tenancy"
-        ]
-    },
-    {
-        "name"        : "launch_compute_instances",
-        "role"        : "InstanceLaunchers",
-        "description" : "Ability to do everything with instances launched into the cloud network and subnets in compartment XYZ, and attach/detach any existing volumes that already exist in compartment ABC.",
-        "rules"       : [
-            "Allow group InstanceLaunchers to manage instance-family in compartment _application",
-            "Allow group InstanceLaunchers to read app-catalog-listing in tenancy",
-            "Allow group InstanceLaunchers to use volume-family in compartment _application",
-            "Allow group InstanceLaunchers to use virtual-network-family in compartment _network"
-        ]
-    },
-    {
-        "name"        : "deply_images",
-        "role"        : "ImageUsers",
-        "description" : "bility to launch instances into the cloud network and subnets in compartment XYZ using only the specified custom image. The policy also includes the ability to attach/detach any existing volumes that already exist in a compartment.",
-        "rules"       : [
-            "Allow group ImageUsers to inspect instance-images in compartment _application",
-            "Allow group ImageUsers to {INSTANCE_IMAGE_READ} in compartment _application where target.image.id:'<image_OCID>'",
-            "Allow group ImageUsers to manage instances in compartment _application",
-            "Allow group ImageUsers to read app-catalog-listing in tenancy",
-            "Allow group ImageUsers to use volume-family in compartment _application",
-            "Allow group ImageUsers to use virtual-network-family in compartment _network"
-        ]
-    },
-    {
-        "name"        : "manage_images",
-        "role"        : "ImageAdmins",
-        "description" : "Ability to do everything with custom images and compute instances. Also includes the ability to do everything with Object Storage buckets, objects, and namespaces in compartment Y (for creating images from objects and creating pre-authenticated requests to images); to attach/detach any existing volumes in an application compartment; and to launch instances into the cloud network and subnets in network compartment (for creating new instances to base an image on).",
-        "rules"       : [
-            "Allow group ImageAdmins to manage instances in compartment _application",
-            "Allow group ImageAdmins to manage instance-images in compartment _application",
-            "Allow group ImageAdmins to read app-catalog-listing in tenancy",
-            "Allow group ImageAdmins to manage object-family in compartment _resident",
-            "Allow group ImageAdmins to use volume-family in compartment _application",
-            "Allow group ImageAdmins to use virtual-network-family in compartment _network"
-        ]
-    }
+  {
+    "purpose"     : "Let the Help Desk manage users",
+    "group"       : "HelpDesk",
+    "description" : "Ability to create, update, and delete users and their credentials. It does not include the ability to put users in groups.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group HelpDesk to manage users in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let auditors inspect your resources",
+    "group"       : "Auditors",
+    "description" : "Ability to list the resources in all compartments. Be aware that: The operation to list IAM policies includes the contents of the policies themselves. The list operations for Networking resource-types return all the information (for example, the contents of security lists and route tables). The operation to list instances requires the read verb instead of inspect, and the contents include the user-provided metadata. The operation to view Audit service events requires the read verb instead of inspect. Where to create the policy: In the tenancy. Because of the concept of policy inheritance, auditors can then inspect both the tenancy and all compartments beneath it. Or you could choose to give auditors access to only specific compartments if they don't need access to the entire tenancy.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group Auditors to inspect all-resources in tenancy",
+      "Allow group Auditors to read instances in tenancy",
+      "Allow group Auditors to read audit-events in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let network admins manage a cloud network",
+    "group"       : "NetworkAdmins",
+    "description" : "Ability  to manage all components in Networking. This includes cloud networks, subnets, gateways, virtual circuits, security lists, route tables, and so on. If the network admins need to launch instances to test network connectivity, see Let users launch compute instances.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group NetworkAdmins to manage virtual-network-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let network admins manage load balancers",
+    "group"       : "NetworkAdmins",
+    "description" : "Ability  to manage all components in Load Balancing. If the group needs to launch instances, see Let users launch compute instances.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group NetworkAdmins to manage load-balancers in compartment ${resident}",
+      "Allow group NetworkAdmins to use virtual-network-family in compartment ${resident}",
+      "Allow group NetworkAdmins to manage instances in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let load-balancer users use load balancers",
+    "group"       : "LBUsers",
+    "description" : "Ability  to manage all components in Load Balancing. If the group needs to launch instances, see Let users launch compute instances.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group LBUsers to use load-balancers in ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users launch compute instances",
+    "group"       : "InstanceLaunchers",
+    "description" : "Ability  to do everything with instances launched into the cloud network and subnets in compartment ${network}, and attach/detach any existing volumes that already exist in compartment ${application}. The first statement also lets the group create and manage instance images in compartment ${application}. If the group doesn't need to attach/detach volumes, you can delete the volume-family statement.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group InstanceLaunchers to manage instance-family in compartment ${application}",
+      "Allow group InstanceLaunchers to read app-catalog-listing in tenancy",
+      "Allow group InstanceLaunchers to use volume-family in compartment ${application}",
+      "Allow group InstanceLaunchers to use virtual-network-family in compartment ${network}"
+    ]
+  },
+  {
+    "purpose"     : "Let users launch compute instances from a specific custom image",
+    "group"       : "ImageUsers",
+    "description" : "Ability  to launch instances into the cloud network and subnets in compartment ${network} using only the specified custom image. The policy also includes the ability to attach/detach any existing volumes that already exist in compartment ${application}. If the group doesn't need to attach/detach volumes, you can delete the volume-family statement. To specify multiple custom images, you can use conditions.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group ImageUsers to inspect instance-images in compartment ${application}",
+      "Allow group ImageUsers to {INSTANCE_IMAGE_READ} in compartment ${application} where target.image.id='${image_OCID}'",
+      "Allow group ImageUsers to manage instances in compartment ${application}",
+      "Allow group ImageUsers to read app-catalog-listing in tenancy",
+      "Allow group ImageUsers to use volume-family in compartment ${resident}",
+      "Allow group ImageUsers to use virtual-network-family in compartment ${network}"
+    ]
+  },
+  {
+    "purpose"     : "Let image admins manage custom images",
+    "group"       : "ImageAdmins",
+    "description" : "Ability  to do everything with custom images and compute instances. Also includes the ability to do everything with Object Storage buckets, objects, and namespaces in compartment ${resident} (for creating images from objects and creating pre-authenticated requests to images); to attach/detach any existing volumes in compartment ${application}; and to launch instances into the cloud network and subnets in compartment Z (for creating new instances to base an image on). If the group doesn't need to attach/detach volumes, you can delete the volume-family statement.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group ImageAdmins to manage instances in compartment ${application}",
+      "Allow group ImageAdmins to manage instance-images in compartment ${application}",
+      "Allow group ImageAdmins to read app-catalog-listing in tenancy",
+      "Allow group ImageAdmins to manage object-family in compartment ${resident}",
+      "Allow group ImageAdmins to use volume-family in compartment ${resident}",
+      "Allow group ImageAdmins to use virtual-network-family in compartment ${network}"
+    ]
+  },
+  {
+    "purpose"     : "Let instance pool admins manage Compute instance configurations, instance pools, and cluster networks",
+    "group"       : "InstancePoolAdmins",
+    "description" : "Ability  to do all things with instance configurations, instance pools, and cluster networks in all compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group InstancePoolAdmins to manage compute-management-family in compartment ${resident}",
+      "Allow group InstancePoolAdmins to read instance-family in compartment ${resident}",
+      "Allow group InstancePoolAdmins to inspect volumes in compartment ${resident}",
+      "Allow service compute_management to use compute-capacity-reservations in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let instance pool users manage Compute instance configurations, instance pools, and cluster networks",
+    "group"       : "InstancePoolUsers",
+    "description" : "Ability  to do all things with instance configurations, instance pools, and cluster networks in all compartments.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group InstancePoolUsers to use instance-pools in compartment ${resident}",
+      "Allow group InstancePoolUsers to use tag-namespaces in tenancy where target.tag-namespace.name = 'oracle-tags'",
+      "Allow service compute_management to use compute-capacity-reservations in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users manage Compute autoscaling configurations",
+    "group"       : "AutoscalingAdmins",
+    "description" : "Ability  to create, update, and delete autoscaling configurations.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group AutoscalingAdmins to manage auto-scaling-configurations in compartment ${resident}",
+      "Allow group AutoscalingAdmins to manage instance-pools in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users list and subscribe to images from the Partner Image catalog",
+    "group"       : "CatalogSubscribers",
+    "description" : "Ability  to list and create subscriptions to images in the Partner Image catalog. It does not include the ability to create instances using images from the Partner Image catalog (see Let users launch compute instances).",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group CatalogSubscribers to inspect app-catalog-listing in tenancy",
+      "Allow group CatalogSubscribers to read app-catalog-listing in tenancy",
+      "Allow group CatalogSubscribers to manage app-catalog-listing in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let users create Compute instance console connections",
+    "group"       : "ConsoleUsers",
+    "description" : "Ability  to create instance console connections.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group ConsoleUsers to manage instance-console-connection in tenancy",
+      "Allow group ConsoleUsers to read instance in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let users manage Compute dedicated virtual machine hosts",
+    "group"       : "DedicatedVMHostAdmins",
+    "description" : "Ability  to create, update, and delete dedicated virtual machine hosts as well as launch instances on dedicated virtual machine hosts.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group DedicatedVMHostAdmins to manage dedicated-vm-hosts in compartment ${resident}",
+      "Allow group DedicatedVMHostAdmins to manage instances in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users launch Compute instances on dedicated virtual machine hosts",
+    "group"       : "DedicatedVMHostAdmins",
+    "description" : "Ability  to launch instances on dedicated virtual machine hosts.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group DedicatedVMHostAdmins to use dedicated-vm-hosts in compartment ${resident}",
+      "Allow group DedicatedVMHostAdmins to manage instances in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let volume admins manage block volumes, backups, and volume groups",
+    "group"       : "VolumeAdmins",
+    "description" : "Ability  to do all things with block storage volumes, volume backups, and volume groups in all compartments with the exception of copying volume backups across regions. This makes sense if you want to have a single set of volume admins manage all the volumes, volume backups, and volume groups in all the compartments. The second statement is required in order to attach/detach the volumes from instances.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group VolumeAdmins to manage volume-family in compartment ${resident}",
+      "Allow group VolumeAdmins to use instance-family in compartment ${resident}",
+      "Allow group VolumeAdmins to use volume-backups in compartment ${resident} where request.permission='VOLUME_BACKUP_COPY'",
+      "Allow group VolumeAdmins to use boot-volume-backups in compartment ${resident} where request.permission='BOOT_VOLUME_BACKUP_COPY'"
+    ]
+  },
+  {
+    "purpose"     : "Let volume backup admins manage only backups",
+    "group"       : "VolumeBackupAdmins",
+    "description" : "Ability  to do all things with volume backups, but not create and manage volumes themselves. This makes sense if you want to have a single set of volume backup admins manage all the volume backups in all the compartments. The first statement gives the required access to the volume that is being backed up; the second statement enables creation of the backup (and the ability to delete backups). The third statement enables the creation and management of user defined backup policies; the fourth statement enables assignment and removal of assignment of backup policies.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group VolumeBackupAdmins to use volumes in compartment ${resident}",
+      "Allow group VolumeBackupAdmins to manage volume-backups in compartment ${resident}",
+      "Allow group VolumeBackupAdmins to manage backup-policies in compartment ${resident}",
+      "Allow group VolumeBackupAdmins to manage backup-policy-assignments in compartment ${resident}",
+      "Allow group VolumeBackupAdmins to use volumes in compartment ${resident}",
+      "Allow group VolumeBackupAdmins to manage volume-backups in compartment ${resident}",
+      "Allow group VolumeBackupAdmins to inspect volume-attachments in compartment ${resident}",
+      "Allow group VolumeBackupAdmins to inspect instances in compartment ${resident}",
+      "Allow group VolumeBackupAdmins to manage backup-policies in compartment ${resident}",
+      "Allow group VolumeBackupAdmins to manage backup-policy-assignments in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let boot volume backup admins manage only backups",
+    "group"       : "BootVolumeBackupAdmins",
+    "description" : "Ability  to do all things with boot volume backups, but not create and manage boot volumes themselves. This makes sense if you want to have a single set of boot volume backup admins manage all the boot volume backups in all the compartments. The first statement gives the required access to the boot volume that is being backed up; the second statement enables creation of the backup (and the ability to delete backups). The third statement enables the creation and management of user defined backup policies; the fourth statement enables assignment and removal of assignment of backup policies.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group BootVolumeBackupAdmins to use volumes in compartment ${resident}",
+      "Allow group BootVolumeBackupAdmins to manage boot-volume-backups in compartment ${resident}",
+      "Allow group BootVolumeBackupAdmins to manage backup-policies in compartment ${resident}",
+      "Allow group BootVolumeBackupAdmins to manage backup-policy-assignments in compartment ${resident}",
+      "Allow group BootVolumeBackupAdmins to use volumes in compartment ${resident}",
+      "Allow group BootVolumeBackupAdmins to manage boot-volume-backups in compartment ${resident}",
+      "Allow group BootVolumeBackupAdmins to inspect instances in compartment ${resident}",
+      "Allow group BootVolumeBackupAdmins to manage backup-policies in compartment ${resident}",
+      "Allow group BootVolumeBackupAdmins to manage backup-policy-assignments in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users create a volume group",
+    "group"       : "VolumeGroupCreators",
+    "description" : "Ability  to create a volume group from a set of volumes.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group VolumeGroupCreators to inspect volumes in compartment ${resident}",
+      "Allow group VolumeGroupCreators to manage volume-groups in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users clone a volume group",
+    "group"       : "VolumeGroupCloners",
+    "description" : "Ability  to clone a volume group from an existing volume group.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group VolumeGroupCloners to inspect volumes in compartment ${resident}",
+      "Allow group VolumeGroupCloners to manage volume-groups in compartment ${resident}",
+      "Allow group VolumeGroupCloners to manage volumes in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users create a volume group backup",
+    "group"       : "VolumeGroupBackupAdmins",
+    "description" : "Ability  to create a volume group backup.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group VolumeGroupBackupAdmins to inspect volume-groups in compartment ${resident}",
+      "Allow group VolumeGroupBackupAdmins to manage volumes in compartment ${resident}",
+      "Allow group VolumeGroupBackupAdmins to manage volume-group-backups in compartment ${resident}",
+      "Allow group VolumeGroupBackupAdmins to manage volume-backups in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users restore a volume group backup",
+    "group"       : "VolumeGroupBackupAdmins",
+    "description" : "Ability  to create a volume group by restoring a volume group backup.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group VolumeGroupBackupAdmins to inspect volume-group-backups in compartment ${resident}",
+      "Allow group VolumeGroupBackupAdmins to read volume-backups in compartment ${resident}",
+      "Allow group VolumeGroupBackupAdmins to manage volume-groups in compartment ${resident}",
+      "Allow group VolumeGroupBackupAdmins to manage volumes in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users create, manage, and delete file systems",
+    "group"       : "StorageAdmins",
+    "description" : "Ability  to create, manage, or delete a file system or file system clone. Administrative functions for a file system include the ability to rename or delete it or disconnect from it.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group StorageAdmins to manage file-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users create file systems",
+    "group"       : "FileSystemManagers",
+    "description" : "Ability  to create a file system or file system clone.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group FileSystemManagers to manage file-systems in compartment ${resident}",
+      "Allow group FileSystemManagers to read mount-targets in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let Object Storage admins manage buckets and objects",
+    "group"       : "ObjectAdmins",
+    "description" : "Ability  to do all things with Object Storage buckets and objects in all compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group ObjectAdmins to manage buckets in compartment ${resident}",
+      "Allow group ObjectAdmins to manage objects in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users write objects to Object Storage buckets",
+    "group"       : "ObjectWriters",
+    "description" : "Ability  to write objects to any Object Storage bucket in compartment ${resident} (imagine a situation where a client needs to regularly write log files to a bucket). This consists of the ability to list the buckets in the compartment, list the objects in a bucket, and create a new object in a bucket. Although the second statement gives broad access with the manage verb, that access is then scoped down to only the OBJECT_INSPECT and OBJECT_CREATE permissions with the condition at the end of the statement.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group ObjectWriters to read buckets in compartment ${resident}",
+      "Allow group ObjectWriters to manage objects in compartment ${resident} where any {request.permission='OBJECT_CREATE', request.permission='OBJECT_INSPECT'}"
+    ]
+  },
+  {
+    "purpose"     : "Let bucket users write objects to an indicated Object Storage bucket",
+    "group"       : "BucketUsers",
+    "description" : "Ability  to write objects to any Object Storage bucket in compartment ${resident} (imagine a situation where a client needs to regularly write log files to a bucket). This consists of the ability to list the buckets in the compartment, list the objects in a bucket, and create a new object in a bucket. Although the second statement gives broad access with the manage verb, that access is then scoped down to only the OBJECT_INSPECT and OBJECT_CREATE permissions with the condition at the end of the statement.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group BucketUsers to read buckets in compartment ${resident}",
+      "Allow group BucketUsers to manage objects in compartment ${resident} where all {target.bucket.name='BucketA', any {request.permission='OBJECT_CREATE', request.permission='OBJECT_INSPECT'}}"
+    ]
+  },
+  {
+    "purpose"     : "Let users download objects from Object Storage buckets",
+    "group"       : "ObjectReaders",
+    "description" : "Ability  to download objects from any Object Storage bucket in compartment ${resident}. This consists of the ability to list the buckets in the compartment, list the objects in a bucket, and read existing objects in a bucket.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group ObjectReaders to read buckets in compartment ${resident}",
+      "Allow group ObjectReaders to read objects in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let bucket users download objects from Object Storage buckets",
+    "group"       : "BucketUsers",
+    "description" : "Ability  to download objects from any Object Storage bucket in compartment ${resident}. This consists of the ability to list the buckets in the compartment, list the objects in a bucket, and read existing objects in a bucket.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group BucketUsers to read buckets in compartment ${resident}",
+      "Allow group BucketUsers to read objects in compartment ${resident} where target.bucket.name='BucketA'"
+    ]
+  },
+  {
+    "purpose"     : "Let database admins manage Oracle Cloud database systems",
+    "group"       : "DatabaseAdmins",
+    "description" : "Ability  to do all things with the following system types and their associated resources in all compartments: Exadata Cloud Service instances, bare metal DB systems, virtual machine DB systems. This makes sense if you want to have a single set of database admins manage all the bare metal, virtual machine, and Exadata systems in all the compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group DatabaseAdmins to manage database-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let database admins manage Exadata Database Service on Cloud@Customer instances",
+    "group"       : "ExaCCAdmins",
+    "description" : "Ability  to do all things with the Exadata Database Service on Cloud@Customer resources in all compartments. This makes sense if you want to have a single set of database admins manage all the Exadata Database Service on Cloud@Customer systems in all the compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group ExaCCAdmins to manage database-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let database admins manage MySQL Database resources",
+    "group"       : "MySQLAdmins",
+    "description" : "Ability to do all things with MySQL Database and MySQL HeatWave resources in all compartments. Creating and managing MySQL Database DB Systems also requires limited access to VCNs, Subnets, and Tag namespaces in the tenancy.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group MySQLAdmins to {SUBNET_READ, SUBNET_ATTACH, SUBNET_DETACH, VCN_READ, COMPARTMENT_INSPECT} in tenancy",
+      "Allow group MySQLAdmins to manage mysql-family in tenancy",
+      "Allow group MySQLAdmins to use tag-namespaces in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let database admins manage Oracle Cloud external database resources",
+    "group"       : "OnPremDatabaseAdmins",
+    "description" : "Ability  to do all things with the following OCI external database resources in all compartments: OCI external container database resources, pluggable database resources, non-container database resources, database connectors. This makes sense if you want to have a single set of database admins manage all the OCI external database resources in all the compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group OnPremDatabaseAdmins to manage external-database-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let fleet admins manage Autonomous Databases",
+    "group"       : "DatabaseAdmins",
+    "description" : "Ability  to do all things with Autonomous Database instances in all compartments. Applicable if you want to have a single set of database administrators manage all the Autonomous Database databases in all the compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group DatabaseAdmins to manage autonomous-database-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let database admins manage Autonomous Databases",
+    "group"       : "AutonomousDatabaseAdmins",
+    "description" : "Ability  to do all things with Autonomous Database instances in all compartments. Applicable if you want to have a single set of database administrators manage all the Autonomous Database databases in all the compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group AutonomousDatabaseAdmins to manage autonomous-database in compartment ${resident}",
+      "Allow group AutonomousDatabaseAdmins to manage autonomous-backup in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let OLTP admins manage Autonomous Databases",
+    "group"       : "AutonomousOLTPAdmins",
+    "description" : "Ability  to do all things with Autonomous Database instances in all compartments. Applicable if you want to have a single set of database administrators manage all the Autonomous Database databases in all the compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group AutonomousOLTPAdmins to manage autonomous-databases in tenancy where target.workloadType = 'OLTP'",
+      "Allow group AutonomousOLTPAdmins to manage autonomous-backups in tenancy where target.workloadType = 'OLTP'"
+    ]
+  },
+  {
+    "purpose"     : "Let APEX admins manage Autonomous Databases",
+    "group"       : "AutonomousDWAdmins",
+    "description" : "Ability  to do all things with Autonomous Database instances in all compartments. Applicable if you want to have a single set of database administrators manage all the Autonomous Database databases in all the compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group AutonomousAPEXAdmins to manage autonomous-databases in tenancy where target.workloadType = 'APEX'",
+      "Allow group AutonomousAPEXAdmins to manage autonomous-backups in tenancy where target.workloadType = 'APEX'"
+    ]
+  },
+  {
+    "purpose"     : "Let DW admins manage Autonomous Databases",
+    "group"       : "AutonomousDWAdmins",
+    "description" : "Ability  to do all things with Autonomous Database instances in all compartments. Applicable if you want to have a single set of database administrators manage all the Autonomous Database databases in all the compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group AutonomousDWAdmins to manage autonomous-databases in tenancy where target.workloadType = 'DW'",
+      "Allow group AutonomousDWAdmins to manage autonomous-backups in tenancy where target.workloadType = 'DW'"
+    ]
+  },
+  {
+    "purpose"     : "Let AJD admins manage Autonomous Databases",
+    "group"       : "AutonomousAJDAdmins",
+    "description" : "Ability  to do all things with Autonomous Database instances in all compartments. Applicable if you want to have a single set of database administrators manage all the Autonomous Database databases in all the compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group AutonomousAJDAdmins to manage autonomous-databases in tenancy where target.workloadType = 'AJD'",
+      "Allow group AutonomousAJDAdmins to manage autonomous-backups in tenancy where target.workloadType = 'AJD'"
+    ]
+  },
+  {
+    "purpose"     : "Let security admins manage vaults, keys, and secrets",
+    "group"       : "SecurityAdmins",
+    "description" : "Ability  to do all things with the Vault service in all compartments. This makes sense if you want to have a single set of security admins manage all the vaults, keys, and secret components (including secrets, secret versions, and secret bundles) in all compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group SecurityAdmins to manage vaults in compartment ${resident}",
+      "Allow group SecurityAdmins to manage keys in compartment ${resident}",
+      "Allow group SecurityAdmins to manage secret-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let security admins manage all keys in a specific vault in a compartment",
+    "group"       : "SecurityAdmins",
+    "description" : "Ability  to do all things with keys in a specific vault in compartment ${resident}.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group SecurityAdmins to manage keys in compartment ${resident} where target.vault.id='${vault_OCID}'"
+    ]
+  },
+  {
+    "purpose"     : "Let security admins use a specific key in a compartment",
+    "group"       : "SecurityAdmins",
+    "description" : "Ability  to list, view, and perform cryptographic operations with a specific key in a compartment.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group SecurityAdmins to use keys in compartment ${resident} where target.key.id='${key_OCID}'"
+    ]
+  },
+  {
+    "purpose"     : "Let a user group delegate key usage in a compartment",
+    "group"       : "any-user",
+    "description" : "Ability to associate an Object Storage bucket, Block Volume volume, File Storage file system, Kubernetes cluster, or Streaming stream pool with a specific key authorized for use in a specific compartment. With this policy, a user in the specified group does not have permission to use the key itself. Rather, by association, the key can be used by Object Storage, Block Volume, File Storage, Container Engine for Kubernetes, or Streaming on behalf of the user to: Create or update an encrypted bucket, volume, or file system and to encrypt or decrypt data in the bucket, volume, or file system. Create Kubernetes clusters with encrypted Kubernetes secrets at rest in the etcd key-value store. Create a stream pool to encrypt data in the streams in the stream pool. This policy requires that you also have a companion policy that lets Object Storage, Block Volume, File Storage, Container Engine for Kubernetes, or Streaming use the key to perform cryptographic operations.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group ObjectWriters, VolumeWriters, FileWriters, ClusterWriters, StreamWriters to use key-delegate in compartment ${resident} where target.key.id = '${key_OCID}'"
+    ]
+  },
+  {
+    "purpose"     : "Let Block Volume, Object Storage, File Storage, Container Engine for Kubernetes, and Streaming services encrypt and decrypt volumes, volume backups, buckets, file systems, Kubernetes secrets, and stream pools",
+    "group"       : "any-user",
+    "description" : "Ability  to list, view, and perform cryptographic operations with all keys in compartment ${resident}. Because Object Storage is a regional service, it has regional endpoints. As such, you must specify the regional service name for each region where you’re using Object Storage with Vault encryption. This policy also requires that you have a companion policy that allows a user group to use the delegated key that Object Storage, Block Volume, File Storage, Container Engine for Kubernetes, or Streaming will use.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow service blockstorage, objectstorage-${region_name}, FssOc1Prod, oke, streaming to use keys in compartment ${resident} where target.key.id = '${key_OCID}'"
+    ]
+  },
+  {
+    "purpose"     : "Let security admins manage all secrets in a specific vault in a compartment",
+    "group"       : "SecurityAdmins",
+    "description" : "Ability  to do all things with secrets in a specific vault in compartment ${resident}.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group SecurityAdmins to manage secret-family in compartment ${resident} where target.vault.id='${vault_OCID}'"
+    ]
+  },
+  {
+    "purpose"     : "Let users read, update, and rotate all secrets",
+    "group"       : "SecretsUsers",
+    "description" : "Ability  to read, update, and rotate all secrets in any vault in the tenancy.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group SecretsUsers to use secret-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let a compartment admin manage the compartment",
+    "group"       : "ServiceAdmins",
+    "description" : "Ability  to manage all aspects of a particular compartment. For example, a group called A-Admins could manage all aspects of a compartment called Project-A, including writing additional policies that affect the compartment. For more information, see Policy Attachment. For an example of this kind of setup and additional policies that are useful, see Example Scenario.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group ServiceAdmins to manage all-resources in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Restrict admin access to a specific region",
+    "group"       : "RegionAdmins",
+    "description" : "Ability  to manage resources in a specific region. Remember that IAM resources must be managed in the home region. If the specified region is not the home region, then the Admin will not be able to manage IAM resources. For more information about the home region, see Managing Regions.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group RegionAdmins to manage all-resources in tenancy where request.region='${region}'"
+    ]
+  },
+  {
+    "purpose"     : "Restrict user access to view only summary announcements",
+    "group"       : "AnnouncementListers",
+    "description" : "Ability  to view the summary versions of announcements about the operational status of Oracle Cloud Infrastructure services.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group AnnouncementListers to inspect announcements in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let users view details of announcements",
+    "group"       : "AnnouncementReaders",
+    "description" : "Ability  to view the details of announcements about the operational status of Oracle Cloud Infrastructure services.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group AnnouncementReaders to read announcements in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let streaming admins manage streaming resources",
+    "group"       : "StreamAdmins",
+    "description" : "Ability  to do all things with the Streaming service in all compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group StreamAdmins to manage stream-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let streaming users publish messages to streams",
+    "group"       : "StreamUsers",
+    "description" : "Ability  to produce messages to streams with the Streaming service in all compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group StreamUsers to use stream-push in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let streaming users publish messages to a specific stream",
+    "group"       : "StreamUsers",
+    "description" : "Ability  to produce messages to a stream with the Streaming service.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group StreamUsers to use stream-push in tenancy where target.stream.id = '${stream_OCID}'"
+    ]
+  },
+  {
+    "purpose"     : "Let streaming users publish messages to a stream in a specific stream pool",
+    "group"       : "StreamUsers",
+    "description" : "Ability  to produce messages to a stream with the Streaming service.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group StreamUsers to use stream-push in tenancy where target.streampool.id = '${stream_OCID}'"
+    ]
+  },
+  {
+    "purpose"     : "Let streaming users consume messages from streams",
+    "group"       : "StreamUsers",
+    "description" : "Ability  to consume messages from streams with the Streaming service in all compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group StreamUsers to use stream-pull in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users view metric definitions in a compartment",
+    "group"       : "MetricReaders",
+    "description" : "Ability  to view metric definitions  in a specific compartment. For more information about metrics, see Metrics Feature Overview.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group MetricReaders to inspect metrics in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users access monitoring metrics in a compartment",
+    "group"       : "MetricReaders",
+    "description" : "Ability  to view and retrieve monitoring metrics  for supported resources in a specific compartment. For more information about metrics, see Metrics Feature Overview.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group MetricReaders to read metrics in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Restrict user access to a specific metric namespace",
+    "group"       : "MetricReaders",
+    "description" : "Ability  to view and retrieve monitoring metrics  for resources under a specific metric namespace . For more information about metrics, see Metrics Feature Overview.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group MetricReaders to read metrics in compartment ${resident} where target.metrics.namespace='oci_computeagent'"
+    ]
+  },
+  {
+    "purpose"     : "Let users publish custom metrics",
+    "group"       : "MetricPublishers",
+    "description" : "Ability  to publish custom metrics  under a specific metric namespace  to the Monitoring service. For instructions, see Publishing Custom Metrics.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group MetricPublishers to use metrics in tenancy where target.metrics.namespace='mycustomnamespace'"
+    ]
+  },
+  {
+    "purpose"     : "Let instances make API calls to access monitoring metrics in the tenancy",
+    "group"       : "MetricInstances",
+    "description" : "Ability  to call the Monitoring API for access to monitoring metrics . The instances on which API requests originate must be members of the dynamic group indicated in the policy. For more information, see Calling Services from an Instance and Metrics Feature Overview.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow dynamic-group MetricInstances to read metrics in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let users view alarms",
+    "group"       : "AlarmUsers",
+    "description" : "Ability  to view alarms  for supported resources in tenancy. Does not include the ability to create alarms or to create or delete topics. For more information about alarms, see Alarms Feature Overview.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group AlarmUsers to read alarms in compartment ${resident}",
+      "Allow group AlarmUsers to read metrics in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users manage alarms",
+    "group"       : "AlarmUsers",
+    "description" : "Ability  to view and create alarms  with existing notification topics for supported resources in the tenancy. Does not include the ability to create or delete topics. For more information about alarms, see Alarms Feature Overview. All statements are required to let AlarmUsers create alarms.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group AlarmUsers to manage alarms in compartment ${resident}",
+      "Allow group AlarmUsers to read metrics in compartment ${resident}",
+      "Allow group AlarmUsers to use ons-topics in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users manage alarms and create topics",
+    "group"       : "AlarmUsers",
+    "description" : "Ability  to view and create alarms  (with new or existing topics ) for supported resources in tenancy. Also includes the ability to create subscriptions  in the tenancy, to publish messages  (broadcast notification messages) to all subscriptions in the tenancy, and to move alarms to different compartments in the tenancy. For more information about alarms, see Alarms Feature Overview.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group AlarmUsers to manage alarms in compartment ${resident}",
+      "Allow group AlarmUsers to read metrics in compartment ${resident}",
+      "Allow group AlarmUsers to manage ons-topics in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users access usage reports",
+    "level"       : "${tenancy}",
+    "group"       : "Administrators",
+    "description" : "Ability  to view usage reports for your tenancy. For more information about usage reports, see Cost and Usage Reports Overview. Where to create the policy: This is a special cross-tenancy policy and must be created in the tenancy. For more information, see Cost and Usage Reports Overview.",
+    "statements"  : [
+      "define tenancy usage-report as ${tenancy_OCID}",
+      "endorse group Administrators to read objects in tenancy usage-report"
+    ]
+  },
+  {
+    "purpose"     : "Let users analyze costs",
+    "group"       : "ReportReaders",
+    "description" : "Ability  to see costs for the tenancy. See Checking Your Expenses and Usage. Where to create the policy: In the tenancy so that users in the ${Example_Group} can see costs for the entire account.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group ReportReaders to read usage-reports in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Allow a group to manage topics",
+    "group"       : "NotificationAdmins",
+    "description" : "Ability  to get, create, update, and delete topics in the tenancy, as well as move topics to different compartments in the tenancy. Also includes the ability to create subscriptions  in the tenancy and to publish messages  (broadcast notification messages) to all subscriptions in the tenancy.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group NotificationAdmins to manage ons-topics in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Allow a group to manage topic subscriptions",
+    "group"       : "NotificationAdmins",
+    "description" : "Ability  to list, create, update, and delete subscriptions  for topics in the tenancy. Ability to move subscriptions to different compartments in the tenancy.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group NotificationAdmins to manage ons-subscriptions in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Allow a group to publish messages to topics",
+    "group"       : "NotificationAdmins",
+    "description" : "Ability  to broadcast notification messages  to all subscriptions  in the tenancy, as well as list, create, update, and delete subscriptions in the tenancy.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group NotificationAdmins to use ons-topics in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let users create, deploy, and manage functions and applications",
+    "group"       : "FunctionsDevelopers",
+    "description" : "Ability  to create, deploy, and manage Functions applications and functions. These policy statements give the group access to Cloud Shell, repositories in Oracle Cloud Infrastructure Registry, logs, metrics, functions, networks, and tracing.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group FunctionsDevelopers to use cloud-shell in compartment ${resident}",
+      "Allow group FunctionsDevelopers to manage repos in compartment ${resident}",
+      "Allow group FunctionsDevelopers to read objectstorage-namespaces in compartment ${resident}",
+      "Allow group FunctionsDevelopers to manage logging-family in compartment ${resident}",
+      "Allow group FunctionsDevelopers to read metrics in compartment ${resident}",
+      "Allow group FunctionsDevelopers to manage functions-family in compartment ${resident}",
+      "Allow group FunctionsDevelopers to use virtual-network-family in compartment ${resident}",
+      "Allow group FunctionsDevelopers to use use apm-domains in compartment ${resident}",
+      "Allow group FunctionsDevelopers to read vaults in compartment ${resident}",
+      "Allow group FunctionsDevelopers to use keys in compartment ${resident}",
+      "Allow service faas to use apm-domains in compartment ${resident}",
+      "Allow service faas to read repos in compartment ${resident} where request.operation='ListContainerImageSignatures'",
+      "Allow service faas to {KEY_READ} in compartment ${resident} where request.operation='GetKeyVersion'",
+      "Allow service faas to {KEY_VERIFY} in compartment ${resident} where request.operation='Verify'"
+    ]
+  },
+  {
+    "purpose"     : "Let users list Events rules in a compartment",
+    "group"       : "RuleReaders",
+    "description" : "Ability to list Events rules.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group RuleReaders to read cloudevents-rules in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let admins manage Events rules in a compartment",
+    "group"       : "RuleAdmins",
+    "description" : "Ability  to manage Events rules, including creating, deleting and updating rules.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group RuleAdmins to inspect compartments in tenancy",
+      "Allow group RuleAdmins to use tag-namespaces in tenancy",
+      "Allow group RuleAdmins to inspect streams in tenancy",
+      "Allow group RuleAdmins to use stream-push in tenancy",
+      "Allow group RuleAdmins to use stream-pull in tenancy",
+      "Allow group RuleAdmins to use virtual-network-family in tenancy",
+      "Allow group RuleAdmins to manage function-family in tenancy",
+      "Allow group RuleAdmins to use ons-topic in tenancy",
+      "Allow group RuleAdmins to manage cloudevents-rules in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Allow a group to access all of Cloud Guard",
+    "group"       : "CloudGuardReaders",
+    "description" : "Read-only access to all of Cloud Guard. In the example policy, the group is 'CloudGuardReaders.'",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group CloudGuardReaders to read cloud-guard-family in tenancy",
+      "Allow group CloudGuardReaders to read compartments in tenancy",
+      "Allow group CloudGuardReaders to read announcements in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Allow a group to access Cloud Guard problems",
+    "group"       : "CloudGuardProblemReaders",
+    "description" : "Read-only access to Cloud Guard problems. In the example policy, the group is 'CloudGuardProblemReaders.'",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group CloudGuardProblemReaders to read cloud-guard-family in tenancy",
+      "Allow group CloudGuardProblemReaders to inspect cloud-guard-detectors in tenancy",
+      "Allow group CloudGuardProblemReaders to inspect cloud-guard-targets in tenancy",
+      "Allow group CloudGuardProblemReaders to inspect cloud-guard-resource-types in tenancy",
+      "Allow group CloudGuardProblemReaders to read announcements in tenancy",
+      "Allow group CloudGuardProblemReaders to read compartments in tenancy",
+      "Allow group CloudGuardProblemReaders to read cloud-guard-config in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Allow a group to access Cloud Guard detector recipes",
+    "group"       : "CloudGuardDetectorReaders",
+    "description" : "Read-only access to Cloud Guard detector recipes. In the example policy, the group is 'CloudGuardDetectorReaders.'",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group CloudGuardDetectorReaders to read cloud-guard-detector-recipes in tenancy",
+      "Allow group CloudGuardDetectorReaders to read announcements in tenancy",
+      "Allow group CloudGuardDetectorReaders to read compartments in tenancy",
+      "Allow group CloudGuardDetectorReaders to read cloud-guard-config in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Allow a group to access Cloud Guard in a single compartment",
+    "group"       : "CloudGuardSingleCompartmentReaders",
+    "description" : "Read-only access to Cloud Guard in a single compartment. In the example policy, the group is 'CloudGuardSingleCompartmentReaders' and the compartment name is 'cgDemo_RestrictedAccess.'",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group CloudGuardSingleCompartmentReaders to read compartments in compartment ${resident} where target.compartment.name = 'cgDemo_RestrictedAccess'",
+      "Allow group CloudGuardSingleCompartmentReaders to read cloud-guard-family in compartment cgDemo_RestrictedAccess",
+      "Allow group CloudGuardSingleCompartmentReaders to read announcements in compartment cgDemo_RestrictedAccess",
+      "Allow group CloudGuardSingleCompartmentReaders to read cloud-guard-config in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let security admins manage all bastions and sessions",
+    "group"       : "SecurityAdmins",
+    "description" : "Ability  to manage all resources in the Bastion service in all compartments. This makes sense if you want to have a single set of security admins manage all bastions  and sessions  in all compartments.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group SecurityAdmins to manage bastion in compartment ${resident}",
+      "Allow group SecurityAdmins to manage bastion-session in compartment ${resident}",
+      "Allow group SecurityAdmins to manage virtual-network-family in compartment ${resident}",
+      "Allow group SecurityAdmins to read instance-family in compartment ${resident}",
+      "Allow group SecurityAdmins to read instance-agent-plugins in compartment ${resident}",
+      "Allow group SecurityAdmins to inspect work-requests in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let security admins manage bastion sessions",
+    "group"       : "SecurityAdmins",
+    "description" : "Ability  to manage all sessions  on all bastions  and in all compartments, including creating, connecting to, and terminating sessions.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group SecurityAdmins to use bastion in compartment ${resident}",
+      "Allow group SecurityAdmins to manage bastion-session in compartment ${resident}",
+      "Allow group SecurityAdmins to manage virtual-network-family in compartment ${resident}",
+      "Allow group SecurityAdmins to read instance-family in compartment ${resident}",
+      "Allow group SecurityAdmins to read instance-agent-plugins in compartment ${resident}",
+      "Allow group SecurityAdmins to inspect work-requests in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let security admins manage bastion sessions for a specific target host in a compartment",
+    "group"       : "SecurityAdmins",
+    "description" : "Ability  to manage sessions  on a bastion  in a specific compartment, and only for sessions that provide connectivity to a specific Compute instance.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group SecurityAdmins to use bastion in compartment ${resident}",
+      "Allow group SecurityAdmins to manage bastion-session in compartment ${resident} where ALL {target.resource.ocid='${instance_OCID}', target.bastion-session.username='${session_username}'}",
+      "Allow group SecurityAdmins to manage virtual-network-family in tenancy",
+      "Allow group SecurityAdmins to read instance-family in tenancy",
+      "Allow group SecurityAdmins to read instance-agent-plugins in tenancy",
+      "Allow group SecurityAdmins to inspect work-requests in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let security admins configure scanning of instances in all compartments",
+    "group"       : "SecurityAdmins",
+    "description" : "Ability  to configure Oracle Vulnerability Scanning Service to scan all Compute instances  in all compartments, and to view the scanning results. Consider this policy if you want to have a single set of security administrators configure vulnerability scanning for all instances.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group SecurityAdmins to manage vss-family in compartment ${resident}",
+      "Allow service vulnerability-scanning-service to manage instances in compartment ${resident}",
+      "Allow service vulnerability-scanning-service to read compartments in compartment ${resident}",
+      "Allow service vulnerability-scanning-service to read vnics in compartment ${resident}",
+      "Allow service vulnerability-scanning-service to read vnic-attachments in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users view vulnerability scan results in all compartments",
+    "group"       : "SecurityReviewers",
+    "description" : "Ability  to view the results of scanning Compute instances  in all compartments for security vulnerabilities. Consider this policy if you have a dedicated team responsible for reviewing or auditing the security of your entire tenancy.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group SecurityReviewers to read vss-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Allow a group to manage service connectors",
+    "group"       : "ConnectorAdmins",
+    "description" : "Ability  to list, create, update, and delete service connectors  in the tenancy. Ability to move service connectors to different compartments in the tenancy.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group ConnectorAdmins to manage serviceconnectors in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Allow a group to call Operations Insights ingest operations at tenancy",
+    "group"       : "OpsInsightUsers",
+    "description" : "Ability to call Operations Insights ingest operations at the tenancy level only.",
+    "level"       : "${tenancy}",
+    "statements"  : [
+      "Allow group OpsInsightUsers to use opsi-database-insights in tenancy where any {request.operation='IngestSqlBucket', request.operation='IngestSqlText', request.operation='IngestSqlPlanLines'}"
+    ]
+  },
+  {
+    "purpose"     : "Let users create and delete workspaces without networking (Data Integration)",
+    "group"       : "DataIntegrationAdmins",
+    "description" : "Ability to create, delete, and modify workspaces within a compartment.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group DataIntegrationAdmins to manage dis-workspaces in compartment ${resident}",
+      "Allow group DataIntegrationAdmins to manage dis-work-requests in compartment ${resident}",
+      "Allow group DataIntegrationAdmins to manage tag-namespaces in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users create and delete workspaces with networking (Data Integration)",
+    "group"       : "DataIntegrationAdmins",
+    "description" : "Ability to create, delete, and modify workspaces within a virtual network.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow service dataintegration to use virtual-network-family in compartment ${resident}",
+      "Allow group DataIntegrationAdmins to manage dis-workspaces in compartment ${resident}",
+      "Allow group DataIntegrationAdmins to manage dis-work-requests in compartment ${resident}",
+      "Allow group DataIntegrationAdmins to use virtual-network-family in compartment ${resident}",
+      "Allow group DataIntegrationAdmins to manage tag-namespaces in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users and resource principal access and use Object Storage for all workspaces (Data Integration)",
+    "group"       : "ObjectStorageSubscribers",
+    "description" : "Ability to create and use Object Storage data assets within all workspaces.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow any-user to use buckets in compartment ${resident} where ALL {request.principal.type='disworkspace'}",
+      "Allow any-user to manage objects in compartment ${resident} where ALL {request.principal.type='disworkspace'}",
+      "Allow group ObjectStorageSubscribers to use object-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users and resource principal access and use Object Storage for a given workspace (Data Integration)",
+    "group"       : "ObjectStorageSubscribers",
+    "description" : "Ability to create and use Object Storage data assets within all workspaces.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow any-user to use buckets in compartment ${resident} where ALL {request.principal.type='disworkspace', request.principal.id='${workspace_OCID}'}",
+      "Allow any-user to manage objects in compartment ${resident} where ALL {request.principal.type='disworkspace', request.principal.id='${workspace_OCID}'}",
+      "Allow group ObjectStorageSubscribers to use object-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users and resource principal access and use autonomous databases as a target for all workspaces (Data Integration)",
+    "group"       : "AutonomousDatabaseSubscribers",
+    "description" : "Ability to create and use autonomous database data assets within all workspaces.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow any-user to use buckets in compartment ${resident} where ALL {request.principal.type='disworkspace'}",
+      "Allow any-user to manage objects in compartment ${resident} where ALL {request.principal.type='disworkspace'}",
+      "Allow any-user to manage buckets in compartment ${resident} where ALL {request.principal.type='disworkspace', request.permission='PAR_MANAGE'}",
+      "Allow group AutonomousDatabaseSubscribers to use object-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users and resource principal access and use autonomous databases as a target for a given workspace (Data Integration)",
+    "group"       : "AutonomousDatabaseSubscribers",
+    "description" : "Ability to create and use autonomous database data assets within all workspaces.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow any-user to use buckets in compartment ${resident} where ALL {request.principal.type='disworkspace', request.principal.id='${workspace_OCID}'}",
+      "Allow any-user to manage objects in compartment ${resident} where ALL {request.principal.type='disworkspace', request.principal.id='${workspace_OCID}'}",
+      "Allow any-user to manage buckets in compartment ${resident} where ALL {request.principal.type='disworkspace', request.principal.id='${workspace_OCID}', request.permission='PAR_MANAGE'}",
+      "Allow group AutonomousDatabaseSubscribers to use object-family in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users move workspaces to a new compartment (Data Integration)",
+    "group"       : "DataIntegrationAdmins",
+    "description" : "Ability to move workspaces to a new compartment.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow service dataintegration to inspect compartments in compartment ${resident}",
+      "Allow group DataIntegrationAdmins to manage dis-workspaces in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let users search objects within a workspace and publish tasks to the OCI Data Flow service (Data Integration)",
+    "group"       : "any-user",
+    "description" : "Ability to publish the different tasks within all workspaces to the OCI Data Flow service.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow any-user to manage dataflow-application in compartment ${resident} where ALL {request.principal.type='disworkspace'}",
+      "Allow service dataintegration to {TENANCY_INSPECT} in tenancy",
+      "Allow service dataintegration to {DIS_METADATA_INSPECT} in tenancy"
+    ]
+  },
+  {
+    "purpose"     : "Let users publish tasks to a particular OCI Data Flow service workspace(Data Integration)",
+    "group"       : "any-user",
+    "description" : "Ability to publish the different tasks within all workspaces to the OCI Data Flow service.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow any-user to manage dataflow-application in compartment ${resident} where ALL {request.principal.type='disworkspace', request.principal.id='${workspace_OCID}'}"
+    ]
+  },
+  {
+    "purpose"     : "Let users access the OCI Vault service for a given workspace (Data Integration)",
+    "group"       : "SecretUsers",
+    "description" : "Ability to use OCI Vault secrets within all workspaces.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow any-user to read secret-bundles in compartment ${resident} where ALL {request.principal.type='disworkspace'}",
+      "Allow any-user to read secret-bundles in compartment ${resident} where ALL {request.principal.type='disworkspace', request.principal.id='${workspace_OCID}'}",
+      "Allow group SecretUsers to read secret-bundles in compartment ${resident}"
+    ]
+  },
+  {
+    "purpose"     : "Let admins manage announcement subscriptions",
+    "group"       : "AnnouncementAdmins",
+    "description" : "Ability  to manage subscriptions that deliver announcements about the operational status of Oracle Cloud Infrastructure services.",
+    "level"       : "${resident}",
+    "statements"  : [
+      "Allow group AnnouncementAdmins to manage announcement-subscriptions in compartment ${resident}"
+    ]
+  }
 ]

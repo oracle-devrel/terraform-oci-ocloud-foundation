@@ -5,25 +5,25 @@
 resource "oci_core_default_security_list" "default_security_list" {
   manage_default_resource_id = oci_core_vcn.segment.default_security_list_id
   egress_security_rules {
-    protocol         = "6" // tcp
-    destination      = "all-${lower(var.resident.region.key)}-services-in-oracle-services-network"
-    destination_type = "SERVICE_CIDR_BLOCK"
+    protocol         = "all"
+    destination      = "0.0.0.0/0"
+    destination_type = "CIDR_BLOCK"
     stateless        = false
     description      = "allow outgoing tcp traffic"
   }
   ingress_security_rules {
     protocol  = "1"
     stateless = false
-    source    = var.network.cidr
+    source    = var.config.network.gateways.drg.anywhere
     icmp_options {
       type = 3
       code = 4
-  }
+    }
   }
   ingress_security_rules {
     protocol  = "1"
     stateless = false
-    source    = var.network.gateways.drg.anywhere
+    source    = var.config.network.cidr
     icmp_options {
       type = 3
       code = null
@@ -34,70 +34,55 @@ resource "oci_core_default_security_list" "default_security_list" {
 resource "oci_core_security_list" "segment" {
   compartment_id = data.oci_identity_compartments.network.compartments[0].id
   vcn_id         = oci_core_vcn.segment.id
-  for_each       = var.network.security_lists
+  for_each       = {
+    for profile in var.config.network.security_lists : profile.display_name => profile
+    if  profile.stage <= var.config.service.stage
+  }
   display_name   = each.value.display_name
 
-  // allow outbound tcp traffic to other internal segments
+  // allow all outbound traffic to other network segments
   egress_security_rules {
-    protocol    = "6" // tcp
-    destination = oci_core_vcn.segment.cidr_blocks[0]
-    stateless   = false
-    description = "allow outgoing tcp traffic to vcn"
-  }
-  // allow outbound tcp traffic to oracle service network
-  egress_security_rules {
-    protocol         = "6" // tcp
-    destination      = "all-${lower(var.resident.region.key)}-services-in-oracle-services-network"
-    destination_type = "SERVICE_CIDR_BLOCK"
+    protocol         = "all"
+    destination      = "0.0.0.0/0"
+    destination_type = "CIDR_BLOCK"
     stateless        = false
-    description      = "allow outgoing tcp traffic to osn"
+    description      = "allow outgoing tcp traffic"
   }
   // allow inbound icmp traffic
   ingress_security_rules {
     protocol    = 1
-    source      = var.network.gateways.drg.anywhere
+    source      = var.config.network.gateways.drg.anywhere
     stateless   = false
     description = "allow internal icmp traffic"
     icmp_options {
       type = 3
       code = 4
+    }
   }
-  }
-  // allow inbound tcp traffic from other internal segments
   ingress_security_rules {
-    protocol    = 1
-    source      = "10.0.0.0/8"
-    stateless   = false
-    description = "allow internal icmp traffic"
+    protocol  = "1"
+    stateless = false
+    source    = var.config.network.cidr
+    icmp_options {
+      type = 3
+      code = null
+    }
   }
-  // allow inbound tcp traffic from oracle service segments
-  ingress_security_rules {
-    protocol    = 1
-    source      = "172.16.0.0/12"
-    stateless   = false
-    description = "allow internal icmp traffic"
-  }
-
-  ingress_security_rules {
-    protocol    = 1
-    source      = "192.168.0.0/16"
-    stateless   = false
-    description = "allow internal icmp traffic"
-  }
-
   // allow defined inbound tcp traffic
   dynamic "ingress_security_rules" {
-    for_each = [for profile in each.value.ingress: {
-      protocol    = profile.protocol
-      source      = profile.source
-      stateless   = profile.stateless
-      description = profile.description
-      min_port    = profile.min_port
-      max_port    = profile.max_port
+    for_each = [for application in each.value.ingress: {
+      protocol    = application.protocol
+      source      = application.source
+      source_type = application.source_type
+      stateless   = application.stateless
+      description = application.description
+      min_port    = application.min_port
+      max_port    = application.max_port
     }]
     content {
       protocol    = ingress_security_rules.value.protocol
       source      = ingress_security_rules.value.source
+      source_type = ingress_security_rules.value.source_type
       stateless   = ingress_security_rules.value.stateless
       description = ingress_security_rules.value.description
       tcp_options {
@@ -113,7 +98,7 @@ resource "oci_core_network_security_group" "segment" {
   depends_on     = [oci_core_vcn.segment]
   compartment_id = data.oci_identity_compartments.network.compartments[0].id
   vcn_id         = oci_core_vcn.segment.id
-  for_each       = var.network.security_groups
+  for_each       = var.config.network.security_groups
   display_name   = each.value.display_name
   defined_tags   = var.assets.resident.defined_tags
   freeform_tags  = var.assets.resident.freeform_tags

@@ -1,0 +1,6 @@
+{
+  "FREE_TIER" : 0,
+  "TRIAL"     : 1,
+  "PAYG"      : 2,
+  "UCC"       : 3
+}

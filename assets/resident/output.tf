@@ -14,7 +14,7 @@ output "parent_id" {
 
 output "compartment_ids" {
   description = "A list of OCID for the child compartments, representing the different administration domain."
-  value       = { for compartment in oci_identity_compartment.domains : compartment.name => compartment.id }
+  value       = {for compartment in oci_identity_compartment.domains : compartment.name => compartment.id}
 }
 
 output "namespace_ids" {

@@ -1,0 +1,19 @@
+[
+  {
+    "name"        : "sql",
+    "stateless"   : false,
+    "min"         : 1521,
+    "max"         : 1521,
+    "transport"   : "tcp",
+    "protocol"    : 6,
+    "description" : "Oracle database connection"
+  },{
+    "name"        : "rdp",
+    "stateless"   : false,
+    "min"         : 3389,
+    "max"         : 3389,
+    "transport"   : "tcp",
+    "protocol"    : 6,
+    "description" : "windows remote desktop"
+  }
+]

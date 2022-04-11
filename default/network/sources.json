@@ -1,0 +1,5 @@
+{
+    "anywhere" : ["https"],
+    "vcn"      : ["ssh"],
+    "osn"      : ["https"]
+}

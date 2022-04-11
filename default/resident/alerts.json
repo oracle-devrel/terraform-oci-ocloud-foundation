@@ -1,0 +1,26 @@
+[
+  {
+    "measure"   : "PERCENTAGE",
+    "name"      : "compartment",
+    "stage"     : 2,
+    "threshold" : 90,
+    "type"      : "spent",
+    "channel"   : "budget"
+  },
+  {
+    "measure"   : "PERCENTAGE",
+    "name"      : "tag",
+    "stage"     : 2,
+    "threshold" : 90,
+    "type"      : "spent",
+    "channel"   : "budget"
+  },
+  {
+    "measure"   : "ABSOLUTE",
+    "name"      : "absolute",
+    "stage"     : 2,
+    "threshold" : 100,
+    "type"      : "spent",
+    "channel"   : "budget"
+  }
+]

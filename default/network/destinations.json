@@ -1,19 +1,23 @@
 [
   {
-    "name"     : "internet",
-    "gateway"  : "internet",
-    "sections" : ["internet"]
+    "name"    : "internet",
+    "gateway" : "internet",
+    "zones"   : ["anywhere"]
   },{
-    "name"     : "nat",
-    "gateway"  : "nat",
-    "sections" : ["internet"]
+    "name"    : "nat",
+    "gateway" : "translation",
+    "zones"   : ["anywhere"]
   },{
-    "name"     : "osn",
-    "gateway"  : "osn",
-    "sections" : ["osn"]
+    "name"    : "storage",
+    "gateway" : "service",
+    "zones"   : ["buckets"]
   },{
-    "name"     : "cpe",
-    "gateway"  : "drg",
-    "sections" : ["cpe", "devices"]
+    "name"    : "osn",
+    "gateway" : "service",
+    "zones"   : ["osn"]
+  },{
+    "name"    : "wan",
+    "gateway" : "router",
+    "zones"   : ["cpe", "devices"]
   }
 ]

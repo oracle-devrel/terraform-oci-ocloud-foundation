@@ -1,0 +1,17 @@
+[
+  {
+    "name"    : "SMALL",
+    "cores"   : 1,
+    "storage" : 1
+  },
+  {
+    "name"    : "MEDIUM",
+    "cores"   : 4,
+    "storage" : 2
+  },
+  {
+    "name"    : "LARGE",
+    "cores"   : 8,
+    "storage" : 4
+  }
+]

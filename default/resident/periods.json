@@ -1,0 +1,12 @@
+[
+  {
+    "name"   : "default",  
+    "type"   : "MONTHLY",
+    "offset" : 1
+  },
+  {
+    "name"   : "mid",  
+    "type"   : "MONTHLY",
+    "offset" : 15
+  }
+]
