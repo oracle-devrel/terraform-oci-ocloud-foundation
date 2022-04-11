@@ -170,3 +170,24 @@ output "database" {
   sensitive = true
 }
 // --- database creation --- //
+// --- bucket creation --- //
+module "storage" {
+  source     = "github.com/torstenboettjer/object_store"
+  depends_on = [module.configuration, module.resident, module.network, module.encryption]
+  providers  = {oci = oci.service}
+  config = {
+    tenancy  = module.configuration.tenancy
+    service  = module.configuration.service
+  }
+  assets = {
+    encryption = module.encryption["main"]
+    network    = module.network["core"]
+    resident   = module.resident
+  }
+}
+output "database" {
+  value = {for resource, parameter in module.database : resource => parameter}
+  sensitive = true
+}
+// --- bucket creation --- // 
+ 
