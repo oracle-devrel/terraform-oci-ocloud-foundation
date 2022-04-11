@@ -13,17 +13,10 @@ variable "adb_type" {
   default     = "TRANSACTION_PROCESSING"
 }
 
-<<<<<<< Updated upstream
-variable "repository" {
-  type        = string
-  description = "The service configuration is stored using infrastructure code in a repository"
-  default     = "https://github.com/oracle-devrel/terraform-oci-ocloud-configuration"
-=======
 variable "budget" {
   type = number
   description = "Set a monthly budget for the service, cost tracking will send an alert when 90% of the budget has been consumed. The budget will be ingored when set to 0,-"
   default     = 500
->>>>>>> Stashed changes
 }
 
 variable "class" {
@@ -98,6 +91,12 @@ variable "organization" {
   default     =  "Organization"
 }
 
+variable "osn" {
+  type        = string
+  description = "Configures the scope for the service gateway"
+  default     = "ALL_SERVICES"
+}
+
 variable "owner" {
   type        = string
   description = "The service owner is identified by his or her eMail address"
@@ -114,7 +113,7 @@ variable "parent" {
 variable "repository" {
   type        = string
   description = "The service configuration is stored using infrastructure code in a repository"
-  default     = "https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone"
+  default     = "https://github.com/oracle-devrel/terraform-oci-ocloud-foundation"
 }
 
 variable "stage"           { 
@@ -122,22 +121,9 @@ variable "stage"           {
   description = "The stage variable triggers lifecycle related resources to be provisioned"
   default     = "DEVELOPMENT"
 }
-<<<<<<< Updated upstream
-variable "adb_type" {
-  type = string
-  description = "Configures the autonomous database type"
-  default     = "TRANSACTION_PROCESSING"
-=======
-
-variable "osn" {
-  type        = string
-  description = "Configures the scope for the service gateway"
-  default     = "ALL_SERVICES"
-}
 
 variable "wallet" {
   type        = string
   description = "Define the storage entity, either Software or HARDWARE"
   default     = "SOFTWARE"
->>>>>>> Stashed changes
 }
