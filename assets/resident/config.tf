@@ -5,24 +5,24 @@
 terraform {
     required_providers {
         oci = {
-            source = "hashicorp/oci"
+            source = "oracle/oci"
         }
     }
 }
 
 // metadata for the tenancy
-data "oci_identity_tenancy" "resident" { tenancy_id = var.tenancy.id }
+data "oci_identity_tenancy" "resident" { tenancy_id = var.config.tenancy.id }
 
 locals {
   defined_tags = {
-    for tag in var.resident.tags : "${tag.namespace}.${tag.name}" => tag.default
-    if tag.stage <= var.resident.stage
+    for tag in var.config.service.tags : "${tag.namespace}.${tag.name}" => tag.default
+    if tag.stage <= var.config.service.stage
   }
   freeform_tags = {
     "framework" = "ocloud"
-    "owner"     = var.resident.owner
-    "lifecycle" = var.resident.stage
-    "class"     = var.tenancy.class
+    "owner"     = var.config.service.owner
+    "lifecycle" = var.config.service.stage
+    "class"     = var.config.tenancy.class
   }
 }
 

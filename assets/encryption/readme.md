@@ -21,7 +21,7 @@ module "encryption" {
   resident  = module.configuration.resident
   wallet    = module.configuration.wallet
   input = {
-    type   = var.encryption_type == "Software" ? "DEFAULT" : "VIRTUAL_PRIVATE"
+    type   = var.config.encryption_type == "Software" ? "DEFAULT" : "VIRTUAL_PRIVATE"
     secret = var.secret_name
     phrase = var.secret_phrase
   }
@@ -41,17 +41,17 @@ output "wallet" {
 | Name | Type |
 |------|------|
 | [null_resource.previous](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
-| [oci_kms_key.wallet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/kms_key) | resource |
-| [oci_kms_sign.wallet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/kms_sign) | resource |
-| [oci_kms_vault.wallet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/kms_vault) | resource |
-| [oci_kms_verify.wallet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/kms_verify) | resource |
-| [oci_vault_secret.wallet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/vault_secret) | resource |
+| [oci_kms_key.wallet](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/kms_key) | resource |
+| [oci_kms_sign.wallet](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/kms_sign) | resource |
+| [oci_kms_vault.wallet](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/kms_vault) | resource |
+| [oci_kms_verify.wallet](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/kms_verify) | resource |
+| [oci_vault_secret.wallet](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/vault_secret) | resource |
 | [time_sleep.wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
-| [oci_identity_compartments.security](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_compartments) | data source |
-| [oci_secrets_secretbundle.wallet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/secrets_secretbundle) | data source |
-| [oci_secrets_secretbundle_versions.wallet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/secrets_secretbundle_versions) | data source |
-| [oci_vault_secret.wallet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/vault_secret) | data source |
-| [oci_vault_secrets.wallet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/vault_secrets) | data source |
+| [oci_identity_compartments.security](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartments) | data source |
+| [oci_secrets_secretbundle.wallet](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/secrets_secretbundle) | data source |
+| [oci_secrets_secretbundle_versions.wallet](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/secrets_secretbundle_versions) | data source |
+| [oci_vault_secret.wallet](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/vault_secret) | data source |
+| [oci_vault_secrets.wallet](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/vault_secrets) | data source |
 
 ## Inputs
 

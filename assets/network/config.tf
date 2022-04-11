@@ -5,7 +5,7 @@
 terraform {
   required_providers {
     oci = {
-      source = "hashicorp/oci"
+      source = "oracle/oci"
     }
   }
 }
@@ -24,36 +24,36 @@ data "oci_core_services" "storage" {
   }
 }
 data "oci_identity_compartments" "network" {
-  compartment_id = var.tenancy.id
+  compartment_id = var.config.tenancy.id
   access_level   = "ANY"
   compartment_id_in_subtree = true
-  name           = try(var.network.compartment, var.resident.name)
+  name           = try(var.config.network.compartment, var.config.service.name)
   state          = "ACTIVE"
 }
 data "oci_core_drgs" "segment" {
   depends_on = [oci_core_drg.segment]
-  count          = var.network.gateways.drg.create == true ? 1 : 0
+  count          = var.config.network.gateways.drg.create == true ? 1 : 0
   compartment_id = data.oci_identity_compartments.network.compartments[0].id
 }
 data "oci_core_internet_gateways" "segment" {
   depends_on = [oci_core_internet_gateway.segment]
-  count          = var.input.internet == "ENABLE" ? 1 : 0
+  count          = var.schema.internet == "ENABLE" ? 1 : 0
   compartment_id = data.oci_identity_compartments.network.compartments[0].id
-  display_name   = var.network.gateways.internet.name
+  display_name   = var.config.network.gateways.internet.name
   state          = "AVAILABLE"
   vcn_id         = oci_core_vcn.segment.id
 }
 data "oci_core_nat_gateways" "segment" {
   depends_on = [oci_core_nat_gateway.segment]
-  count          = var.input.nat == "ENABLE" ? 1 : 0
+  count          = var.schema.nat == "ENABLE" ? 1 : 0
   compartment_id = data.oci_identity_compartments.network.compartments[0].id
-  display_name   = var.network.gateways.nat.name
+  display_name   = var.config.network.gateways.nat.name
   state          = "AVAILABLE"
   vcn_id         = oci_core_vcn.segment.id
 }
 data "oci_core_service_gateways" "segment" {
   depends_on = [oci_core_service_gateway.segment]
-  count          = var.input.osn != "DISABLE" ? 1 : 0
+  count          = var.schema.osn != "DISABLE" ? 1 : 0
   compartment_id = data.oci_identity_compartments.network.compartments[0].id
   state          = "AVAILABLE"
   vcn_id         = oci_core_vcn.segment.id
@@ -72,17 +72,11 @@ data "oci_core_route_tables" "default" {
 
 locals {
   create_gateways = {
-    "drg" = var.network.gateways.drg.create
-    "internet" = var.input.internet == "ENABLE" ? true : false
-    "nat" = var.input.nat == "ENABLE" ? true : false
-    "osn" = var.input.osn != "DISABLE" ? true : false
+    "drg"      = var.config.network.gateways.drg.create
+    "internet" = var.schema.internet == "ENABLE" ? true : false
+    "nat"      = var.schema.nat == "ENABLE" ? true : false
+    "service"  = var.schema.osn != "DISABLE" ? true : false
   }
-  gateway_list = compact([
-    local.create_gateways.drg ? var.network.gateways.drg.name : null,
-    local.create_gateways.internet ? var.network.gateways.internet.name : null,
-    local.create_gateways.nat ? var.network.gateways.nat.name : null,
-    local.create_gateways.osn ? var.network.gateways.osn.name : null
-  ])
   gateway_ids = zipmap(
     local.gateway_list,
     compact([
@@ -92,22 +86,19 @@ locals {
       length(data.oci_core_service_gateways.segment) > 0 ? data.oci_core_service_gateways.segment[0].service_gateways[0].id : null
     ])
   )
-  route_tables = {for route in var.network.route_table_input: route.name => {
-    display_name = route.display_name
-    route_rules  = {for name, cidr in route.destinations: name => {
-        network_entity   = route.gateway_name
-        destination      = cidr
-        destination_type = route.gateway == "osn" ? "SERVICE_CIDR_BLOCK" : "CIDR_BLOCK"
-        description      = "Routes ${route.name} traffic via the ${route.gateway} gateway."
-    }} 
-  }if contains(local.gateway_list, route.gateway_name)}
+  gateway_list = compact([
+    local.create_gateways.drg ? var.config.network.gateways.drg.name : null,
+    local.create_gateways.internet ? var.config.network.gateways.internet.name : null,
+    local.create_gateways.nat ? var.config.network.gateways.nat.name : null,
+    local.create_gateways.service ? var.config.network.gateways.service.name : null
+  ])
   osn_ids = {
-    "all"     = lookup(data.oci_core_services.all.services[0], "id")
+    "osn"     = lookup(data.oci_core_services.all.services[0], "id")
     "storage" = lookup(data.oci_core_services.storage.services[0], "id")
   }
   route_table_ids   = merge(
     {for table in oci_core_route_table.segment : table.display_name => table.id}, 
-    {"${var.network.display_name}_default_route" = data.oci_core_route_tables.default.route_tables[0].id}
+    {"${var.config.network.display_name}_default_table" = data.oci_core_route_tables.default.route_tables[0].id}
   )
   security_list_ids = {for list in oci_core_security_list.segment : list.display_name => list.id}
 }

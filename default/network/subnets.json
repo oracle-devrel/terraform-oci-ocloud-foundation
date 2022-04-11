@@ -1,73 +1,57 @@
 [
     {
-        "topology" : "apex",
-        "name"     : "apex",
-        "newbits"  : 3,
-        "firewall" : "web",
-        "disable_nat" : false,
-        "route_table" : "default"
+        "firewall" : "domain",
+        "name"     : "management",
+        "newbits"  : 10,
+        "stage"    : 0,
+        "topology" : "cloud"
     },{
-        "topology" : "host",
+        "firewall" : "edge",
         "name"     : "presentation",
-        "newbits"  : 3,
-        "firewall" : "web",
-        "disable_nat" : false,
-        "route_table" : "default"
-    },
-    {
-        "topology" : "host",
+        "newbits"  : 10,
+        "stage"    : 0,
+        "topology" : "host"
+    },{
+        "firewall" : "domain",
         "name"     : "application",
-        "newbits"  : 3,
-        "firewall" : "business",
-        "disable_nat" : false,
-        "route_table" : "default"
-    },
-    {
-        "topology" : "host",
+        "newbits"  : 10,
+        "stage"    : 0,
+        "topology" : "host"
+    },{
+        "firewall" : "domain",
         "name"     : "database",
-        "newbits"  : 3,
-        "firewall" : "data",
-        "disable_nat" : false,
-        "route_table" : "default"
-    },
-    {
-        "topology" : "nodes",
+        "newbits"  : 10,
+        "stage"    : 0,
+        "topology" : "host"
+    },{
+        "firewall" : "edge",
         "name"     : "frontend",
-        "newbits"  : 3,
-        "firewall" : "web",
-        "disable_nat" : false,
-        "route_table" : "default"
-    },
-    {
-        "topology" : "nodes",
+        "newbits"  : 10,
+        "stage"    : 0,
+        "topology" : "nodes"
+    },{
+        "firewall" : "domain",
         "name"     : "backend",
-        "newbits"  : 3,
-        "firewall" : "data",
-        "disable_nat" : false,
-        "route_table" : "default"
-    },
-    {
-        "topology" : "container",
+        "newbits"  : 10,
+        "stage"    : 0,
+        "topology" : "nodes"
+    },{
+        "firewall" : "edge",
         "name"     : "loadbalancer",
-        "newbits"  : 3,
-        "firewall" : "web",
-        "disable_nat" : false,
-        "route_table" : "default"
-    },
-    {
-        "topology" : "container",
+        "newbits"  : 10,
+        "stage"    : 0,
+        "topology" : "container"
+    },{
+        "firewall" : "domain",
         "name"     : "worker",
-        "newbits"  : 3,
-        "firewall" : "business",
-        "disable_nat" : false,
-        "route_table" : "default"
-    },
-    {
-        "topology" : "container",
+        "newbits"  : 10,
+        "stage"    : 0,
+        "topology" : "container"
+    },{
+        "firewall" : "domain",
         "name"     : "master",
-        "newbits"  : 3,
-        "firewall" : "data",
-        "disable_nat" : false,
-        "route_table" : "default"
+        "newbits"  : 10,
+        "stage"    : 0,
+        "topology" : "container"
     }
 ]

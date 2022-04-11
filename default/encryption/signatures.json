@@ -1,15 +1,15 @@
 [
   {
+    "algorithm" : "SHA_224_RSA_PKCS1_V1_5",
     "name"      : "rsa",
     "message"   : "message",
-    "type"      : "RAW",
-    "algorithm" : "SHA_224_RSA_PKCS1_V1_5",
-    "stage"     : 0
+    "stage"     : 0,
+    "type"      : "RAW"
   },{
+    "algorithm" : "ECDSA_SHA_256",
     "name"      : "ecdsa",
     "message"   : "message",
-    "type"      : "RAW",
-    "algorithm" : "ECDSA_SHA_256",
-    "stage"     : 0
+    "stage"     : 0,
+    "type"      : "RAW"
   }
 ]

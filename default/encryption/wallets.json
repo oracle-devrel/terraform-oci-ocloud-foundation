@@ -1,10 +1,10 @@
 [
   {
-    "name"       : "default",
-    "stage"      : 0,
-    "algorithm"  : "RSA",
-    "length"     : 256,
-    "signatures" : ["rsa"],
-    "secrets"    : ["default"]
+    "algorithm"  : "AES",
+    "length"     : 32,
+    "name"       : "main",
+    "secrets"    : ["default"],
+    "signatures" : ["ecdsa"],
+    "stage"      : 0
   }
 ]

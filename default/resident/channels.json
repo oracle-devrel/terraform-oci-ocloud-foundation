@@ -10,6 +10,11 @@
         "address" : "${owner}"
     },
     {
+        "name"    : "budget",
+        "type"    : "EMAIL",
+        "address" : "${owner}"
+    },
+    {
         "name"    : "incident",
         "type"    : "SLACK",
         "address" : "https://bit.ly/3iqR5H8"

@@ -40,6 +40,8 @@ output "security_list_ids" {
 
 output "security_group_ids" {
   description = "Security Group"
-  value       = {for group in oci_core_network_security_group.segment : group.display_name => group.id}
+  value       = {
+    for group in oci_core_network_security_group.segment : group.display_name => group.id
+  }
 }
 // --- Security ---//

@@ -1,6 +1,11 @@
 ## Requirements
 
-No requirements.
+<pre>locals {
+  domains    = jsondecode(file("${path.module}/default/resident/domains.json"))
+  wallets    = jsondecode(file("${path.module}/default/encryption/wallets.json"))
+  segments   = jsondecode(file("${path.module}/default/network/segments.json"))
+  database   = jsondecode(file("${path.module}/default/database/adb.json"))
+}</pre>
 
 ## Providers
 
@@ -11,18 +16,40 @@ No requirements.
 
 ## Modules
 
-No modules.
+<pre>module "configuration" {
+  source         = "./default/"
+  providers = {oci = oci.service}
+  input = {
+    tenancy      = var.tenancy_ocid
+    class        = var.class
+    owner        = var.owner
+    organization = var.organization
+    name         = var.name
+    repository   = var.repository
+    stage        = var.stage
+    region       = var.location
+    osn          = var.osn
+    adb          = var.adb_type
+  }
+  resident = {
+    topologies = local.topologies
+    domains    = local.domains
+    wallets    = local.wallets
+    segments   = local.segments
+    database   = local.database
+  }
+}</pre>
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [oci_core_services.all](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services) | data source |
-| [oci_core_services.storage](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services) | data source |
-| [oci_identity_availability_domains.tenancy](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_availability_domains) | data source |
-| [oci_identity_regions.tenancy](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_regions) | data source |
-| [oci_identity_tenancy.resident](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_tenancy) | data source |
-| [oci_objectstorage_namespace.tenancy](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/objectstorage_namespace) | data source |
+| [oci_core_services.all](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_services) | data source |
+| [oci_core_services.storage](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_services) | data source |
+| [oci_identity_availability_domains.tenancy](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_availability_domains) | data source |
+| [oci_identity_regions.tenancy](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_regions) | data source |
+| [oci_identity_tenancy.resident](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_tenancy) | data source |
+| [oci_objectstorage_namespace.tenancy](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/objectstorage_namespace) | data source |
 | [template_file.ad_names](https://registry.terraform.io/providers/hashicorp/template/latest/docs/data-sources/file) | data source |
 
 ## Inputs

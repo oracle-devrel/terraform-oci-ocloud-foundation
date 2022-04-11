@@ -1,0 +1,58 @@
+[
+  {
+    "alert"  : "tag",
+    "amount" : 100,
+    "name"   : "IT",
+    "period" : "default",
+    "stage"  : 2,
+    "tag"    : "cost_center"
+  },
+  {
+    "alert"  : "tag",
+    "amount" : 100,
+    "name"   : "HR",
+    "period" : "default",
+    "stage"  : 2,
+    "tag"    : "cost_center"
+  },
+  {
+    "alert"  : "tag",
+    "amount" : 100,
+    "name"   : "Sales",
+    "period" : "default",
+    "stage"  : 2,
+    "tag"    : "cost_center"
+  },
+  {
+    "alert"  : "tag",
+    "amount" : 100,
+    "name"   : "management",
+    "period" : "default",
+    "stage"  : 2,
+    "tag"    : "cost_type"
+  },
+  {
+    "alert"  : "tag",
+    "amount" : 100,
+    "name"   : "operation",
+    "period" : "default",
+    "stage"  : 2,
+    "tag"    : "cost_type"
+  },
+  {
+    "alert"  : "tag",
+    "amount" : 100,
+    "name"   : "development",
+    "period" : "default",
+    "stage"  : 2,
+    "tag"    : "cost_type"
+  },
+  {
+    "alert"  : "tag",
+    "amount" : 100,
+    "name"   : "${user}",
+    "period" : "default",
+    "stage"  : 2,
+    "tag"    : "created_by"
+  }
+]

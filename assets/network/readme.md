@@ -1,6 +1,6 @@
 ## Requirements
 
-No requirements.
+`https://github.com/ocilabs/`
 
 ## Providers
 
@@ -22,8 +22,8 @@ module "network" {
   resident  = module.configuration.resident
   network   = module.configuration.network[each.key]
   input = {
-    internet = var.internet
-    nat      = var.nat
+    internet = var.internet == "PUBLIC" ? "ENABLE" : "DISABLE"
+    nat      = var.nat == true ? "ENABLE" : "DISABLE"
     ipv6     = var.ipv6
     osn      = var.osn
   }
@@ -32,9 +32,7 @@ module "network" {
   }
 }
 output "network" {
-  value = {
-    for resource, parameter in module.network : resource => parameter
-    }
+  value = {for resource, parameter in module.network : resource => parameter}
 }
 // --- network configuration --- //
 ```
@@ -44,25 +42,25 @@ output "network" {
 | Name | Type |
 |------|------|
 | [null_resource.previous](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
-| [oci_core_default_security_list.default_security_list](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_default_security_list) | resource |
-| [oci_core_drg.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg) | resource |
-| [oci_core_drg_attachment.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg_attachment) | resource |
-| [oci_core_internet_gateway.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_internet_gateway) | resource |
-| [oci_core_nat_gateway.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_nat_gateway) | resource |
-| [oci_core_route_table.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_route_table) | resource |
-| [oci_core_security_list.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_security_list) | resource |
-| [oci_core_service_gateway.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_service_gateway) | resource |
-| [oci_core_subnet.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_subnet) | resource |
-| [oci_core_vcn.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_vcn) | resource |
+| [oci_core_default_security_list.default_security_list](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_default_security_list) | resource |
+| [oci_core_drg.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_drg) | resource |
+| [oci_core_drg_attachment.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_drg_attachment) | resource |
+| [oci_core_internet_gateway.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_internet_gateway) | resource |
+| [oci_core_nat_gateway.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_nat_gateway) | resource |
+| [oci_core_route_table.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_route_table) | resource |
+| [oci_core_security_list.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_security_list) | resource |
+| [oci_core_service_gateway.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_service_gateway) | resource |
+| [oci_core_subnet.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_subnet) | resource |
+| [oci_core_vcn.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_vcn) | resource |
 | [time_sleep.wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
-| [oci_core_drgs.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_drgs) | data source |
-| [oci_core_internet_gateways.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_internet_gateways) | data source |
-| [oci_core_nat_gateways.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_nat_gateways) | data source |
-| [oci_core_route_tables.default_route_table](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_route_tables) | data source |
-| [oci_core_service_gateways.segment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_service_gateways) | data source |
-| [oci_core_services.all](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services) | data source |
-| [oci_core_services.storage](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services) | data source |
-| [oci_identity_compartments.network](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_compartments) | data source |
+| [oci_core_drgs.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_drgs) | data source |
+| [oci_core_internet_gateways.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_internet_gateways) | data source |
+| [oci_core_nat_gateways.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_nat_gateways) | data source |
+| [oci_core_route_tables.default_route_table](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_route_tables) | data source |
+| [oci_core_service_gateways.segment](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_service_gateways) | data source |
+| [oci_core_services.all](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_services) | data source |
+| [oci_core_services.storage](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_services) | data source |
+| [oci_identity_compartments.network](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartments) | data source |
 
 ## Inputs
 

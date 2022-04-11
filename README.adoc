@@ -2,18 +2,18 @@
 // Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 
-image::https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg[Deploy on Oracle Cloud, link="https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/terraform-oci-ocloud-landing-zone/archive/refs/heads/main.zip"]
+image::https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg[Deploy on Oracle Cloud, link="https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/terraform-oci-ocloud-foundation/archive/refs/heads/main.zip"]
 
-== Kickstart your Oracle Cloud Infrastructure (OCI) Deployments
+== Kickstart Application Deployments on Oracle Cloud Infrastructure (OCI)
 
 image:https://img.shields.io/badge/license-UPL-green[link="LICENSE"]
 
 === Introduction
 
-With a new generation of cloud infrastructure, hyperscale offerings have taken a leap and become managed infrastructure platforms, capable of running enterprise workloads. While launching a cloud server is a matter of pressing a button, building a hosting platform for intra- and extranet services, operators need to comply with strict security and compliance guidelines. link:https://www.oracle.com/cloud/[Oracle Cloud Infrastructure (OCI)] addresses the need for more control with dedicated resources and isolated networks. But while OCI allows operators to increase operational efficiency with link:https://developer.oracle.com/infrastructure-as-code["Infrastructure as Code" (IaC)], expedites the development of solutions with predefined services and prevents investment risks with flexible pricing, a link:https://continuousarchitecture.com/continuous-architecture-principles[continous architecture pracitice] is required to translate operational benefits to reduced cost, decreased time-to-market and increased revenue. This framework aims at IT departments looking for a service delivery that keeps services aligned with the needs of the business while functional and non-functional requirements evolve. Service residents enable "multi-tenant" deployments with shared services, service assets facilitate a modular approach and service configurations extracted from deployment plans allow for small, incremental development steps. The link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[Oracle's Resource Manager (ORM)] is employed to generate graphical user interfaces and REST-API from code variables. This enables operations engineers to build self-service portals that trigger provisioning processes rather than launching infrastructure resources prior to adopting a CI/CD practice. 
+With a new generation of cloud infrastructure, hyperscale offerings have taken a leap and become managed infrastructure platforms for enterprise workloads. link:https://www.oracle.com/cloud/[Oracle Cloud Infrastructure (OCI)] addresses the need for advanced control with dedicated resources and isolated networks. A progammable controller enables operators to increase operational efficiency with link:https://developer.oracle.com/infrastructure-as-code["Infrastructure as Code" (IaC)] and the framework enables them to contain investment risks for the development of new services with link:https://continuousarchitecture.com/continuous-architecture-principles[continous architecture practices]. While launching a public cloud server has become a matter of pressing a button, a hosting platform for intra- and extranet services needs to address advanced security and compliance requirements of a private infrastructure stack. Traditionally requirements engineers translate operational benefits into reduced cost, decreased time-to-market and increased revenue for the business. In cloud implementations agile methods keep the service delivery aligned with the evolving needs of the business. This framework provides a middleground. The separation of service configurations and service assets facilitates modern CI/CD pipilines and the modular approach allows to adopt with itterative implementation steps even for hardware resources. But the construct of a service residents allows to merge company specific operator controls into the provisioning process and reflects the need for "multi-tenant" operations in a single teanancy. It also enables IT departments to preserve separate administration domains for link:https://en.wikipedia.org/wiki/Shared_services[shared services]. Executing automation scripts with the link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[Oracle's Resource Manager (ORM)] protects state information, provides a graphical user interfaces and a REST-API to build self-service portals for service owners. 
 
 ==== Architecture
-Architecture deals with transition planning activities that lead to the successful implementation of a cloud service. The architecture of a cloud service addresses security, scalability, performance, and resiliency requirements. It defines the guiding principles and standards for a services and helps to develop service assets. The framework enables architects to abstract at an appropriate level to make business and technical decisions, and to facilitate the analysis of platform capbilities and to compare design options. Meanwhile operations engineers focus on building reusable service assets, and system administrator provide the appropriate service configuration that will be merged into deployment plans. The framework provides a baseline configuration to support ad-hoc deployments, but  separates service design and infrastructure automation with provisioning instructions for reusable assets. The framework defines a link:assets/resident[service resident] isolating service assets in a network segment and creates administrator domains to reflect operational responsibilities. An administrator domain combines OCI resources like compartments, groups, policies, identity tags and notifications into a reusable asset that separates system operators from network-, database-, and security operators.
+The architecture of a cloud tenancy addresses security, scalability, performance, and resiliency requirements. The framework allows architects to abstract at an appropriate level to make business and technical decisions, and to facilitate the analysis of platform capbilities and to compare design config. It provides the guiding principles for the development of service assets. Meanwhile operations engineers focus on building reusable service assets, and system administrator provide the appropriate service configuration that will be merged into deployment plans. The framework provides a baseline configuration to support ad-hoc deployments, but  separates service design and infrastructure automation with provisioning instructions for reusable assets. The framework defines a link:assets/resident[service resident] isolating service assets in a network segment and creates administrator domains to reflect operational responsibilities. An administrator domain combines OCI resources like compartments, groups, policies, identity tags and notifications into a reusable asset that separates system operators from network-, database-, and security operators.
 
 [#img-architecture] 
 .Baseline Configuration 
@@ -26,7 +26,7 @@ Continous architecture principles help operation engineers to develop a secure, 
 
 * *Architect services, not solutions* A service delivers business value by facilitating the desired outcome without transfering the ownership for operational costs and risks to the user. Initially services are assembled using monitored and managed infrastructure components with PaaS and SaaS attachments. When functional requirements evolve, operators consider self-managed modules as replacement for public cloud services.
 
-* *Facilitate context-aware deployments* The way teams are organized drives the architecture and design of the systems they are working on. The commercial and the operational context for a service changes over time. Leveraging the “power of small” allows to move fast. In order to support a continuous delivery, tenancies are classified commercially and the lifecycle status is captured in the service configuration.
+* *Facilitate context-aware deployments* The way teams are organized drives the architecture and design of the systems they are working on. The commercial and the operational context for a service changes over time. Leveraging the “power of SMALL” allows to move fast. In order to support a continuous delivery, tenancies are classified commercially and the lifecycle status is captured in the service configuration.
 
 * *Innovate without disruption* Cloud services are usually designed as blueprints that represent the entire footprint in a single automation script. Operational models for IT departments have incorporated shared infrastructure services in some shape or form. E.g. operational responsibilities for database or network infrastructure is reflected in a separation of duties. Extracting configuration parameters from the deployment code, the framework provides an automated provisioning process that collects input from existing competence center.
 
@@ -38,30 +38,38 @@ Continous architecture principles help operation engineers to develop a secure, 
 .Code Delivery
 image::https://raw.githubusercontent.com/ocilabs/images/main/code_delivery.drawio.png[Code Delivery]
 
-Provisioning templates extract configuration parameter from the deployment code for service assets. This enables operators to start with a recommendet set of resources and refine the configuration in incremental steps. The state-aware provisioning suggests an iterative approach. A SCRUM team is made up of system administrators with expertise in application management, network-, database- and security operations. They can adjust settings without learning HCL or Terraform. Service configurations are captured in JSON files and can be edited without touching the deployment code.
+Provisioning templates extract configuration parameter from the deployment code for service assets and trigger provisioning processes rather than launching infrastructure resources prior to adopting a CI/CD practice. . This enables operators to start with a recommendet set of resources and refine the configuration in incremental steps. The state-aware provisioning suggests an iterative approach. A SCRUM team is made up of system administrators with expertise in application management, network-, database- and security operations. They can adjust settings without learning HCL or Terraform. Service configurations are captured in JSON files and can be edited without touching the deployment code.
 
 ==== Considerations
 Storing the code in a git repository and connecting the Resource Manager (ORM) with the source allows administrators to implement a link:https://en.wikipedia.org/wiki/Continuous_delivery[continuous delivery] process. Operation engineers "borrow" tools and workflows, invented for software developer. But instead of using these tools for application code, operators leverage them for infrastructure automation. Git becomes the single source of truth for both, application and infrastructure code. A service template describes the desired state for the assets and is versioned in the repository. Operators introduce self-service following in steps in the service design phase: 
 
-===== Service Residency
-Default settings enable initial deployments for a new services. Operators evaluate the infrastructure platform, delivering a first service. System administrators and service owners explore service options that help to bootstrap operational tasks. link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[Oracle's Resource Manager (ORM)] exposes assets through proteced user- and application interfaces, keeping service owners in charge to determine when and where a service will be launched. A schema file extends the console and facilitates variable entries in the `Create Stack` page. The default schema offers the following of options:
+===== Use the template with default settings
+Default settings enable initial deployments for a new services. Operators evaluate the infrastructure platform, delivering a first service. System administrators and service owners explore service config that help to bootstrap operational tasks. link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[Oracle's Resource Manager (ORM)] exposes assets through proteced user- and application interfaces, keeping service owners in charge to determine when and where a service will be launched. A schema file extends the console and facilitates variable entries in the `Create Stack` page. The default schema offers the following of config:
 
 * *Tenancy Classification*: The class parameter helps to constraint resource deployments according to the service limits associated with contract for a tenancy. 
 
 * *Resident Configuration*: In the second section meta data assciated with a resident is collected. Names should be unique for a tenancy to avoid conflicts for resources, defined on root level. The lifecycle stage helps engineers to avoid over provisioning of resources that take a long time to be destroyed.
 
-* *Topology Options*: Executing the default deployment plan, the resource manager offers a choice of topologies that enable common use cases like enterprise applications, big-data and cloud-native services. These options can also be combined to build hybrid services. The opology selection triggers the subnet topology for a segment.
+* *Topology Options*: Executing the default deployment plan, the resource manager offers a choice of topologies that enable common use cases like enterprise applications, big-data and cloud-native services. These config can also be combined to build hybrid services. The opology selection triggers the subnet topology for a segment.
 
 * *Network Settings*: Generic network parameter trigger the level of exposure to the public internet. Activating the internet gateway will expose a frontend, and/or load balancer network to the public internet.   
 
 * *Domain Protection*: The default protection setting is triggered by the lifecycle setting, however can be changed, should that be required.
 
-===== Service Configuration
+===== Configure an own service template
 Default settings are stored in configuration files, containing parameters as lists of objects. Combining mulitple resources into assets, the number of resource arguments is significantly reduced.  Dependencies are modelled referencing resource names. Subject matter experts refine these parameter to add, change or delete resources from a template. JSON files represent the design, scale and scope of a service. In the refinement phase teams collect input from practitioners to adjust the default parameter that allow operators to controll demand and optimize capacity utilization. 
 
+====== Settings
+* link:/default/resident/classification.json[Tenant Classification] : The classification schema allows to restrict deployment templates to the resources available under the service limits of a particular contract. This setting should only be mofied by an experienced user.
+
+* link:/default/resident/lifecycle.json[Lifecycle Stages] : Different lifecycle trigger a corresponding selection of resources. E.g., using stages allows to increase security measures within a deployment template, without rewriting a blueprint. 
+
+* link:/library/rfc6335.json[Standard Application Profiles (link:https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[RFC 6335])] : The RFC library reflects standard application profiles according to IANA assignments for public internet traffic. 
+
+====== Resident
 * link:/default/resident/domains.json[Administrator Domains] : Domains organize the stewardship for service assets like network, storage or compute. Domain names must be unique for a service resident. 
 
-* link:/default/resident/roles.json[Administrator Roles] : Roles reflect a series of policies to ensure a seprartion of duties between operators. Each role allows to manage administrator priviledges and policies independently. 
+* link:/default/resident/operators.json[Administrator Roles] : Roles reflect a series of policies to ensure a seprartion of duties between operators. Each role allows to manage administrator priviledges and policies independently. 
 
 * link:/default/resident/controls.json[Operator Controls] : Controls enable operators to constrain resource access and retrieve alarms or notifications in case of an event. Controls can also trigger scripts to apply predefined measures.
 
@@ -69,6 +77,20 @@ Default settings are stored in configuration files, containing parameters as lis
 
 * link:/default/resident/channels.json[Notification Channels] : Channels utilize the messaging services for notifications generated by an event or an operator control like budget or service limits.
 
+* link:/default/resident/budgets.json[Budgets] : Budgets enables operator to assign UCC to a service owner and monitor the consumption. If defined threshhold is reached, an alert will be send to the selected admin channel.  
+
+* link:/default/resident/alerts.json[Administrator Alerts] : Alerts define threshholds for monitoring events. Currently the functionlaity is limited to cost tracking.
+
+* link:/default/resident/periods.json[Monitoring Periods] : Periosd are the foundation for alerts and define the sequence when threshholds will be reset.
+
+====== Encryption
+* link:/default/encryption/secrets.json[Passwords] :  Passwords can either be random strings or secrets that are stored in vault and are managed using the Key Management Service (KMS) 
+
+* link:/default/encryption/signatures.json[Signatures] :  Signatures are always stored in vault and can be retrieved for the respecitve resources.
+
+* link:/default/encryption/wallets.json[Wallets] :  A wallet combines a vault with an encryption key. The wallet data set trigger the creation and deprovisioning of a vault. 
+
+====== Network
 * link:/default/network/segments.json[Network Segments] :  Segments provide private IP networks for a resident. OCI provides a native layer three network, tenancies can be considered as isolated, virtual data centers. 
 
 * link:/default/network/subnets.json[Subnets] : Subnets divide network segments into smaller parts. The purpose is to improve security and avoid address conflicts, when deploying autoscaling workloads. 
@@ -81,12 +103,19 @@ Default settings are stored in configuration files, containing parameters as lis
 
 * link:/default/network/sections.json[Security Zones] : Security zones describe portions of a network with a security requirements set. Each zone consists of a single interface, to which a security policy is applied. Subnets and routing destinations are predfined zones, additional can be defined as sections.
 
-* link:/default/network/ports.json[Application Profiles] : Application Port Profiles include a combination of a protocol and a port, or a group of ports, that is used for firewalls and NAT gateways.
+* link:/default/network/profiles.json[Application Profiles] : Application Port Profiles include a combination of a protocol and a port, or a group of ports, that is used for firewalls and NAT gateways.
 
-===== Service Composition
+* link:/default/network/sources.json[Traffic Sources] : Sources are network zones where incoming traffic can orgin. Network sources are used to define firewall rules on subnet level.
+
+====== Database
+* link:/default/database/adb.json[Autonomous Database] : The database file defines the various deployment options for databases in OCI. Currently only autonomous databases are supported. 
+
+* link:/default/database/sizes.json[T-Shirt Sizes] : In the sizes file database administrators can define standard deplyment sizes for self-service deployments. When moving to production, often standard sizes are replaced with speciffic sizing options.
+
+===== Create own service components
 The objective of every adoption project is the deployment of a service. Beside refining the topology, servers need to be configured and applications need to be installed. Configuration scripts are are triggerdd from a host configuration, and services hosted in the Oracle Service Network can be attached to a network segment. Cloud solutions are assembled using service assets. The framework provides predefined components that abstract provider specific APIs. Using ORM, services are deployed into existing residents. Predefined modules can be invoked referring to OCI modules in the link:https://registry.terraform.io/browse/modules?provider=oci[terraform registry] or to a git repository, containing infrastructure code. A great starting point are the link:https://registry.terraform.io/search/modules?q=oci%20cloud%20bricks[cloudbricks] components. Depending on the level of standardization, service components are introduced using the following methods:
 
-* *Service Assets* - Service assets are reusable definitions of infrastructure resoources. These assets are invoked as Terraform modules in the main.tf file. This allows to complement the predefined set of resources with custom components, e.g. commercial hypervisor, container orchstrator or load balancer. A growing number of link:https://registry.terraform.io/browse/providers[Terraform provider] suggests to define custom assets in HCL.
+* *Service Assets* - Service assets are reusable definitions of infrastructure resoources. These assets are invoked as Terraform modules in the main.tf file. This allows to complement the predefined set of resources with custom components, e.g. commercial hypervisor, container orchstrator or load balancer. A growing number of link:https://registry.terraform.io/browse/providers[Terraform provider] suggests to define custom assets in HCL. The link:https://github.com/ocilabs/asset[asset template] get's engineers to started on a new repository and the link:https://github.com/ocilabs/core_dev[core development repository] helps to develop deployment templates offline.  
 * *Service Attachments* - The Oracle Service Network offers a variety of link:https://www.oracle.com/cloud/networking/service-gateway/service-gateway-supported-services[public cloud services] that can be attached to a private service through the service gateway. Attachments don't need customization, resource blocks can be added to the main.tf file.
 * *Service Modules* - Service Modules represent link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[resource manager stacks] with an own schema file. This allows to use the same modules accross multiple residents. Examples are application and database hosts or container cluster.
 
@@ -105,7 +134,7 @@ Code is written in HashiCorp Configuration Language (HCL), includes data stored 
 * link:https://www.oracle.com/cloud/free/[Oracle Cloud Infrastructure (OCI) Account] 
 * link:https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm[Oracle Resource Manager]
 * link:https://www.terraform.io[HashiCorp Terraform]
-* link:https://registry.terraform.io/providers/hashicorp/oci/latest[Terraform Service Provider for OCI]
+* link:https://registry.terraform.io/providers/oracle/oci/latest[Terraform Service Provider for OCI]
 * link:https://registry.terraform.io/providers/hashicorp/time/latest[Terraform Time Service Provider]
 * link:https://cloudinit.readthedocs.io/en/latest/[Cloud Init]
 

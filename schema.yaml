@@ -1,9 +1,9 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "Kickstart Application Deployments"
-description: "The kickstart framwork creates a foundation for application deployments in Oracle Cloud Infrastructure"
-informationalText: "This stack helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). A base set of resources is provisioned and configured."
+title: "Kickstart Application Deployments with the Oracle Resource Manager "
+description: "The ocloud framwork creates a foundation for application deployments in Oracle Cloud Infrastructure"
+informationalText: "This resource manager stack helps operators to set up a hosting environment for enterprise applications in Oracle Cloud Infrastructure (OCI). A base set of resources is provisioned and configured."
 schemaVersion: 1.1.0
 version: "20210611"
 locale: "en"
@@ -14,33 +14,32 @@ variableGroups:
   variables:
   - tenancy_ocid
   - class
-
-- title: "Region"
-  visible: true
-  variables:
-  - region
-
-- title: "Service"
-  visible: true
-  variables:
-  - parent
-  - compartment_ocid
-  - current_user_ocid
-  - organization
-  - solution
-  - owner
-  - repository
+  - budget
 
 - title: "Lifecycle"
   visible: true
   variables:
   - stage
 
+- title: "Settings"
+  visible: true
+  variables:
+  - compartment_ocid
+  - current_user_ocid
+  - name
+  - location
+  - region
+  - organization
+  - owner
+  - parent
+  - repository
+
 - title: "Database"
   visible: true
   variables:
   - create_adb
   - adb_type
+  - adb_size
 
 - title: "Application Type"
   visible: true
@@ -48,35 +47,58 @@ variableGroups:
   - host
   - nodes
   - container
-  - apex
 
-- title: "Network"
+- title: "Advanced Settings"
   visible: true
   variables:
+  - vaultsettings
+  - create_wallet
+  - wallet
   - netsettings
   - internet
   - osn
+  - management
   - nat
   - ipv6
-
-- title: "Wallet"
-  visible: true
-  variables:
-  - create_wallet
-  - wallet_type
-
 variables:
-# Tenancy
-  tenancy_ocid:
-    title: "Tenancy ID"
-    description: "A unique identifier for your cloud tenancy"
-    visible: false
-    type: string
-    required: true
+
+  adb_type:
+    title: "Database Type"
+    visible: create_adb
+    required: false
+    type: enum
+    enum:
+      - TRANSACTION_PROCESSING
+      - APEX
+      - DATA_WAREHOUSE
+      - JSON
+
+  adb_size:
+    title: "Database Size"
+    visible: create_adb
+    required: false
+    type: enum
+    enum:
+      - SMALL
+      - MEDIUM
+      - LARGE
+
+  budget:
+    title: "Sets a monthly budget for the service"
+    default: 0
+    required: false
+    visible: 
+      or:
+        - eq:
+          - class
+          - "PAYG"
+        - eq:
+          - class
+          - "UCC"
 
   class:
-    title: "Define service limits related to the contract type"
-    description: "Choose the Universal Credit Consumption (UCC) model to select corresponding resource types"
+    title: "Limits"
+    description: "Selecting a contract type restricts the resource portfolio to the corresponding service limits and avoids deployment errors."
     type: enum
     default: "FREE_TIER"
     required: true
@@ -86,13 +108,28 @@ variables:
       - PAYG
       - UCC
 
-# Service Configuration
   compartment_ocid:
     title: "Compartment ID"
-    description: "A unique identifier that creates a bspoke administrator domains for your service"
+    description: "A unique identifier that creates a bspoke administrator domains for your service."
     visible: false
     type: string
     required: true
+
+  container:
+    type: boolean
+    title: "Cloud Native Service"
+    required: false
+
+  create_adb:
+    type: boolean
+    title: "Autonomous Database"
+    required: false
+
+  create_wallet:
+    type: boolean
+    title: "Wallet"
+    visible: vaultsettings
+    required: false
   
   current_user_ocid:
     title: "User ID"
@@ -100,95 +137,11 @@ variables:
     visible: false
     type: string
     required: true
-    
-  parent:
-    title: "Parent Compartment"
-    description: "The OCID for the root compartment, the default selection should only be changed by an experienced user"
-    type: oci:identity:compartment:id
-    visible: false
-    dependsOn:
-      compartmentId: tenancy_ocid
-      accessLevel: ANY
-      lifecycleState: ACTIVE
-    required: true
 
-  region:
-    title: "Select the data center region for the service deployment"
-    description: "Before selecting an availability domain in a region, the target region should be activated for a tenancy"
-    visible: true
-    type: oci:identity:region:name
-    required: true
-
-  organization:
-    title: "Name of the business unit"
-    description: "Identifier for the organization that will use the service"
-    type: string
-    default: "Organization"
-    minLength: 1
-    maxLength: 25
-    pattern: "^[a-zA-Z]+$"
-    required: true
-
-  solution:
-    title: "Name of the solution"
-    description: "Identifier for the service, the name should be unique within the tenancy"
-    type: string
-    default: "Name"
-    minLength: 1
-    maxLength: 25
-    pattern: "^[a-zA-Z]+$"
-    required: true
-
-  stage:
-    title: "Select the lifecycle stage for the deployment"
-    description: "Selecting the lifecycle stage preselects an appropriate collection of operational controls"
-    type: enum
-    default: "DEV"
-    required: true
-    enum:
-      - DEV
-      - UAT
-      - PROD
-
-  repository:
-    title: "Source code repository for the provisioning scripts (only used for information pusposes)"
-    description: "Provide an URL for the code source"
-    type: string
-    required: false
-
-  owner:
-    title: "Service Administrator"
-    description: "The service administrator will receive notifications when the service topology changes"
-    type: string
-    required: true
-
-# Application Type
   host:
     type: boolean
     title: "Enterprise Application"
     required: false
-
-  nodes:
-    type: boolean
-    title: "Web Application"
-    required: false
-
-  container:
-    type: boolean
-    title: "Cloud Native Service"
-    required: false
-
-  apex:
-    type: boolean
-    title: "APEX Service"
-    required: false
-
-# Network Options
-  netsettings:
-    type: boolean
-    title: "Advanced Network Settings"
-    required: true
-    default: false
 
   internet:
     type: enum
@@ -206,12 +159,59 @@ variables:
     visible: netsettings
     default: false
 
+  location:
+    title: "Region"
+    description: "Define the target region for the service deployment, the target region needs to be activated for a tenancy."
+    visible: true
+    type: oci:identity:region:name
+    default: region
+    required: true
+
+  management:
+    type: boolean
+    title: "Management Network"
+    visible: false
+    default : true
+    required: true
+
+  name:
+    title: "Service"
+    description: "Provide an identifier for the service, the name should be unique within the tenancy"
+    type: string
+    default: "Name"
+    minLength: 1
+    maxLength: 25
+    pattern: "^[a-zA-Z]+$"
+    required: true
+
   nat:
     type: boolean
     title: "NAT for Private Subnets"
     required: true
     visible: netsettings
     default: true
+
+  netsettings:
+    type: boolean
+    title: "Network"
+    description: "Advanced parameter for the network topology."
+    required: true
+    default: false
+
+  nodes:
+    type: boolean
+    title: "Web Application"
+    required: false
+
+  organization:
+    title: "Consumer"
+    description: "Identifier for the organization that will use the service."
+    type: string
+    default: "Organization"
+    minLength: 1
+    maxLength: 25
+    pattern: "^[a-zA-Z]+$"
+    required: true
 
   osn:
     type: enum
@@ -223,34 +223,65 @@ variables:
       - OBJECT_STORAGE
       - DISABLE
 
-# Database Service
-  create_adb:
-    type: boolean
-    title: "Create an Autonomous Database"
+  owner:
+    title: "Administrator"
+    description: "The service administrator will receive notifications when the service topology changes"
+    type: string
+    required: true
+    
+  parent:
+    title: "Parent Compartment"
+    description: "The OCID for the root compartment, the default selection should only be changed by an experienced user"
+    type: oci:identity:compartment:id
+    visible: false
+    dependsOn:
+      compartmentId: tenancy_ocid
+      accessLevel: ANY
+      lifecycleState: ACTIVE
+    required: true
+
+  region:
+    title: "Default region for the user"
+    visible: false
+    type: string
+    required: true
+
+  repository:
+    title: "Repository"
+    description: "Source code repository for the provisioning scripts (only used for information pusposes)"
+    type: string
     required: false
 
-  adb_type:
-    title: "Database Type"
-    visible: create_adb
+  stage:
+    title: "Stage"
+    description: "Providing the lifecycle stage preselects an appropriate collection of operational controls"
+    type: enum
+    default: "DEVELOPMENT"
+    required: true
+    enum:
+      - DEVELOPMENT
+      - TEST
+      - PRODUCTION
+
+  tenancy_ocid:
+    title: "Tenancy ID"
+    description: "A unique identifier for your cloud tenancy"
+    visible: false
+    type: string
+    required: true
+
+  vaultsettings:
+    type: boolean
+    title: "Encryption"
+    description: "Enforce the creation of a secret store. Storing secrets is strongly recommended for production, but not for the development phase."
+    required: true
+    default: false
+
+  wallet:
+    title: "Type"
+    visible: vaultsettings
     required: false
     type: enum
     enum:
-      - TRANSACTION_PROCESSING
-      - APEX
-      - DATA_WAREHOUSE
-      - JSON
-
-# Encryption Service
-  create_wallet:
-    type: boolean
-    title: "Create a Wallet"
-    required: false
-
-  wallet_type:
-    title: "Vault Type"
-    visible: create_wallet
-    required: false
-    type: enum
-    enum:
-      - Software
-      - HSM
+      - SOFTWARE
+      - HARDWARE

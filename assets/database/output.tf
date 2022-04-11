@@ -3,21 +3,24 @@
 
 output "database_ids" {
   description = "A list of automous databases created by the database module"
-  value       = { for adb in data.oci_database_autonomous_databases.database.autonomous_databases : adb.display_name => adb.id }
+  value       = length(oci_database_autonomous_database.database) > 0 ? {for adb in data.oci_database_autonomous_databases.database.autonomous_databases : adb.display_name => adb.id} : null
 }
 
 output "service_console_url" {
-  value = oci_database_autonomous_database.database[0].service_console_url
+  value = length(oci_database_autonomous_database.database) > 0 ? oci_database_autonomous_database.database[0].service_console_url : null
 }
 
 output "connection_strings" {
-  value = oci_database_autonomous_database.database[0].connection_strings[0].all_connection_strings
+  value = length(oci_database_autonomous_database.database) > 0 ? oci_database_autonomous_database.database[0].connection_strings[0].all_connection_strings : null
 }
 
 output "connection_urls" {
-  value = oci_database_autonomous_database.database[0].connection_urls[0]
+  value = length(oci_database_autonomous_database.database) > 0 ? oci_database_autonomous_database.database[0].connection_urls[0] : null
 }
 
 output "password" {
-  value = var.assets.encryption.passwords[var.database.password]
+  value = length(oci_database_autonomous_database.database) > 0 ? try(
+    var.assets.encryption.passwords[var.config.database.password], 
+    base64decode(data.oci_secrets_secretbundle.database.secret_bundle_content.0.content)
+  ) : null
 }

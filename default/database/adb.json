@@ -1,42 +1,38 @@
 [
   {
-    "name"     : "atp",
+    "name"     : "TRANSACTION_PROCESSING",
     "type"     : "OLTP",
     "stage"    : 0,
-    "cores"    : 1,
-    "storage"  : 1,
+    "sizes"    : ["SMALL", "MEDIUM", "LARGE"],
     "license"  : "LICENSE_INCLUDED",
-    "password" : "default",
+    "password" : "database",
     "version"  : "19c"
   },
   {
-    "name"    : "adw",
-    "type"    : "DW",
-    "stage"   : 0,
-    "cores"   : 1,
-    "storage" : 1,
-    "license" : "LICENSE_INCLUDED",
-    "password" : "default",
-    "version" : "19c"
+    "name"     : "DATA_WAREHOUSE",
+    "type"     : "DW",
+    "stage"    : 0,
+    "sizes"    : ["SMALL", "MEDIUM", "LARGE"],
+    "license"  : "LICENSE_INCLUDED",
+    "password" : "database",
+    "version"  : "19c"
   },
   {
-    "name"    : "apex",
-    "type"    : "APEX",
-    "stage"   : 0,
-    "cores"   : 1,
-    "storage" : 1,
-    "license" : "LICENSE_INCLUDED",
-    "password" : "default",
-    "version" : "19c"
+    "name"     : "APEX",
+    "type"     : "APEX",
+    "stage"    : 0,
+    "sizes"    : ["SMALL", "MEDIUM", "LARGE"],
+    "license"  : "LICENSE_INCLUDED",
+    "password" : "database",
+    "version"  : "19c"
   },
   {
-    "name"    : "json",
-    "type"    : "AJD",
-    "stage"   : 0,
-    "cores"   : 1,
-    "storage" : 1,
-    "license" : "LICENSE_INCLUDED",
-    "password" : "default",
-    "version" : "19c"
+    "name"     : "JSON",
+    "type"     : "AJD",
+    "stage"    : 0,
+    "sizes"    : ["SMALL", "MEDIUM", "LARGE"],
+    "license"  : "LICENSE_INCLUDED",
+    "password" : "database",
+    "version"  : "19c"
   }
 ]
