@@ -4,11 +4,7 @@
 
 image::https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg[Deploy on Oracle Cloud, link="https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/terraform-oci-ocloud-foundation/archive/refs/heads/main.zip"]
 
-<<<<<<< Updated upstream
-== Kickstart your Application Deployments on Oracle Cloud Infrastructure (OCI)
-=======
 == Kickstart Application Deployments on Oracle Cloud Infrastructure (OCI)
->>>>>>> Stashed changes
 
 image:https://img.shields.io/badge/license-UPL-green[link="LICENSE"]
 
